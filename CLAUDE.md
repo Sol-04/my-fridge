@@ -15,14 +15,36 @@ Website giúp người Việt **chọn thực phẩm đang có** (trong tủ l�
 ## Cấu trúc thư mục
 - `src/app/` — các trang của website (`page.tsx` = trang chủ, `layout.tsx` = khung chung).
 - `src/app/globals.css` — CSS chung, nạp Tailwind.
+- `src/app/studio/[[...tool]]/` — trang quản trị Sanity Studio tại `/studio`.
+- `src/sanity/` — kết nối Sanity: `env.ts` (đọc biến môi trường), `lib/client.ts` (đọc dữ liệu),
+  `lib/image.ts` (link ảnh), `schemaTypes/recipe.ts` (loại nội dung "Món ăn").
+- `sanity.config.ts`, `sanity.cli.ts` — cấu hình Studio và lệnh `npx sanity`.
+- `data/nutrition.ts` — bảng dinh dưỡng /100 g, là **danh sách tên nguyên liệu chuẩn**.
+- `data/recipes.ts` — 24 món mẫu; calo/đạm/tinh bột/béo được tính tự động từ số gram.
+- `scripts/import-recipes.ts` — script nhập món vào Sanity.
 - `public/` — ảnh, icon tĩnh.
 - `.env.example` — mẫu tên biến môi trường (KHÔNG chứa giá trị thật).
 
+## Sanity (công thức món ăn)
+- Project ID `b4tnn0pq`, dataset `production` (dataset public: đọc không cần token).
+- Loại nội dung `recipe` ("Món ăn"): `name`, `slug`, `image`, `description`,
+  `meals` (`breakfast`/`lunch`/`dinner`), `ingredients[] {name, grams}`, `servingGrams`,
+  `calories`, `protein`, `carbs`, `fat`, `cookMinutes`, `steps[]`.
+- Mỗi món có ID cố định `recipe-<slug>` → nhập lại sẽ ghi đè, không trùng.
+- Thêm món mới: thêm vào `data/recipes.ts` (chỉ dùng tên nguyên liệu có trong `data/nutrition.ts`),
+  rồi chạy `npm run import:recipes`.
+- Studio tại `/studio` cần thêm địa chỉ web vào CORS origins (sanity.io/manage → API).
+
+## Biến môi trường
+- `NEXT_PUBLIC_SANITY_PROJECT_ID`, `NEXT_PUBLIC_SANITY_DATASET` — công khai, cần cả trên Vercel.
+- `SANITY_API_WRITE_TOKEN` — **BÍ MẬT**, chỉ dùng cho script nhập dữ liệu, không đưa lên Vercel.
+
 ## Lệnh thường dùng
 - `npm install` — cài thư viện.
-- `npm run dev` — chạy thử trên máy tại http://localhost:3000
+- `npm run dev` — chạy thử trên máy tại http://localhost:3000 (Studio ở /studio)
 - `npm run build` — build để kiểm tra lỗi.
 - `npm run lint` — kiểm tra lỗi cách viết code.
+- `npm run import:recipes` — nhập món trong `data/recipes.ts` vào Sanity (cần token ghi).
 
 ## Quy tắc giao diện
 - Toàn bộ chữ hiển thị cho người dùng bằng **tiếng Việt** (có dấu đầy đủ).
