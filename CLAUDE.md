@@ -15,9 +15,15 @@ Website giúp người Việt **chọn thực phẩm đang có** (trong tủ l�
 ## Cấu trúc thư mục
 - `src/app/` — các trang của website (`page.tsx` = trang chủ, `layout.tsx` = khung chung).
 - `src/app/globals.css` — CSS chung, nạp Tailwind.
+- `src/app/mon-an/` — trang danh sách món `/mon-an` (thẻ món + lọc theo bữa trong `RecipeList.tsx`).
+- `src/app/mon-an/[slug]/` — trang chi tiết món (dinh dưỡng, nguyên liệu, các bước) + `not-found.tsx`.
 - `src/app/studio/[[...tool]]/` — trang quản trị Sanity Studio tại `/studio`.
+- `src/components/` — `RecipeCard.tsx` (thẻ món), `RecipeImage.tsx` (ảnh món, có ô thay thế khi chưa có ảnh).
 - `src/sanity/` — kết nối Sanity: `env.ts` (đọc biến môi trường), `lib/client.ts` (đọc dữ liệu),
-  `lib/image.ts` (link ảnh), `schemaTypes/recipe.ts` (loại nội dung "Món ăn").
+  `lib/image.ts` (link ảnh), `lib/queries.ts` (truy vấn GROQ), `lib/recipes.ts` (hàm lấy món,
+  cache 1 giờ, lỗi thì trả rỗng chứ không làm sập web), `meals.ts` (nhãn bữa sáng/trưa/tối),
+  `schemaTypes/recipe.ts` (loại nội dung "Món ăn").
+  - Code của trang web KHÔNG import từ `schemaTypes/` (sẽ kéo cả gói Studio nặng vào trang).
 - `sanity.config.ts`, `sanity.cli.ts` — cấu hình Studio và lệnh `npx sanity`.
 - `data/nutrition.ts` — bảng dinh dưỡng /100 g, là **danh sách tên nguyên liệu chuẩn**.
 - `data/recipes.ts` — 24 món mẫu; calo/đạm/tinh bột/béo được tính tự động từ số gram.

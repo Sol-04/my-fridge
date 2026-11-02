@@ -1,12 +1,7 @@
 import { LemonIcon } from "@sanity/icons/Lemon";
 import { defineArrayMember, defineField, defineType } from "sanity";
 
-// Các bữa trong ngày. "value" là mã lưu trong dữ liệu, "title" là chữ hiển thị.
-export const MEAL_OPTIONS = [
-  { title: "Bữa sáng", value: "breakfast" },
-  { title: "Bữa trưa", value: "lunch" },
-  { title: "Bữa tối", value: "dinner" },
-] as const;
+import { MEAL_OPTIONS, mealLabel } from "../meals";
 
 const gramField = (name: string, title: string, description?: string) =>
   defineField({
@@ -133,7 +128,7 @@ export const recipe = defineType({
     },
     prepare: ({ title, calories, meals, media }) => {
       const mealLabels = ((meals as string[] | undefined) ?? [])
-        .map((m) => MEAL_OPTIONS.find((o) => o.value === m)?.title ?? m)
+        .map(mealLabel)
         .join(", ");
       return {
         title,
