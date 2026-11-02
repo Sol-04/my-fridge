@@ -18,7 +18,15 @@ Website giúp người Việt **chọn thực phẩm đang có** (trong tủ l�
 - `src/app/mon-an/` — trang danh sách món `/mon-an` (thẻ món + lọc theo bữa trong `RecipeList.tsx`).
 - `src/app/mon-an/[slug]/` — trang chi tiết món (dinh dưỡng, nguyên liệu, các bước) + `not-found.tsx`.
 - `src/app/studio/[[...tool]]/` — trang quản trị Sanity Studio tại `/studio`.
-- `src/components/` — `RecipeCard.tsx` (thẻ món), `RecipeImage.tsx` (ảnh món, có ô thay thế khi chưa có ảnh).
+- `src/app/tao-thuc-don/` — trang tạo thực đơn 3 bước (`Planner.tsx`): 1) thông tin cá nhân → calo mục tiêu,
+  2) chọn thực phẩm đang có, 3) gợi ý món + khẩu phần, nút "Lưu thực đơn" (`actions.ts` — server action).
+- `src/app/thuc-don/[id]/` — xem lại thực đơn đã lưu + nút "Sao chép link" (`CopyLinkButton.tsx`).
+- `src/lib/meal-plan.ts` — công thức tính: calo mục tiêu (Mifflin-St Jeor), chia bữa 25/40/35%,
+  gia vị luôn có (`PANTRY_STAPLES`), nhóm nguyên liệu, chấm điểm món, khẩu phần (0,5–2,5, bước 0,25).
+- `src/lib/supabase.ts` — kết nối Supabase (anon key); `src/lib/meal-plans-db.ts` — đọc thực đơn theo id.
+- `supabase/schema.sql` — SQL tạo bảng `meal_plans` + RLS (chạy trong Supabase SQL Editor).
+- `src/components/` — `RecipeCard.tsx` (thẻ món), `RecipeImage.tsx` (ảnh món, có ô thay thế khi chưa có ảnh),
+  `MealEntryCard.tsx` (thẻ 1 bữa), `NutritionTotals.tsx` (tổng dinh dưỡng trong ngày).
 - `src/sanity/` — kết nối Sanity: `env.ts` (đọc biến môi trường), `lib/client.ts` (đọc dữ liệu),
   `lib/image.ts` (link ảnh), `lib/queries.ts` (truy vấn GROQ), `lib/recipes.ts` (hàm lấy món,
   cache 1 giờ, lỗi thì trả rỗng chứ không làm sập web), `meals.ts` (nhãn bữa sáng/trưa/tối),
@@ -41,8 +49,20 @@ Website giúp người Việt **chọn thực phẩm đang có** (trong tủ l�
   rồi chạy `npm run import:recipes`.
 - Studio tại `/studio` cần thêm địa chỉ web vào CORS origins (sanity.io/manage → API).
 
+## Supabase (lưu thực đơn)
+- Project "Sol-1". Bảng `public.meal_plans`: `id`, `created_at`, `user_input` (jsonb), `target_calories`,
+  `selected_foods` (text[]), `breakfast` / `lunch` / `dinner` (jsonb: món + khẩu phần + dinh dưỡng).
+- RLS: chỉ cho **thêm mới**; không ai đọc thẳng bảng, sửa hay xoá. Xem 1 thực đơn qua hàm
+  `get_meal_plan(plan_id)` → phải biết đúng id (uuid ngẫu nhiên) mới xem được.
+- id được tạo ở máy chủ (`crypto.randomUUID()`) trước khi insert, vì không được đọc lại bảng.
+- Server action tự tính lại calo từ dữ liệu Sanity, không tin số liệu từ trình duyệt.
+- `user_input` là thông tin cá nhân → trang `/thuc-don/[id]` đặt `noindex`.
+- Đổi cấu trúc bảng: sửa `supabase/schema.sql` và nhắc chủ dự án chạy lại trong SQL Editor.
+
 ## Biến môi trường
 - `NEXT_PUBLIC_SANITY_PROJECT_ID`, `NEXT_PUBLIC_SANITY_DATASET` — công khai, cần cả trên Vercel.
+- `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` — công khai (anon key), cần cả trên Vercel.
+  Tuyệt đối không dùng `service_role` key trong web.
 - `SANITY_API_WRITE_TOKEN` — **BÍ MẬT**, chỉ dùng cho script nhập dữ liệu, không đưa lên Vercel.
 
 ## Lệnh thường dùng

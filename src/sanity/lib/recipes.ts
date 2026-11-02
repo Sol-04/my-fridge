@@ -4,7 +4,12 @@ import type { SanityImageSource } from "@sanity/image-url";
 import { cacheLife } from "next/cache";
 
 import { client } from "./client";
-import { RECIPE_QUERY, RECIPE_SLUGS_QUERY, RECIPES_QUERY } from "./queries";
+import {
+  PLANNER_RECIPES_QUERY,
+  RECIPE_QUERY,
+  RECIPE_SLUGS_QUERY,
+  RECIPES_QUERY,
+} from "./queries";
 
 export type Meal = "breakfast" | "lunch" | "dinner";
 
@@ -27,6 +32,12 @@ export type RecipeDetailData = RecipeCardData & {
   fat: number;
   steps: string[];
 };
+
+// Dữ liệu món dùng cho trang tạo thực đơn
+export type PlannerRecipe = Pick<
+  RecipeDetailData,
+  "_id" | "name" | "slug" | "meals" | "ingredients" | "servingGrams" | "calories" | "protein" | "carbs" | "fat"
+>;
 
 // Nếu Sanity lỗi (ví dụ chưa đặt biến môi trường), web vẫn chạy và báo nhẹ nhàng
 // thay vì bị sập.
@@ -63,6 +74,17 @@ export async function getRecipeSlugs(): Promise<string[]> {
     return (await client.fetch<string[]>(RECIPE_SLUGS_QUERY)) ?? [];
   } catch (err) {
     logError("danh sách slug", err);
+    return [];
+  }
+}
+
+export async function getPlannerRecipes(): Promise<PlannerRecipe[]> {
+  "use cache";
+  cacheLife("hours");
+  try {
+    return (await client.fetch<PlannerRecipe[]>(PLANNER_RECIPES_QUERY)) ?? [];
+  } catch (err) {
+    logError("dữ liệu món cho thực đơn", err);
     return [];
   }
 }

@@ -10,12 +10,20 @@ export default function Home() {
         Chọn thực phẩm bạn đang có, nhận ngay thực đơn sáng – trưa – tối vừa đủ
         calo để kiểm soát cân nặng.
       </p>
-      <Link
-        href="/mon-an"
-        className="mt-8 inline-flex min-h-12 items-center rounded-full bg-emerald-600 px-6 font-semibold text-white shadow-sm transition hover:bg-emerald-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600"
-      >
-        Xem món ăn
-      </Link>
+      <div className="mt-8 flex w-full max-w-xs flex-col gap-3 sm:max-w-none sm:flex-row sm:justify-center">
+        <Link
+          href="/tao-thuc-don"
+          className="inline-flex min-h-12 items-center justify-center rounded-full bg-emerald-600 px-6 font-semibold text-white shadow-sm transition hover:bg-emerald-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600"
+        >
+          Tạo thực đơn
+        </Link>
+        <Link
+          href="/mon-an"
+          className="inline-flex min-h-12 items-center justify-center rounded-full border border-emerald-600 px-6 font-semibold text-emerald-700 transition hover:bg-emerald-50 dark:hover:bg-emerald-950"
+        >
+          Xem món ăn
+        </Link>
+      </div>
     </main>
   );
 }
