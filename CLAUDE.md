@@ -15,16 +15,21 @@ Website giúp người Việt **chọn thực phẩm đang có** (trong tủ l�
 ## Cấu trúc thư mục
 - `src/app/` — các trang của website (`page.tsx` = trang chủ, `layout.tsx` = khung chung).
 - `src/app/globals.css` — CSS chung, nạp Tailwind.
-- `src/app/mon-an/` — trang danh sách món `/mon-an` (thẻ món + lọc theo bữa trong `RecipeList.tsx`).
-- `src/app/mon-an/[slug]/` — trang chi tiết món (dinh dưỡng, nguyên liệu, các bước) + `not-found.tsx`.
+- `src/app/(site)/` — nhóm các trang của web, có menu (`SiteHeader`) + footer lưu ý sức khoẻ (`SiteFooter`)
+  trong `layout.tsx`, trang lỗi `error.tsx`, các file `loading.tsx` (khung đang tải). Dấu ngoặc `(site)` KHÔNG
+  xuất hiện trên đường dẫn. `/studio` nằm ngoài nhóm nên không có menu/footer. `src/app/not-found.tsx` = trang 404 chung.
+- `src/app/(site)/mon-an/` — trang danh sách món `/mon-an` (thẻ món + lọc theo bữa trong `RecipeList.tsx`).
+- `src/app/(site)/mon-an/[slug]/` — trang chi tiết món (dinh dưỡng, nguyên liệu, các bước) + `not-found.tsx`.
 - `src/app/studio/[[...tool]]/` — trang quản trị Sanity Studio tại `/studio`.
-- `src/app/tao-thuc-don/` — trang tạo thực đơn 3 bước (`Planner.tsx`): 1) thông tin cá nhân → calo mục tiêu,
+- `src/app/(site)/tao-thuc-don/` — trang tạo thực đơn 3 bước (`Planner.tsx`): 1) thông tin cá nhân → calo mục tiêu,
   2) chọn thực phẩm đang có, 3) gợi ý món + khẩu phần, nút "Lưu thực đơn" (`actions.ts` — server action).
-- `src/app/thuc-don/[id]/` — xem lại thực đơn đã lưu + nút "Sao chép link" (`CopyLinkButton.tsx`).
+- `src/app/(site)/thuc-don/[id]/` — xem lại thực đơn đã lưu + nút "Sao chép link" (`CopyLinkButton.tsx`).
 - `src/lib/meal-plan.ts` — công thức tính: calo mục tiêu (Mifflin-St Jeor), chia bữa 25/40/35%,
   gia vị luôn có (`PANTRY_STAPLES`), nhóm nguyên liệu, chấm điểm món, khẩu phần (0,5–2,5, bước 0,25).
 - `src/lib/supabase.ts` — kết nối Supabase (anon key); `src/lib/meal-plans-db.ts` — đọc thực đơn theo id.
 - `supabase/schema.sql` — SQL tạo bảng `meal_plans` + RLS (chạy trong Supabase SQL Editor).
+- `src/components/ui.tsx` — khối giao diện dùng chung: `buttonClass`/`ButtonLink` (nút to ≥48px), `Notice` (thông báo
+  lỗi/lưu ý), `EmptyState` (trạng thái rỗng), `Skeleton`/`LoadingLabel` (đang tải), `PageHeader`.
 - `src/components/` — `RecipeCard.tsx` (thẻ món), `RecipeImage.tsx` (ảnh món, có ô thay thế khi chưa có ảnh),
   `MealEntryCard.tsx` (thẻ 1 bữa), `NutritionTotals.tsx` (tổng dinh dưỡng trong ngày).
 - `src/sanity/` — kết nối Sanity: `env.ts` (đọc biến môi trường), `lib/client.ts` (đọc dữ liệu),
@@ -73,6 +78,10 @@ Website giúp người Việt **chọn thực phẩm đang có** (trong tủ l�
 - `npm run import:recipes` — nhập món trong `data/recipes.ts` vào Sanity (cần token ghi).
 
 ## Quy tắc giao diện
+- Phong cách: tươi, sạch, thân thiện. Màu chủ đạo `brand-*` (xanh lá, khai báo trong `globals.css`),
+  nền sáng `bg-canvas`, chữ `text-ink` / `text-muted`, nhấn `accent-*` (cam đào) cho calo. Luôn nền sáng
+  (đã tắt `dark:`). Bo góc mềm: `rounded-2xl`/`rounded-3xl`, nút `rounded-full`. Dùng lại khối trong `ui.tsx`.
+- Kiểm tra hiển thị ở khổ điện thoại 375px (không tràn ngang, nút ≥44px).
 - Toàn bộ chữ hiển thị cho người dùng bằng **tiếng Việt** (có dấu đầy đủ).
 - **Ưu tiên mobile**: thiết kế cho màn hình điện thoại trước, sau đó mới mở rộng cho
   màn hình lớn (dùng tiền tố Tailwind `sm:`, `md:`, `lg:`).

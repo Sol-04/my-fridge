@@ -11,18 +11,18 @@ type Props = {
   preload?: boolean; // tải trước (dùng cho ảnh lớn đầu trang)
 };
 
-// Ảnh món ăn tỉ lệ 4:3. Món chưa có ảnh sẽ hiện ô màu nhạt với biểu tượng 🍲.
+// Ảnh món ăn tỉ lệ 16:10. Món chưa có ảnh sẽ hiện ô màu nhạt với biểu tượng 🍲.
 export function RecipeImage({ image, name, width, sizes, preload }: Props) {
-  const height = Math.round((width * 3) / 4);
+  const height = Math.round((width * 10) / 16);
 
   if (!image) {
     return (
       <div
-        className="flex aspect-[4/3] w-full items-center justify-center bg-emerald-50 text-5xl dark:bg-emerald-950"
+        className="flex aspect-[16/10] w-full items-center justify-center bg-gradient-to-br from-brand-50 via-brand-100 to-accent-50 text-5xl"
         role="img"
         aria-label={`${name} (chưa có ảnh)`}
       >
-        🍲
+        <span aria-hidden className="drop-shadow-sm">🍲</span>
       </div>
     );
   }
@@ -35,7 +35,7 @@ export function RecipeImage({ image, name, width, sizes, preload }: Props) {
       height={height}
       sizes={sizes}
       preload={preload}
-      className="aspect-[4/3] w-full object-cover"
+      className="aspect-[16/10] w-full object-cover"
     />
   );
 }

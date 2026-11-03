@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
 import { MealEntryCard } from "@/components/MealEntryCard";
+import { ButtonLink, LoadingLabel, Notice, Skeleton } from "@/components/ui";
 import { NutritionTotals } from "@/components/NutritionTotals";
 import { describeUser, MEAL_ORDER, mealTargets, sumMeals } from "@/lib/meal-plan";
 import { getMealPlan } from "@/lib/meal-plans-db";
@@ -19,8 +20,8 @@ export const metadata: Metadata = {
 
 export default function MealPlanPage({ params }: PageProps<"/thuc-don/[id]">) {
   return (
-    <main className="mx-auto w-full max-w-2xl px-4 py-6 sm:py-10">
-      <Suspense fallback={<p className="py-10 text-center text-zinc-500">Đang tải thực đơn…</p>}>
+    <main className="mx-auto w-full max-w-2xl px-4 py-8 sm:py-12">
+      <Suspense fallback={<MealPlanSkeleton />}>
         <MealPlanContent params={params} />
       </Suspense>
     </main>
@@ -34,10 +35,18 @@ async function MealPlanContent({ params }: { params: PageProps<"/thuc-don/[id]">
   if (result.status === "not-found") notFound();
   if (result.status === "error") {
     return (
-      <div className="rounded-xl bg-amber-50 p-4 text-amber-800">
-        <p className="font-semibold">Chưa tải được thực đơn.</p>
-        <p className="mt-1 text-sm">Vui lòng thử lại sau ít phút.</p>
-      </div>
+      <Notice
+        tone="error"
+        title="Chưa tải được thực đơn"
+        action={
+          <ButtonLink href={`/thuc-don/${id}`} variant="secondary">
+            Thử tải lại
+          </ButtonLink>
+        }
+      >
+        Có thể mạng đang chậm hoặc hệ thống đang bảo trì. Thực đơn của bạn vẫn được lưu an toàn, vui lòng thử lại
+        sau ít phút.
+      </Notice>
     );
   }
 
@@ -52,17 +61,13 @@ async function MealPlanContent({ params }: { params: PageProps<"/thuc-don/[id]">
 
   return (
     <>
-      <Link href="/" className="inline-flex min-h-11 items-center text-sm text-emerald-700 hover:underline">
-        ← Trang chủ
-      </Link>
-      <h1 className="mt-1 text-3xl font-bold tracking-tight text-zinc-900 sm:text-4xl dark:text-zinc-100">
-        Thực đơn của bạn
-      </h1>
-      <p className="mt-1 text-sm text-zinc-500">Tạo lúc {createdAt}</p>
+      <p className="text-sm font-semibold text-brand-600">✅ Đã lưu thực đơn</p>
+      <h1 className="mt-1 text-3xl font-extrabold tracking-tight text-ink sm:text-4xl">Thực đơn của bạn</h1>
+      <p className="mt-1 text-sm text-muted">Tạo lúc {createdAt}</p>
 
-      <div className="mt-4 rounded-2xl border border-zinc-200 p-4 dark:border-zinc-800">
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">{describeUser(plan.user_input)}</p>
-        <p className="mt-1 text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+      <div className="mt-4 rounded-3xl bg-white p-5 ring-1 ring-brand-100">
+        <p className="text-sm text-muted">{describeUser(plan.user_input)}</p>
+        <p className="mt-1 text-lg font-bold text-ink">
           Mục tiêu: {plan.target_calories} kcal/ngày
         </p>
       </div>
@@ -80,7 +85,7 @@ async function MealPlanContent({ params }: { params: PageProps<"/thuc-don/[id]">
             {plan[meal] && (
               <Link
                 href={`/mon-an/${plan[meal]!.slug}`}
-                className="mt-3 inline-flex min-h-11 items-center text-sm font-medium text-emerald-700 hover:underline"
+                className="mt-3 inline-flex min-h-11 items-center text-sm font-semibold text-brand-700 hover:underline"
               >
                 Xem cách nấu →
               </Link>
@@ -92,12 +97,12 @@ async function MealPlanContent({ params }: { params: PageProps<"/thuc-don/[id]">
 
         {plan.selected_foods.length > 0 && (
           <section>
-            <h2 className="text-sm font-semibold text-zinc-800 dark:text-zinc-200">Thực phẩm đã chọn</h2>
+            <h2 className="text-sm font-bold text-ink">🧺 Thực phẩm đã chọn</h2>
             <ul className="mt-2 flex flex-wrap gap-2">
               {plan.selected_foods.map((f) => (
                 <li
                   key={f}
-                  className="rounded-full bg-zinc-100 px-3 py-1 text-sm text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
+                  className="rounded-full bg-white px-3 py-1.5 text-sm text-ink ring-1 ring-brand-100"
                 >
                   {f}
                 </li>
@@ -107,15 +112,29 @@ async function MealPlanContent({ params }: { params: PageProps<"/thuc-don/[id]">
         )}
       </div>
 
-      <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-start">
-        <CopyLinkButton />
-        <Link
-          href="/tao-thuc-don"
-          className="inline-flex min-h-12 items-center justify-center rounded-full border border-zinc-300 px-6 font-medium text-zinc-700 hover:border-emerald-600 hover:text-emerald-700 dark:border-zinc-700 dark:text-zinc-200"
-        >
-          Tạo thực đơn mới
-        </Link>
+      <div className="mt-8 rounded-3xl bg-brand-50 p-5">
+        <p className="font-semibold text-brand-900">Gửi thực đơn cho người thân hoặc lưu lại để xem sau</p>
+        <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-start">
+          <CopyLinkButton />
+          <ButtonLink href="/tao-thuc-don" variant="secondary">
+            Tạo thực đơn mới
+          </ButtonLink>
+        </div>
       </div>
     </>
+  );
+}
+
+// Khung "đang tải" khi mở trang thực đơn
+function MealPlanSkeleton() {
+  return (
+    <div className="space-y-4">
+      <LoadingLabel>Đang tải thực đơn…</LoadingLabel>
+      <Skeleton className="h-9 w-2/3" />
+      <Skeleton className="h-20 w-full rounded-3xl" />
+      {[0, 1, 2].map((i) => (
+        <Skeleton key={i} className="h-36 w-full rounded-3xl" />
+      ))}
+    </div>
   );
 }

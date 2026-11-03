@@ -9,31 +9,28 @@ export function RecipeCard({ recipe }: { recipe: RecipeCardData }) {
   return (
     <Link
       href={`/mon-an/${recipe.slug}`}
-      className="group block overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm transition hover:shadow-md focus-visible:outline-2 focus-visible:outline-emerald-600 dark:border-zinc-800 dark:bg-zinc-900"
+      className="group flex h-full flex-col overflow-hidden rounded-3xl bg-white shadow-sm ring-1 ring-brand-100 transition hover:-translate-y-0.5 hover:shadow-md hover:ring-brand-200"
     >
-      <RecipeImage
-        image={recipe.image}
-        name={recipe.name}
-        width={600}
-        sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-      />
-      <div className="p-4">
-        <h2 className="text-lg font-semibold leading-snug text-zinc-900 group-hover:text-emerald-700 dark:text-zinc-100">
-          {recipe.name}
-        </h2>
-        <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm text-zinc-600 dark:text-zinc-400">
-          <span>🔥 {recipe.calories} kcal</span>
-          <span>⏱ {recipe.cookMinutes} phút</span>
-        </div>
-        <div className="mt-3 flex flex-wrap gap-2">
+      <div className="relative">
+        <RecipeImage
+          image={recipe.image}
+          name={recipe.name}
+          width={600}
+          sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+        />
+        <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
           {recipe.meals?.map((m) => (
-            <span
-              key={m}
-              className="rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-medium text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300"
-            >
+            <span key={m} className="rounded-full bg-white/95 px-2.5 py-1 text-xs font-semibold text-brand-700 shadow-sm">
               {mealLabel(m)}
             </span>
           ))}
+        </div>
+      </div>
+      <div className="flex flex-1 flex-col p-4">
+        <h2 className="text-lg leading-snug font-bold text-ink group-hover:text-brand-700">{recipe.name}</h2>
+        <div className="mt-auto flex flex-wrap gap-2 pt-3 text-sm">
+          <span className="rounded-full bg-accent-50 px-2.5 py-1 font-semibold text-accent-500">🔥 {recipe.calories} kcal</span>
+          <span className="rounded-full bg-canvas px-2.5 py-1 font-medium text-muted">⏱ {recipe.cookMinutes} phút</span>
         </div>
       </div>
     </Link>
