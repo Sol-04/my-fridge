@@ -1,25 +1,72 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* Web luôn dùng nền sáng: tắt kiểu "dark:" tự động theo chế độ tối của điện thoại */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Bộ màu & font chung của My Fridge */
+@theme {
+  --font-sans: var(--font-be-vietnam-pro), ui-sans-serif, system-ui, sans-serif;
+
+  /* Xanh lá chủ đạo */
+  --color-brand-50: #effbf2;
+  --color-brand-100: #d8f5e0;
+  --color-brand-200: #b3e9c4;
+  --color-brand-300: #7fd6a0;
+  --color-brand-400: #4cbd79;
+  --color-brand-500: #28a25c;
+  --color-brand-600: #1b8549;
+  --color-brand-700: #186a3d;
+  --color-brand-800: #175434;
+  --color-brand-900: #14452c;
+
+  /* Màu nhấn ấm (cam đào) cho điểm nhấn nhỏ */
+  --color-accent-50: #fff6ed;
+  --color-accent-100: #ffead4;
+  --color-accent-500: #f97316;
+
+  /* Nền & chữ */
+  --color-canvas: #f7faf5;
+  --color-ink: #1f2a24;
+  --color-muted: #5b6b62;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-be-vietnam-pro);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  color-scheme: light;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-be-vietnam-pro), Arial, Helvetica, sans-serif;
+  background: var(--color-canvas);
+  color: var(--color-ink);
+}
+
+/* Viền nổi bật rõ ràng khi dùng bàn phím */
+:focus-visible {
+  outline: 3px solid var(--color-brand-400);
+  outline-offset: 2px;
+}
+
+/* Hiệu ứng "đang tải" lấp lánh nhẹ */
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background: #e6eee8;
+}
+.skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+  animation: shimmer 1.4s infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .skeleton::after {
+    animation: none;
+  }
 }

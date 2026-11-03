@@ -56,7 +56,7 @@ export async function saveMealPlan(input: SaveMealPlanInput): Promise<SaveMealPl
 
   // 3) Lưu vào Supabase. Tạo sẵn id để không cần đọc lại bảng (bảng không cho đọc trực tiếp).
   const supabase = getSupabase();
-  if (!supabase) return { error: "Chưa kết nối được nơi lưu thực đơn. Vui lòng thử lại sau." };
+  if (!supabase) return { error: "Hệ thống lưu trữ đang tạm thời chưa sẵn sàng. Thực đơn vẫn còn nguyên trên màn hình, bạn đợi một chút rồi bấm “Lưu thực đơn” lần nữa nhé." };
 
   const id = crypto.randomUUID();
   let errorMessage: string | null = null;
@@ -77,7 +77,7 @@ export async function saveMealPlan(input: SaveMealPlanInput): Promise<SaveMealPl
 
   if (errorMessage) {
     console.error("Lưu thực đơn thất bại:", errorMessage);
-    return { error: "Không lưu được thực đơn. Vui lòng thử lại sau ít phút." };
+    return { error: "Có thể mạng đang chậm hoặc hệ thống đang bận. Thực đơn vẫn còn nguyên trên màn hình, bạn đợi một chút rồi bấm “Lưu thực đơn” lần nữa nhé." };
   }
 
   // 4) Chuyển tới trang xem thực đơn (redirect phải nằm ngoài try/catch)

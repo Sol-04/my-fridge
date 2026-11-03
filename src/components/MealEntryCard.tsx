@@ -17,35 +17,39 @@ type Props = {
 // Thẻ 1 bữa ăn: tên món, khẩu phần, calo. Dùng ở bước 3 và trang /thuc-don/[id].
 export function MealEntryCard({ meal, title, target, entry, emptyText, children }: Props) {
   return (
-    <section className="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
-      <div className="flex items-baseline justify-between gap-2">
-        <h3 className="text-sm font-semibold uppercase tracking-wide text-emerald-700 dark:text-emerald-400">
-          <span aria-hidden>{MEAL_ICON[meal]} </span>
+    <section className="rounded-3xl bg-white p-5 shadow-sm ring-1 ring-brand-100">
+      <div className="flex items-center justify-between gap-2">
+        <h3 className="flex items-center gap-2 text-sm font-bold text-brand-700">
+          <span aria-hidden className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-50 text-base">
+            {MEAL_ICON[meal]}
+          </span>
           {title}
         </h3>
-        {target != null && <span className="text-xs text-zinc-500">Mục tiêu ~{target} kcal</span>}
+        {target != null && (
+          <span className="rounded-full bg-canvas px-2.5 py-1 text-xs font-medium text-muted">Mục tiêu ~{target} kcal</span>
+        )}
       </div>
 
       {entry ? (
         <>
           <Link
             href={`/mon-an/${entry.slug}`}
-            className="mt-2 block text-lg font-semibold leading-snug text-zinc-900 hover:text-emerald-700 hover:underline dark:text-zinc-100"
+            className="mt-2 flex min-h-11 items-center text-lg leading-snug font-bold text-ink hover:text-brand-700 hover:underline"
           >
             {entry.name}
           </Link>
-          <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+          <p className="text-sm text-muted">
             {formatServings(entry.servings)} khẩu phần ≈ {Math.round(entry.serving_grams * entry.servings)} g
           </p>
-          <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-sm">
-            <span className="font-semibold text-zinc-900 dark:text-zinc-100">🔥 {entry.total_calories} kcal</span>
-            <span className="text-zinc-500">Đạm {entry.protein} g</span>
-            <span className="text-zinc-500">Tinh bột {entry.carbs} g</span>
-            <span className="text-zinc-500">Béo {entry.fat} g</span>
+          <div className="mt-3 flex flex-wrap gap-2 text-sm">
+            <span className="rounded-full bg-accent-50 px-2.5 py-1 font-bold text-accent-500">🔥 {entry.total_calories} kcal</span>
+            <span className="rounded-full bg-canvas px-2.5 py-1 text-muted">Đạm {entry.protein} g</span>
+            <span className="rounded-full bg-canvas px-2.5 py-1 text-muted">Tinh bột {entry.carbs} g</span>
+            <span className="rounded-full bg-canvas px-2.5 py-1 text-muted">Béo {entry.fat} g</span>
           </div>
         </>
       ) : (
-        <p className="mt-2 text-zinc-600 dark:text-zinc-400">{emptyText ?? "Không có món."}</p>
+        <p className="mt-3 rounded-2xl bg-canvas p-3 text-sm text-muted">{emptyText ?? "Không có món."}</p>
       )}
 
       {children}

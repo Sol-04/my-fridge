@@ -3,6 +3,7 @@
 import { useMemo, useState, useTransition } from "react";
 
 import { MealEntryCard } from "@/components/MealEntryCard";
+import { buttonClass, EmptyState, Notice } from "@/components/ui";
 import { NutritionTotals } from "@/components/NutritionTotals";
 import {
   ACTIVITY_OPTIONS,
@@ -46,10 +47,10 @@ function Chip({
       type="button"
       onClick={onClick}
       aria-pressed={active}
-      className={`min-h-11 rounded-xl border px-3 text-sm font-medium transition ${
+      className={`min-h-12 rounded-2xl border-2 px-4 text-sm font-semibold transition active:scale-[0.98] ${
         active
-          ? "border-emerald-600 bg-emerald-600 text-white"
-          : "border-zinc-300 bg-white text-zinc-700 hover:border-emerald-600 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200"
+          ? "border-brand-600 bg-brand-600 text-white shadow-sm"
+          : "border-brand-100 bg-white text-ink hover:border-brand-300"
       } ${className}`}
     >
       {children}
@@ -74,7 +75,7 @@ function NumberField({
   const invalid = value !== "" && !(n >= limits.min && n <= limits.max);
   return (
     <label className="block">
-      <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">{label}</span>
+      <span className="text-sm font-semibold text-ink">{label}</span>
       <div className="mt-1 flex items-center gap-2">
         <input
           type="number"
@@ -84,15 +85,15 @@ function NumberField({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           aria-invalid={invalid}
-          className={`min-h-12 w-full rounded-xl border bg-white px-3 text-base text-zinc-900 outline-none focus:ring-2 focus:ring-emerald-500 dark:bg-zinc-900 dark:text-zinc-100 ${
-            invalid ? "border-red-400" : "border-zinc-300 dark:border-zinc-700"
+          className={`min-h-14 w-full rounded-2xl border-2 bg-white px-4 text-lg font-semibold text-ink outline-none focus:border-brand-500 ${
+            invalid ? "border-red-300 bg-red-50" : "border-brand-100"
           }`}
         />
-        <span className="w-8 shrink-0 text-sm text-zinc-500">{unit}</span>
+        <span className="w-8 shrink-0 text-sm text-muted">{unit}</span>
       </div>
       {invalid && (
-        <span className="mt-1 block text-xs text-red-600">
-          Nhập từ {limits.min} đến {limits.max} {unit}
+        <span className="mt-1 block text-sm text-red-700">
+          Vui lòng nhập từ {limits.min} đến {limits.max} {unit}
         </span>
       )}
     </label>
@@ -175,7 +176,7 @@ export function Planner({ recipes }: { recipes: PlannerRecipe[] }) {
       } catch (err) {
         // Lệnh chuyển trang của Next.js cũng đi qua đây — không coi là lỗi.
         if (err && typeof err === "object" && "digest" in err && String(err.digest).startsWith("NEXT_REDIRECT")) throw err;
-        setSaveError("Không lưu được thực đơn. Vui lòng kiểm tra mạng và thử lại.");
+        setSaveError("Có thể mạng đang chậm hoặc bị ngắt. Thực đơn vẫn còn nguyên trên màn hình, bạn đợi một chút rồi bấm “Lưu thực đơn” lần nữa nhé.");
       }
     });
   };
@@ -189,27 +190,32 @@ export function Planner({ recipes }: { recipes: PlannerRecipe[] }) {
   return (
     <div>
       {/* Thanh tiến trình */}
-      <ol className="flex gap-2" aria-label="Các bước">
-        {STEPS.map((label, i) => (
-          <li key={label} className="flex-1">
-            <div className={`h-1.5 rounded-full ${i <= step ? "bg-emerald-600" : "bg-zinc-200 dark:bg-zinc-800"}`} />
-            <p
-              className={`mt-1 text-xs ${i === step ? "font-semibold text-emerald-700 dark:text-emerald-400" : "text-zinc-500"}`}
-              aria-current={i === step ? "step" : undefined}
-            >
-              Bước {i + 1}: {label}
-            </p>
-          </li>
-        ))}
+      <ol className="flex items-start gap-2 rounded-3xl bg-white p-3 ring-1 ring-brand-100" aria-label="Các bước">
+        {STEPS.map((label, i) => {
+          const done = i < step;
+          const current = i === step;
+          return (
+            <li key={label} className="flex flex-1 flex-col items-center gap-1 text-center" aria-current={current ? "step" : undefined}>
+              <span
+                className={`flex h-9 w-9 items-center justify-center rounded-full text-sm font-bold ${
+                  current ? "bg-brand-600 text-white" : done ? "bg-brand-100 text-brand-700" : "bg-canvas text-muted"
+                }`}
+              >
+                {done ? "✓" : i + 1}
+              </span>
+              <span className={`text-xs ${current ? "font-semibold text-brand-700" : "text-muted"}`}>{label}</span>
+            </li>
+          );
+        })}
       </ol>
 
       {/* ---------- BƯỚC 1 ---------- */}
       {step === 0 && (
         <div className="mt-6 space-y-6">
-          <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">Thông tin của bạn</h2>
+          <h2 className="text-2xl font-extrabold tracking-tight text-ink">Thông tin của bạn</h2>
 
           <fieldset>
-            <legend className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Giới tính</legend>
+            <legend className="text-sm font-semibold text-ink">Giới tính</legend>
             <div className="mt-1 grid grid-cols-2 gap-2">
               {GENDER_OPTIONS.map((o) => (
                 <Chip key={o.value} active={gender === o.value} onClick={() => setGender(o.value)}>
@@ -226,7 +232,7 @@ export function Planner({ recipes }: { recipes: PlannerRecipe[] }) {
           </div>
 
           <fieldset>
-            <legend className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Mức vận động</legend>
+            <legend className="text-sm font-semibold text-ink">Mức vận động</legend>
             <div className="mt-1 grid grid-cols-1 gap-2 sm:grid-cols-2">
               {ACTIVITY_OPTIONS.map((o) => (
                 <Chip
@@ -236,7 +242,7 @@ export function Planner({ recipes }: { recipes: PlannerRecipe[] }) {
                   className="py-2 text-left"
                 >
                   <span className="block">{o.label}</span>
-                  <span className={`block text-xs font-normal ${activity === o.value ? "text-emerald-100" : "text-zinc-500"}`}>
+                  <span className={`block text-xs font-normal ${activity === o.value ? "text-brand-100" : "text-muted"}`}>
                     {o.hint}
                   </span>
                 </Chip>
@@ -245,7 +251,7 @@ export function Planner({ recipes }: { recipes: PlannerRecipe[] }) {
           </fieldset>
 
           <fieldset>
-            <legend className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Mục tiêu</legend>
+            <legend className="text-sm font-semibold text-ink">Mục tiêu</legend>
             <div className="mt-1 grid grid-cols-3 gap-2">
               {GOAL_OPTIONS.map((o) => (
                 <Chip key={o.value} active={goal === o.value} onClick={() => setGoal(o.value)}>
@@ -255,15 +261,15 @@ export function Planner({ recipes }: { recipes: PlannerRecipe[] }) {
             </div>
           </fieldset>
 
-          <div className="rounded-2xl bg-emerald-50 p-4 dark:bg-emerald-950" aria-live="polite">
+          <div className="rounded-3xl bg-brand-600 p-5 text-white" aria-live="polite">
             {target ? (
               <>
-                <p className="text-sm text-emerald-800 dark:text-emerald-300">Calo mục tiêu mỗi ngày</p>
-                <p className="text-3xl font-bold text-zinc-900 dark:text-zinc-100">{target} kcal</p>
+                <p className="text-sm text-brand-100">🎯 Calo mục tiêu mỗi ngày</p>
+                <p className="text-4xl font-extrabold">{target} kcal</p>
               </>
             ) : (
-              <p className="text-sm text-zinc-600 dark:text-zinc-400">
-                Nhập tuổi, chiều cao, cân nặng để tính calo mục tiêu.
+              <p className="text-sm text-brand-50">
+                Nhập tuổi, chiều cao, cân nặng để xem lượng calo bạn cần mỗi ngày.
               </p>
             )}
           </div>
@@ -273,32 +279,44 @@ export function Planner({ recipes }: { recipes: PlannerRecipe[] }) {
       {/* ---------- BƯỚC 2 ---------- */}
       {step === 1 && (
         <div className="mt-6">
-          <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">Bạn đang có thực phẩm gì?</h2>
-          <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+          <h2 className="text-2xl font-extrabold tracking-tight text-ink">Bạn đang có thực phẩm gì?</h2>
+          <p className="mt-1 text-sm text-muted">
             Chạm để chọn. Gia vị cơ bản (dầu ăn, nước mắm, hành, tỏi, gừng…) đã được tính sẵn.
           </p>
           <div className="mt-3 flex flex-wrap gap-2">
             <button
               type="button"
               onClick={() => setSelected(new Set(allFoods))}
-              className="min-h-11 rounded-full px-3 text-sm font-medium text-emerald-700 underline-offset-2 hover:underline"
+              className="min-h-11 rounded-full px-3 text-sm font-medium text-brand-700 underline-offset-2 hover:underline"
             >
               Chọn tất cả
             </button>
             <button
               type="button"
               onClick={() => setSelected(new Set())}
-              className="min-h-11 rounded-full px-3 text-sm font-medium text-zinc-600 underline-offset-2 hover:underline"
+              className="min-h-11 rounded-full px-3 text-sm font-medium text-muted underline-offset-2 hover:underline"
             >
               Bỏ chọn
             </button>
-            <span className="ml-auto self-center text-sm text-zinc-500">Đã chọn {selected.size}</span>
+            <span className="ml-auto self-center text-sm text-muted">Đã chọn {selected.size}</span>
           </div>
 
-          <div className="mt-2 space-y-5">
+          {selected.size === 0 && (
+            <div className="mt-3 flex items-center gap-3 rounded-2xl border-2 border-dashed border-brand-200 bg-white p-3">
+              <span aria-hidden className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-brand-50 text-2xl">
+                🧺
+              </span>
+              <div className="text-sm">
+                <p className="font-semibold text-ink">Bạn chưa chọn thực phẩm nào</p>
+                <p className="text-muted">Chạm vào các ô bên dưới. Chọn càng nhiều, gợi ý càng hợp.</p>
+              </div>
+            </div>
+          )}
+
+          <div className="mt-5 space-y-5">
             {groups.map((g) => (
               <fieldset key={g.title}>
-                <legend className="text-sm font-semibold text-zinc-800 dark:text-zinc-200">{g.title}</legend>
+                <legend className="text-sm font-semibold text-ink">{g.title}</legend>
                 <div className="mt-2 flex flex-wrap gap-2">
                   {g.items.map((name) => (
                     <Chip key={name} active={selected.has(name)} onClick={() => toggleFood(name)}>
@@ -316,10 +334,24 @@ export function Planner({ recipes }: { recipes: PlannerRecipe[] }) {
       {/* ---------- BƯỚC 3 ---------- */}
       {step === 2 && target && targets && (
         <div className="mt-6 space-y-4">
-          <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">Thực đơn của bạn</h2>
-          <p className="text-sm text-zinc-600 dark:text-zinc-400">
+          <h2 className="text-2xl font-extrabold tracking-tight text-ink">Thực đơn của bạn</h2>
+          <p className="text-sm text-muted">
             Khẩu phần đã được điều chỉnh để vừa {target} kcal/ngày. Bấm “Đổi món” nếu muốn món khác.
           </p>
+
+          {!plan.some((p) => p.entry) && (
+            <EmptyState
+              icon="🤔"
+              title="Chưa tìm được món phù hợp"
+              action={
+                <button type="button" onClick={() => goTo(1)} className={buttonClass("primary")}>
+                  Chọn thêm thực phẩm
+                </button>
+              }
+            >
+              Thực phẩm bạn chọn chưa đủ để nấu món nào. Hãy chọn thêm vài loại như trứng, rau hoặc cơm gạo lứt nhé.
+            </EmptyState>
+          )}
 
           {plan.map((p) => (
             <MealEntryCard
@@ -331,15 +363,15 @@ export function Planner({ recipes }: { recipes: PlannerRecipe[] }) {
               emptyText="Chưa có món phù hợp với thực phẩm bạn chọn. Hãy quay lại bước 2 và chọn thêm."
             >
               {p.pick && p.pick.missing.length > 0 && (
-                <p className="mt-3 rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-800 dark:bg-amber-950 dark:text-amber-200">
-                  Cần mua thêm: {p.pick.missing.join(", ")}
-                </p>
+                <div className="mt-3">
+                  <Notice tone="warning">Cần mua thêm: {p.pick.missing.join(", ")}</Notice>
+                </div>
               )}
               {p.count > 1 && (
                 <button
                   type="button"
                   onClick={() => setChoiceIndex((c) => ({ ...c, [p.meal]: c[p.meal] + 1 }))}
-                  className="mt-3 inline-flex min-h-11 items-center rounded-xl border border-zinc-300 px-4 text-sm font-medium text-zinc-700 hover:border-emerald-600 hover:text-emerald-700 dark:border-zinc-700 dark:text-zinc-200"
+                  className={buttonClass("secondary", "md", "mt-3 w-full sm:w-auto")}
                 >
                   🔄 Đổi món ({(choiceIndex[p.meal] % p.count) + 1}/{p.count})
                 </button>
@@ -350,21 +382,21 @@ export function Planner({ recipes }: { recipes: PlannerRecipe[] }) {
           <NutritionTotals totals={totals} target={target} />
 
           {saveError && (
-            <p role="alert" className="rounded-xl bg-red-50 p-3 text-sm text-red-700 dark:bg-red-950 dark:text-red-300">
+            <Notice tone="error" title="Chưa lưu được thực đơn">
               {saveError}
-            </p>
+            </Notice>
           )}
         </div>
       )}
 
       {/* Nút điều hướng */}
-      <div className="sticky bottom-0 -mx-4 mt-8 flex gap-3 border-t border-zinc-200 bg-white/95 px-4 py-3 backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/95">
+      <div className="sticky bottom-0 -mx-4 mt-8 flex gap-3 border-t border-brand-100 bg-white/95 px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur">
         {step > 0 && (
           <button
             type="button"
             onClick={() => goTo(step - 1)}
             disabled={saving}
-            className="min-h-12 rounded-full border border-zinc-300 px-5 font-medium text-zinc-700 disabled:opacity-50 dark:border-zinc-700 dark:text-zinc-200"
+            className={buttonClass("secondary", "md", "px-4")}
           >
             ← Quay lại
           </button>
@@ -377,18 +409,25 @@ export function Planner({ recipes }: { recipes: PlannerRecipe[] }) {
               goTo(step + 1);
             }}
             disabled={!canNext}
-            className="min-h-12 flex-1 rounded-full bg-emerald-600 px-5 font-semibold text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:bg-zinc-300 dark:disabled:bg-zinc-700"
+            className={buttonClass("primary", "md", "flex-1")}
           >
-            {step === 1 && selected.size === 0 ? "Chọn ít nhất 1 thực phẩm" : "Tiếp tục →"}
+            Tiếp tục →
           </button>
         ) : (
           <button
             type="button"
             onClick={onSave}
             disabled={saving || !plan.some((p) => p.entry)}
-            className="min-h-12 flex-1 rounded-full bg-emerald-600 px-5 font-semibold text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:bg-zinc-400"
+            className={buttonClass("primary", "md", "flex-1")}
           >
-            {saving ? "Đang lưu…" : "💾 Lưu thực đơn"}
+            {saving ? (
+              <>
+                <span aria-hidden className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white motion-reduce:animate-none" />
+                Đang lưu…
+              </>
+            ) : (
+              "💾 Lưu thực đơn"
+            )}
           </button>
         )}
       </div>
