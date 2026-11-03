@@ -17,7 +17,7 @@ const STEPS = [
   {
     icon: "🍱",
     title: "Nhận thực đơn",
-    text: "Gợi ý món sáng – trưa – tối với khẩu phần vừa đủ calo. Lưu lại và gửi link cho người thân.",
+    text: "Gợi ý món sáng – trưa – tối với khẩu phần vừa đủ calo. Đăng nhập để lưu lại và gửi link cho người thân.",
   },
 ];
 
@@ -41,7 +41,7 @@ export default async function Home() {
         <div className="relative mx-auto grid w-full max-w-5xl gap-10 px-4 pt-10 pb-12 sm:pt-16 md:grid-cols-[1.15fr_1fr] md:items-center">
           <div>
             <p className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 text-sm font-medium text-brand-700 shadow-sm ring-1 ring-brand-100">
-              <span aria-hidden>✨</span> Miễn phí · Không cần đăng ký
+              <span aria-hidden>✨</span> Miễn phí · Xem gợi ý không cần đăng ký
             </p>
             <h1 className="mt-4 text-[2rem] leading-tight font-extrabold tracking-tight text-ink sm:text-5xl">
               Có sẵn đồ trong tủ lạnh mà <span className="text-brand-600">không biết nấu gì?</span>
