@@ -2,6 +2,8 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 
 import { Icon, Icons, MEAL_ICONS } from "@/components/icons";
+import { buttonClass } from "@/components/ui";
+import { mapsSearchUrl } from "@/lib/maps";
 import { formatServings, type MealEntry } from "@/lib/meal-plan";
 
 
@@ -66,6 +68,18 @@ export function MealEntryCard({ meal, title, target, entry, emptyText, children,
             <span className="rounded-lg bg-canvas px-2 py-1 text-muted">Tinh bột {entry.carbs} g</span>
             <span className="rounded-lg bg-canvas px-2 py-1 text-muted">Béo {entry.fat} g</span>
           </div>
+          {eatOut && (
+            <a
+              href={mapsSearchUrl(entry.slug, entry.name)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={buttonClass("secondary", "md", "mt-3 w-full")}
+            >
+              <Icon icon={Icons.nearby} size={18} />
+              Tìm quán gần bạn
+              <span className="sr-only"> (mở Google Maps)</span>
+            </a>
+          )}
         </>
       ) : (
         <p className="mt-3 rounded-2xl bg-canvas p-3 text-sm text-muted">{emptyText ?? "Không có món."}</p>

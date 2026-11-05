@@ -31,6 +31,9 @@ Website giúp người Việt **chọn thực phẩm đang có** (trong tủ l�
   (`SavedPlansList.tsx`), đổi mật khẩu, đăng xuất. Chưa đăng nhập → chuyển tới `/dang-nhap?next=/ho-so`.
 - `src/app/auth/callback/route.ts` — nhận link từ email (xác nhận tài khoản / đặt lại mật khẩu).
 - `src/proxy.ts` — làm mới phiên đăng nhập Supabase trước mỗi trang (Next 16 gọi là "proxy", trước là middleware).
+- `src/lib/maps.ts` — `mapsSearchUrl(slug, name)`: link Google Maps tìm quán bán món ăn ngoài gần người dùng (Google Maps URLs,
+  miễn phí, không cần API key, web không đọc/lưu vị trí). Một số món tìm theo loại cửa hàng (`QUERY_BY_SLUG`). Nút "Tìm quán gần bạn"
+  ở trang chi tiết món ăn ngoài và thẻ bữa ăn ngoài (bước 3, `/thuc-don/[id]`).
 - `src/lib/meal-plan.ts` — công thức tính: calo mục tiêu (Mifflin-St Jeor), chia bữa 25/40/35%,
   gia vị luôn có (`PANTRY_STAPLES`), nhóm nguyên liệu, chấm điểm món, khẩu phần (0,5–2,5, bước 0,25).
 - `src/lib/supabase.ts` — kết nối Supabase cho khách (anon key, không phiên); `src/lib/meal-plans-db.ts` — đọc thực đơn theo id.
