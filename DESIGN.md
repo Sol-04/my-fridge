@@ -261,6 +261,8 @@ Khai báo trong `@theme` ở `src/app/globals.css`, dùng qua class Tailwind (`b
   - *Thanh bước*: 3 vòng tròn trong thẻ trắng; bước hiện tại `bg-brand-600`, đã xong `bg-aqua-100` + icon `Check`.
   - *Ảnh món*: ảnh thật có giấy phép mở lưu trong Sanity, luôn ghi tác giả + giấy phép (hiện dưới ảnh ở trang chi tiết);
     không có thì dùng hình vẽ minh hoạ; **không dùng ảnh AI, ảnh không rõ nguồn, link ảnh ngoài**.
+    Ảnh chỉ gần giống món (`illustrative`) luôn có nhãn **"Ảnh minh hoạ"** (cùng kiểu nhãn "Hình minh hoạ") để không gây hiểu nhầm;
+    chỉ chọn ảnh rõ món, không chữ / logo, màu không chói.
   - *Hình vẽ minh hoạ* (`public/minh-hoa/*.svg`): SVG phẳng 320×200 (16:10), nền `aqua-50`, chỉ dùng màu trong bảng màu
     (brand, aqua, sand, canvas, đào nhạt cho đồ ăn), không gradient, không chữ, mỗi file < 5 KB.
 

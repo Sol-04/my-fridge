@@ -62,6 +62,7 @@ export default async function RecipePage({ params }: PageProps<"/mon-an/[slug]">
         <p className="mt-1 text-xs text-muted">
           Ảnh: {recipe.image.credit}
           {recipe.image.license && ` · ${recipe.image.license}`}
+          {recipe.image.illustrative && " · ảnh gần giống món"}
           {recipe.image.sourceUrl && (
             <>
               {" · "}

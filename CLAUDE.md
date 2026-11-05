@@ -74,6 +74,8 @@ Website giúp người Việt **chọn thực phẩm đang có** (trong tủ l�
   phép mở (CC0 / Public domain / CC BY / CC BY-SA, ví dụ từ Wikimedia Commons) và PHẢI ghi `credit` + `license`; trang chi
   tiết món hiện dòng "Ảnh: … · giấy phép · Nguồn ảnh". Muốn dùng ảnh tự chụp: vào `/studio`, mở món, tải ảnh lên, ghi tác
   giả là chính mình, giấy phép "Ảnh tự chụp".
+- Ảnh **gần giống món** (không phải đúng công thức, ví dụ ảnh cháo gà cho món cháo yến mạch gà) → bật `image.illustrative`;
+  web hiện nhãn "Ảnh minh hoạ" trên ảnh và ghi "ảnh gần giống món" ở dòng tác giả. Món chưa có ảnh phù hợp thì để trống → hình vẽ.
 - Trường `kind`: `home` (Tự nấu, mặc định) hoặc `eatout` (Ăn ngoài). Món ăn ngoài không có `ingredients`/`steps`/
   `cookMinutes`, thay bằng `servingNote`, `healthyTip`, `whereToBuy`. Truy vấn dùng `coalesce(kind, "home")`.
 - Mỗi món có ID cố định `recipe-<slug>` → nhập lại sẽ ghi đè, không trùng.

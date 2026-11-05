@@ -18,7 +18,7 @@ export type RecipeCardData = {
   _id: string;
   name: string;
   slug: string;
-  image?: SanityImageSource & { alt?: string; credit?: string; license?: string; sourceUrl?: string };
+  image?: SanityImageSource & { alt?: string; credit?: string; license?: string; sourceUrl?: string; illustrative?: boolean };
   calories: number;
   cookMinutes: number;
   meals: Meal[];
