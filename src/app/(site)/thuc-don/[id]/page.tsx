@@ -15,7 +15,7 @@ import { CopyLinkButton } from "./CopyLinkButton";
 
 // Thực đơn chứa thông tin cá nhân → không cho Google lưu trang.
 export const metadata: Metadata = {
-  title: "Thực đơn của bạn – My Fridge",
+  title: "Thực đơn của bạn – Glow up with me",
   robots: { index: false, follow: false },
 };
 

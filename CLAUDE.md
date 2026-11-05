@@ -1,7 +1,7 @@
 @AGENTS.md
 @DESIGN.md
 
-# My Fridge
+# Glow up with me
 
 ## Dự án là gì
 Website giúp người Việt **chọn thực phẩm đang có** (trong tủ lạnh, trong bếp) để nhận

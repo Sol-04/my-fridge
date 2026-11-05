@@ -1,6 +1,6 @@
 // Mở Google Maps tìm quán bán món ăn ngoài gần người dùng.
 // Dùng "Google Maps URLs" (https://developers.google.com/maps/documentation/urls) — miễn phí, không cần API key.
-// Google Maps (app trên điện thoại hoặc web) tự dùng vị trí trên máy người dùng; My Fridge KHÔNG đọc hay lưu vị trí.
+// Google Maps (app trên điện thoại hoặc web) tự dùng vị trí trên máy người dùng; Glow up with me KHÔNG đọc hay lưu vị trí.
 
 // Một số món nên tìm theo loại cửa hàng thay vì tên món
 const QUERY_BY_SLUG: Record<string, string> = {

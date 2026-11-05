@@ -10,7 +10,7 @@ import { AuthFormSkeleton, AuthShell } from "../AuthShell";
 import { SignUpForm } from "./SignUpForm";
 import { Icons } from "@/components/icons";
 
-export const metadata: Metadata = { title: "Đăng ký – My Fridge" };
+export const metadata: Metadata = { title: "Đăng ký – Glow up with me" };
 
 export default function SignUpPage({ searchParams }: PageProps<"/dang-ky">) {
   return (

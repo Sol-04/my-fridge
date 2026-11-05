@@ -6,7 +6,7 @@ import { getRecipes } from "@/sanity/lib/recipes";
 import { RecipeList } from "./RecipeList";
 
 export const metadata: Metadata = {
-  title: "Món ăn – My Fridge",
+  title: "Món ăn – Glow up with me",
   description: "Các món ăn Việt lành mạnh, dễ nấu cho bữa sáng, trưa, tối kèm lượng calo.",
 };
 
