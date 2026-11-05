@@ -66,6 +66,7 @@ Website giúp người Việt **chọn thực phẩm đang có** (trong tủ l�
 - `src/lib/illustrations.ts` — `illustrationFor(name)`: chọn hình vẽ theo từ khoá trong tên món (bỏ dấu); món chưa có
   ảnh thật trong Sanity tự hiện hình vẽ kèm nhãn "Hình minh hoạ" (`RecipeImage.tsx`).
 - `.env.example` — mẫu tên biến môi trường (KHÔNG chứa giá trị thật).
+- `.claude/agents/` — 4 trợ lý theo model (xem mục "Chia việc theo model").
 - `DESIGN.md` — **phong cách giao diện** (màu, chữ, nút, thẻ, bố cục, nên/không nên, câu lệnh mẫu). Đọc trước khi làm giao diện.
 
 ## Sanity (công thức món ăn)
@@ -128,20 +129,26 @@ Website giúp người Việt **chọn thực phẩm đang có** (trong tủ l�
   luôn nền sáng (không `dark:`), không gradient, không vòng xoay "đang tải". Dùng lại khối trong `ui.tsx` /
   `form.tsx` / `icons.tsx`; điện thoại trước, kiểm tra ở 375px (không tràn ngang, nút ≥44px); chữ tiếng Việt có dấu.
 
-## Chia việc theo model
+## Chia việc theo model (tự động chuyển model)
 
-| Loại việc | Model | Vì sao |
-|---|---|---|
-| Việc rất khó, nhiều bước dài: làm lại cả luồng tạo thực đơn, đổi cấu trúc dữ liệu lớn (Sanity + Supabase cùng lúc) | **Fable** | Mạnh nhất nhưng tốn nhất — chỉ dùng khi thật cần |
-| Lên kế hoạch tính năng mới; **bảo mật** (đăng nhập, RLS Supabase, key bí mật); lỗi khó tìm nguyên nhân; review code trước khi gộp PR | **Opus** | Cần suy nghĩ kỹ, sai thì ảnh hưởng người dùng |
-| Việc hằng ngày: làm trang/khối giao diện theo DESIGN.md, thêm món vào `data/`, sửa lỗi build, sửa chữ, cập nhật tài liệu | **Sonnet** | Đủ giỏi, nhanh và rẻ hơn — hợp phần lớn công việc |
-| Việc nhỏ, nhanh: tìm file, đổi một câu chữ, đọc kết quả `npm run lint`/`npm run build`, đếm/rà dữ liệu đơn giản | **Haiku** | Nhanh nhất, rẻ nhất |
+Có 4 trợ lý (subagent) trong `.claude/agents/`, mỗi trợ lý chạy trên **model riêng**. Model chính giao việc cho đúng
+trợ lý nên model được đổi **tự động theo từng việc**, chủ dự án không cần gõ lệnh.
 
-- Không chắc thì chọn model mạnh hơn một bậc.
-- Model nào cũng phải theo đúng CLAUDE.md + DESIGN.md (build trước khi push, không đưa key bí mật vào code, giải thích tiếng Việt dễ hiểu).
-- Sửa phần tính calo / khẩu phần (`src/lib/meal-plan.ts`) hoặc dữ liệu dinh dưỡng (`data/`) → luôn để **Opus** kiểm tra lại.
-- Việc lớn có thể chia nhỏ cho nhiều model chạy song song (subagent), model chính (Opus) tổng hợp và kiểm tra cuối.
-- Đổi model trong Claude Code bằng lệnh `/model`.
+| Trợ lý | Model | Vai | Được sửa file? |
+|---|---|---|---|
+| `kien-truc-su` | **Fable** | Việc rất lớn, nhiều bước: làm lại cả luồng, đổi cấu trúc dữ liệu Sanity + Supabase → trả về kế hoạch | Không |
+| `kiem-tra-vien` | **Opus** | Review trước khi push: bảo mật, calo / khẩu phần, dữ liệu dinh dưỡng, lỗi khó | Không |
+| `tho-giao-dien` | **Sonnet** | Việc hằng ngày: giao diện theo DESIGN.md, thêm món vào `data/`, sửa lỗi build, tài liệu | Có (lint + build trước khi báo xong) |
+| `tro-ly-nhanh` | **Haiku** | Việc nhỏ, lặp lại: tìm file, đọc kết quả lint / build, đếm / rà dữ liệu, trích thông tin hàng loạt | Không |
+
+**Quy trình chuẩn cho mỗi yêu cầu:**
+1. **Model chính** (thường là Opus) nhận yêu cầu, chia việc. Việc rất lớn → hỏi `kien-truc-su` lấy kế hoạch trước.
+2. Tìm kiếm / rà dữ liệu → `tro-ly-nhanh`; làm giao diện / dữ liệu / tài liệu → `tho-giao-dien`. Việc độc lập chạy song song.
+3. Trước khi push → `kiem-tra-vien` review phần đã đổi (**bắt buộc** nếu đụng `src/lib/meal-plan.ts`, `data/`, đăng nhập, Supabase).
+4. Model chính tự xem lại, build, push, tạo PR và báo chủ dự án **việc nào do model nào làm**.
+- Không chắc thì chọn trợ lý mạnh hơn một bậc. Fable không dùng được (tài khoản chưa bật) → dùng Opus thay. Việc quá nhỏ (vài dòng) model chính tự làm cho nhanh.
+- Không trợ lý nào được push / tạo PR; mọi trợ lý phải theo CLAUDE.md + DESIGN.md, không đưa key bí mật vào code.
+- Muốn đổi **model của cuộc trò chuyện chính**: chủ dự án gõ lệnh `/model` (chỉ chủ dự án làm được).
 
 ## Cách làm việc với chủ dự án (QUAN TRỌNG)
 Chủ dự án **không biết code**. Vì vậy luôn:
