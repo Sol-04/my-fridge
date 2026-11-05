@@ -208,7 +208,7 @@ Khai báo trong `@theme` ở `src/app/globals.css`, dùng qua class Tailwind (`b
 - **Không dùng emoji trên giao diện.** Dùng bộ icon nét mảnh **Lucide** (`lucide-react`, ghim bản `1.59.0`).
 - **Chỉ import từ `src/components/icons.tsx`**: `Icons.<tên>` + component `<Icon icon={…} size={…} />`
   (nét mặc định `strokeWidth={1.75}`, tự `aria-hidden`). Icon lớn trang trí dùng nét 1.25–1.5.
-- **Bảng nghĩa:** logo `Leaf` · món `CookingPot` · calo `Flame` · thời gian `Clock` · sáng/trưa/tối `Sunrise`/`Sun`/`Moon`
+- **Bảng nghĩa:** logo `Leaf` · món `CookingPot` · ăn ngoài `Store` · calo `Flame` · thời gian `Clock` · sáng/trưa/tối `Sunrise`/`Sun`/`Moon`
   (map `MEAL_ICONS`) · thực phẩm `ShoppingBasket` · thực đơn `ClipboardList` · đổi món `RefreshCw` · lưu `Save` ·
   khoá `Lock` · link `Link2` · sức khoẻ `Stethoscope` · mục tiêu `Target` · đã chọn `Check`.
 - Icon luôn đi kèm chữ (trừ logo có `aria-label`); cỡ 16px trong nhãn, 18–20px trong nút, 28–64px khi minh hoạ.
@@ -251,7 +251,9 @@ Khai báo trong `@theme` ở `src/app/globals.css`, dùng qua class Tailwind (`b
 - **Footer — `SiteFooter`:** nền trắng, viền trên `border-line`; **luôn có khối "Lưu ý sức khoẻ"** (`bg-aqua-50`,
   icon `Stethoscope`).
 - **Riêng của My Fridge:**
-  - *Thẻ món* (`RecipeCard`): ảnh 16:10 (chưa có ảnh → nền `aqua-50` phẳng + icon `CookingPot`), nhãn bữa `rounded-lg
+  - *Thẻ món* (`RecipeCard`): ảnh 16:10 (chưa có ảnh → nền `aqua-50` phẳng + icon `CookingPot`, món ăn ngoài icon `Store`);
+    món ăn ngoài có nhãn **"Ăn ngoài"** `rounded-lg bg-aqua-800 text-white` + icon `Store`, hiện khẩu phần thường bán
+    thay cho thời gian nấu, nhãn bữa `rounded-lg
     bg-white/95`, nhãn calo (`Flame`, đào) và thời gian (`Clock`, `bg-canvas`).
   - *Thẻ bữa ăn* (`MealEntryCard`): icon bữa trong vòng tròn `aqua-50`, "Mục tiêu ~… kcal", tên món (link), khẩu phần,
     nhãn calo/đạm/tinh bột/béo, nút "Đổi món".
