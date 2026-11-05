@@ -53,12 +53,30 @@ export default async function RecipePage({ params }: PageProps<"/mon-an/[slug]">
         <RecipeImage
           image={recipe.image}
           name={recipe.name}
-          eatOut={eatOut}
           width={1200}
           sizes="(min-width: 768px) 768px, 100vw"
           preload
         />
       </div>
+      {recipe.image?.credit && (
+        <p className="mt-1 text-xs text-muted">
+          Ảnh: {recipe.image.credit}
+          {recipe.image.license && ` · ${recipe.image.license}`}
+          {recipe.image.sourceUrl && (
+            <>
+              {" · "}
+              <a
+                href={recipe.image.sourceUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex min-h-11 items-center underline hover:text-brand-700"
+              >
+                Nguồn ảnh
+              </a>
+            </>
+          )}
+        </p>
+      )}
 
       <div className="mt-5 flex flex-wrap items-center gap-2 text-sm">
         {recipe.meals?.map((m) => (
