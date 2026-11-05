@@ -4,7 +4,8 @@ import { notFound } from "next/navigation";
 
 import { RecipeImage } from "@/components/RecipeImage";
 import { Icon, Icons } from "@/components/icons";
-import { ButtonLink, Notice } from "@/components/ui";
+import { ButtonLink, buttonClass, Notice } from "@/components/ui";
+import { mapsSearchUrl } from "@/lib/maps";
 import { getRecipe, getRecipeSlugs } from "@/sanity/lib/recipes";
 import { mealLabel } from "@/sanity/meals";
 
@@ -148,6 +149,20 @@ export default async function RecipePage({ params }: PageProps<"/mon-an/[slug]">
               Thường bán ở: <span className="font-semibold text-ink">{recipe.whereToBuy}</span>
             </p>
           )}
+          <div>
+            <a
+              href={mapsSearchUrl(recipe.slug, recipe.name)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={buttonClass("secondary", "md", "w-full sm:w-auto")}
+            >
+              <Icon icon={Icons.nearby} size={20} />
+              Tìm quán gần bạn trên Google Maps
+            </a>
+            <p className="mt-2 text-sm text-muted">
+              Google Maps dùng vị trí trên máy bạn để tìm quán gần nhất. My Fridge không lưu vị trí của bạn.
+            </p>
+          </div>
         </section>
       )}
 
