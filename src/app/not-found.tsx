@@ -1,6 +1,7 @@
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
 import { ButtonLink, EmptyState } from "@/components/ui";
+import { Icons } from "@/components/icons";
 
 // Trang 404 chung: khi mở đường dẫn không tồn tại.
 export default function NotFound() {
@@ -9,7 +10,7 @@ export default function NotFound() {
       <SiteHeader />
       <main className="mx-auto w-full max-w-md flex-1 px-4 py-12">
         <EmptyState
-          icon="🧭"
+          icon={Icons.compass}
           title="Không tìm thấy trang"
           action={
             <div className="flex flex-col gap-3 sm:flex-row">

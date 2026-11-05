@@ -1,4 +1,5 @@
 @AGENTS.md
+@DESIGN.md
 
 # My Fridge
 
@@ -24,12 +25,23 @@ Website giúp người Việt **chọn thực phẩm đang có** (trong tủ l�
 - `src/app/(site)/tao-thuc-don/` — trang tạo thực đơn 3 bước (`Planner.tsx`): 1) thông tin cá nhân → calo mục tiêu,
   2) chọn thực phẩm đang có, 3) gợi ý món + khẩu phần, nút "Lưu thực đơn" (`actions.ts` — server action).
 - `src/app/(site)/thuc-don/[id]/` — xem lại thực đơn đã lưu + nút "Sao chép link" (`CopyLinkButton.tsx`).
+- `src/app/(site)/(auth)/` — đăng nhập `/dang-nhap`, đăng ký `/dang-ky`, quên mật khẩu `/quen-mat-khau`,
+  đặt lại mật khẩu `/dat-lai-mat-khau`; `actions.ts` (signIn/signUp/signOut/requestPasswordReset/updatePassword).
+- `src/app/(site)/ho-so/` — hồ sơ: thông tin cơ thể (`ProfileForm.tsx` + `actions.ts`), thực đơn đã lưu
+  (`SavedPlansList.tsx`), đổi mật khẩu, đăng xuất. Chưa đăng nhập → chuyển tới `/dang-nhap?next=/ho-so`.
+- `src/app/auth/callback/route.ts` — nhận link từ email (xác nhận tài khoản / đặt lại mật khẩu).
+- `src/proxy.ts` — làm mới phiên đăng nhập Supabase trước mỗi trang (Next 16 gọi là "proxy", trước là middleware).
 - `src/lib/meal-plan.ts` — công thức tính: calo mục tiêu (Mifflin-St Jeor), chia bữa 25/40/35%,
   gia vị luôn có (`PANTRY_STAPLES`), nhóm nguyên liệu, chấm điểm món, khẩu phần (0,5–2,5, bước 0,25).
-- `src/lib/supabase.ts` — kết nối Supabase (anon key); `src/lib/meal-plans-db.ts` — đọc thực đơn theo id.
+- `src/lib/supabase.ts` — kết nối Supabase cho khách (anon key, không phiên); `src/lib/meal-plans-db.ts` — đọc thực đơn theo id.
+- `src/lib/supabase/server.ts` — kết nối Supabase CÓ phiên đăng nhập (cookie, `@supabase/ssr`): `createSupabaseServer()`,
+  `getCurrentUser()`. `src/lib/auth-helpers.ts` — `safeNext` (chỉ chuyển trang nội bộ), dịch lỗi đăng nhập sang tiếng Việt.
+  `src/lib/profile.ts` — đọc hồ sơ. `src/components/form.tsx` — ô nhập dùng chung (Chip, NumberField, TextField,
+  PasswordField, SubmitButton). `src/components/AccountLink.tsx` — nút tài khoản trên menu.
 - `supabase/schema.sql` — SQL tạo bảng `meal_plans` + RLS (chạy trong Supabase SQL Editor).
+- `src/components/icons.tsx` — bộ icon Lucide dùng chung (`Icons.*`, `<Icon>`, `MEAL_ICONS`); KHÔNG dùng emoji trên giao diện.
 - `src/components/ui.tsx` — khối giao diện dùng chung: `buttonClass`/`ButtonLink` (nút to ≥48px), `Notice` (thông báo
-  lỗi/lưu ý), `EmptyState` (trạng thái rỗng), `Skeleton`/`LoadingLabel` (đang tải), `PageHeader`.
+  lỗi/lưu ý), `EmptyState` (trạng thái rỗng), `Skeleton`/`LoadingLabel`/`PendingDots` (đang tải), `PageHeader`, `cardClass` (thẻ).
 - `src/components/` — `RecipeCard.tsx` (thẻ món), `RecipeImage.tsx` (ảnh món, có ô thay thế khi chưa có ảnh),
   `MealEntryCard.tsx` (thẻ 1 bữa), `NutritionTotals.tsx` (tổng dinh dưỡng trong ngày).
 - `src/sanity/` — kết nối Sanity: `env.ts` (đọc biến môi trường), `lib/client.ts` (đọc dữ liệu),
@@ -43,6 +55,7 @@ Website giúp người Việt **chọn thực phẩm đang có** (trong tủ l�
 - `scripts/import-recipes.ts` — script nhập món vào Sanity.
 - `public/` — ảnh, icon tĩnh.
 - `.env.example` — mẫu tên biến môi trường (KHÔNG chứa giá trị thật).
+- `DESIGN.md` — **phong cách giao diện** (màu, chữ, nút, thẻ, bố cục, nên/không nên, câu lệnh mẫu). Đọc trước khi làm giao diện.
 
 ## Sanity (công thức món ăn)
 - Project ID `b4tnn0pq`, dataset `production` (dataset public: đọc không cần token).
@@ -54,11 +67,20 @@ Website giúp người Việt **chọn thực phẩm đang có** (trong tủ l�
   rồi chạy `npm run import:recipes`.
 - Studio tại `/studio` cần thêm địa chỉ web vào CORS origins (sanity.io/manage → API).
 
-## Supabase (lưu thực đơn)
-- Project "Sol-1". Bảng `public.meal_plans`: `id`, `created_at`, `user_input` (jsonb), `target_calories`,
+## Supabase (đăng nhập + lưu thực đơn)
+- Project "Sol-1". Đăng nhập bằng **email + mật khẩu** (Supabase Auth).
+- Bảng `public.profiles` (1 dòng / tài khoản, tự tạo bằng trigger khi đăng ký): `display_name`, `gender`, `age`,
+  `height_cm`, `weight_kg`, `activity`, `goal`. RLS: chỉ chủ tài khoản xem / tạo / sửa (không xoá).
+- Bảng `public.meal_plans`: `id`, `created_at`, `user_id`, `user_input` (jsonb), `target_calories`,
   `selected_foods` (text[]), `breakfast` / `lunch` / `dinner` (jsonb: món + khẩu phần + dinh dưỡng).
-- RLS: chỉ cho **thêm mới**; không ai đọc thẳng bảng, sửa hay xoá. Xem 1 thực đơn qua hàm
-  `get_meal_plan(plan_id)` → phải biết đúng id (uuid ngẫu nhiên) mới xem được.
+- RLS: **phải đăng nhập mới thêm được** (`user_id` = chính mình); chủ xem được danh sách của mình; không ai
+  sửa / xoá; khách không đọc thẳng bảng. Ai có link xem 1 thực đơn qua hàm `get_meal_plan(plan_id)`.
+- Khách vẫn tạo & xem gợi ý; bấm lưu → lưu tạm vào `sessionStorage` rồi sang `/dang-nhap?next=/tao-thuc-don`,
+  đăng nhập xong tự khôi phục bước 3. Bước 1 tự điền từ hồ sơ.
+- Cache Components: mọi chỗ đọc phiên đăng nhập (cookie) phải nằm trong `<Suspense>`; không đọc cookie trong `'use cache'`.
+- Cài đặt Supabase cần có: Authentication → URL Configuration (Site URL + Redirect URLs gồm web chính,
+  `https://*-sol-04.vercel.app/**`, `http://localhost:3000/**`). Email mặc định của Supabase chỉ gửi tới thành viên
+  project → tạm tắt "Confirm email" hoặc gắn SMTP riêng.
 - id được tạo ở máy chủ (`crypto.randomUUID()`) trước khi insert, vì không được đọc lại bảng.
 - Server action tự tính lại calo từ dữ liệu Sanity, không tin số liệu từ trình duyệt.
 - `user_input` là thông tin cá nhân → trang `/thuc-don/[id]` đặt `noindex`.
@@ -78,14 +100,12 @@ Website giúp người Việt **chọn thực phẩm đang có** (trong tủ l�
 - `npm run import:recipes` — nhập món trong `data/recipes.ts` vào Sanity (cần token ghi).
 
 ## Quy tắc giao diện
-- Phong cách: tươi, sạch, thân thiện. Màu chủ đạo `brand-*` (xanh lá, khai báo trong `globals.css`),
-  nền sáng `bg-canvas`, chữ `text-ink` / `text-muted`, nhấn `accent-*` (cam đào) cho calo. Luôn nền sáng
-  (đã tắt `dark:`). Bo góc mềm: `rounded-2xl`/`rounded-3xl`, nút `rounded-full`. Dùng lại khối trong `ui.tsx`.
-- Kiểm tra hiển thị ở khổ điện thoại 375px (không tràn ngang, nút ≥44px).
-- Toàn bộ chữ hiển thị cho người dùng bằng **tiếng Việt** (có dấu đầy đủ).
-- **Ưu tiên mobile**: thiết kế cho màn hình điện thoại trước, sau đó mới mở rộng cho
-  màn hình lớn (dùng tiền tố Tailwind `sm:`, `md:`, `lg:`).
-- Nút bấm và vùng chạm đủ lớn (tối thiểu ~44px), chữ dễ đọc.
+- Xem đầy đủ trong **`DESIGN.md`** (nguồn chuẩn duy nhất về giao diện — đổi màu/khối dùng chung thì cập nhật cả file đó).
+- Tóm tắt: **tối giản êm dịu**, nhiều khoảng trắng; màu chính **xanh xô thơm** `brand-600 #3f7a5c`, nền **kem**
+  `canvas #fdf6e3`, phụ **xanh nước** `aqua-*`, calo **đào** `accent-*`; font **Nunito**; bo góc 8/16/24px;
+  bóng nhẹ `shadow-soft` / `shadow-lift`; chuyển động `animate-enter` / `stagger`; **icon Lucide (không emoji)**,
+  luôn nền sáng (không `dark:`), không gradient, không vòng xoay "đang tải". Dùng lại khối trong `ui.tsx` /
+  `form.tsx` / `icons.tsx`; điện thoại trước, kiểm tra ở 375px (không tràn ngang, nút ≥44px); chữ tiếng Việt có dấu.
 
 ## Cách làm việc với chủ dự án (QUAN TRỌNG)
 Chủ dự án **không biết code**. Vì vậy luôn:

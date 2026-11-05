@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 import { buttonClass } from "@/components/ui";
+import { Icon, Icons } from "@/components/icons";
 
 // Nút "Sao chép link" — nếu trình duyệt không cho sao chép, hiện ô chứa link để tự copy.
 export function CopyLinkButton() {
@@ -28,7 +29,8 @@ export function CopyLinkButton() {
         onClick={copy}
         className={buttonClass("primary", "md", "w-full sm:w-auto")}
       >
-        {status === "copied" ? "✓ Đã sao chép link" : "🔗 Sao chép link"}
+        <Icon icon={status === "copied" ? Icons.check : Icons.link} size={18} />
+        {status === "copied" ? "Đã sao chép link" : "Sao chép link"}
       </button>
       <span className="sr-only" aria-live="polite">
         {status === "copied" ? "Đã sao chép link" : ""}
@@ -40,7 +42,7 @@ export function CopyLinkButton() {
             readOnly
             value={url}
             onFocus={(e) => e.currentTarget.select()}
-            className="mt-1 min-h-12 w-full rounded-2xl border-2 border-brand-100 bg-white px-3 text-ink"
+            className="mt-1 min-h-12 w-full rounded-2xl border border-line bg-white px-3 text-ink"
           />
         </label>
       )}

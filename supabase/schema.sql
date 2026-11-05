@@ -1,10 +1,93 @@
 -- =============================================================
--- My Fridge — bảng lưu thực đơn (meal_plans)
--- Cách chạy: Supabase → SQL Editor → dán toàn bộ file này → Run.
--- Chạy lại nhiều lần cũng an toàn.
+-- My Fridge — cơ sở dữ liệu (Supabase)
+-- Cách chạy: Supabase → SQL Editor → dán TOÀN BỘ file này → Run.
+-- Chạy lại nhiều lần cũng an toàn (dùng "if not exists" / "or replace" / "drop ... if exists").
 -- =============================================================
 
--- 1) Bảng lưu thực đơn
+
+-- =============================================================
+-- PHẦN A — HỒ SƠ NGƯỜI DÙNG (profiles)
+-- Mỗi tài khoản có 1 hồ sơ. Chỉ chủ tài khoản được xem / sửa hồ sơ của mình.
+-- =============================================================
+
+create table if not exists public.profiles (
+  id            uuid primary key references auth.users (id) on delete cascade,
+  display_name  text,
+  gender        text,
+  age           integer,
+  height_cm     integer,
+  weight_kg     numeric(5, 1),
+  activity      text,
+  goal          text,
+  updated_at    timestamptz not null default now(),
+
+  constraint profiles_display_name_len check (display_name is null or char_length(display_name) between 1 and 60),
+  constraint profiles_gender_valid     check (gender is null or gender in ('female', 'male')),
+  constraint profiles_age_range        check (age is null or age between 15 and 100),
+  constraint profiles_height_range     check (height_cm is null or height_cm between 120 and 220),
+  constraint profiles_weight_range     check (weight_kg is null or weight_kg between 30 and 250),
+  constraint profiles_activity_valid   check (activity is null or activity in ('sedentary', 'light', 'moderate', 'active')),
+  constraint profiles_goal_valid       check (goal is null or goal in ('lose', 'maintain', 'gain'))
+);
+
+comment on table public.profiles is 'Hồ sơ người dùng: tên hiển thị + thông tin cơ thể để tự điền khi tạo thực đơn.';
+
+alter table public.profiles enable row level security;
+
+-- Khách (anon) không đụng được vào hồ sơ. Người đăng nhập chỉ xem / tạo / sửa (không xoá).
+revoke all on table public.profiles from anon, authenticated;
+grant select, insert, update on table public.profiles to authenticated;
+
+drop policy if exists "Xem hồ sơ của mình" on public.profiles;
+create policy "Xem hồ sơ của mình"
+  on public.profiles for select
+  to authenticated
+  using ((select auth.uid()) = id);
+
+drop policy if exists "Tạo hồ sơ của mình" on public.profiles;
+create policy "Tạo hồ sơ của mình"
+  on public.profiles for insert
+  to authenticated
+  with check ((select auth.uid()) = id);
+
+drop policy if exists "Sửa hồ sơ của mình" on public.profiles;
+create policy "Sửa hồ sơ của mình"
+  on public.profiles for update
+  to authenticated
+  using ((select auth.uid()) = id)
+  with check ((select auth.uid()) = id);
+
+-- Tự tạo hồ sơ khi có tài khoản mới (lấy tên hiển thị người dùng nhập lúc đăng ký).
+create or replace function public.handle_new_user()
+returns trigger
+language plpgsql
+security definer
+set search_path = ''
+as $$
+begin
+  insert into public.profiles (id, display_name)
+  values (
+    new.id,
+    nullif(left(trim(coalesce(new.raw_user_meta_data ->> 'display_name', '')), 60), '')
+  )
+  on conflict (id) do nothing;
+  return new;
+end;
+$$;
+
+revoke all on function public.handle_new_user() from public, anon, authenticated;
+
+drop trigger if exists on_auth_user_created on auth.users;
+create trigger on_auth_user_created
+  after insert on auth.users
+  for each row execute function public.handle_new_user();
+
+
+-- =============================================================
+-- PHẦN B — THỰC ĐƠN ĐÃ LƯU (meal_plans)
+-- Phải đăng nhập mới lưu được. Ai có link (id) vẫn xem được qua hàm get_meal_plan.
+-- =============================================================
+
 create table if not exists public.meal_plans (
   id               uuid primary key default gen_random_uuid(),
   created_at       timestamptz not null default now(),
@@ -33,27 +116,38 @@ create table if not exists public.meal_plans (
                                                      and pg_column_size(dinner) < 2000))
 );
 
-comment on table public.meal_plans is 'Thực đơn người dùng đã lưu. Chỉ thêm mới; xem qua hàm get_meal_plan(id).';
+-- Chủ của thực đơn (để trống với các thực đơn lưu trước khi có đăng nhập)
+alter table public.meal_plans
+  add column if not exists user_id uuid references auth.users (id) on delete set null default auth.uid();
 
--- 2) Bật Row Level Security (quy tắc ai được làm gì với từng dòng)
+create index if not exists meal_plans_user_created_idx on public.meal_plans (user_id, created_at desc);
+
+comment on table public.meal_plans is 'Thực đơn đã lưu. Chỉ người đăng nhập được thêm; chủ xem được danh sách của mình; ai có id xem qua get_meal_plan(id).';
+
 alter table public.meal_plans enable row level security;
 
--- Quyền cơ bản: khách (anon) và người đăng nhập chỉ được THÊM MỚI.
--- Không được xem cả bảng, không được sửa, không được xoá.
+-- Quyền cơ bản: khách KHÔNG được thêm. Người đăng nhập được thêm + xem (RLS giới hạn của chính mình).
+-- Không ai được sửa hay xoá.
 revoke all on table public.meal_plans from anon, authenticated;
-grant insert on table public.meal_plans to anon, authenticated;
+grant select, insert on table public.meal_plans to authenticated;
 
--- Quy tắc duy nhất: ai cũng được thêm mới.
--- (Không có quy tắc select/update/delete → không ai đọc thẳng bảng, sửa hay xoá được.)
+-- Bỏ quy tắc cũ (trước đây ai cũng được thêm)
 drop policy if exists "Ai cũng được thêm thực đơn" on public.meal_plans;
-create policy "Ai cũng được thêm thực đơn"
-  on public.meal_plans
-  for insert
-  to anon, authenticated
-  with check (true);
 
--- 3) Xem 1 thực đơn THEO ID (phải biết đúng id mới xem được).
--- Dùng hàm thay vì cho phép "select" để không ai tải được toàn bộ thực đơn của mọi người.
+drop policy if exists "Người đăng nhập thêm thực đơn của mình" on public.meal_plans;
+create policy "Người đăng nhập thêm thực đơn của mình"
+  on public.meal_plans for insert
+  to authenticated
+  with check ((select auth.uid()) = user_id);
+
+drop policy if exists "Xem danh sách thực đơn của mình" on public.meal_plans;
+create policy "Xem danh sách thực đơn của mình"
+  on public.meal_plans for select
+  to authenticated
+  using ((select auth.uid()) = user_id);
+
+-- Xem 1 thực đơn THEO ID (ai có link đều xem được, kể cả khách) — dùng cho link chia sẻ.
+-- Không cho phép "select" cả bảng với khách để không ai tải được thực đơn của người khác.
 create or replace function public.get_meal_plan(plan_id uuid)
 returns setof public.meal_plans
 language sql

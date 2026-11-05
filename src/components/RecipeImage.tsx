@@ -1,5 +1,6 @@
 import Image from "next/image";
 
+import { Icon, Icons } from "@/components/icons";
 import { urlFor } from "@/sanity/lib/image";
 import type { RecipeCardData } from "@/sanity/lib/recipes";
 
@@ -11,18 +12,18 @@ type Props = {
   preload?: boolean; // tải trước (dùng cho ảnh lớn đầu trang)
 };
 
-// Ảnh món ăn tỉ lệ 16:10. Món chưa có ảnh sẽ hiện ô màu nhạt với biểu tượng 🍲.
+// Ảnh món ăn tỉ lệ 16:10. Món chưa có ảnh sẽ hiện ô màu xanh nước nhạt với icon nồi.
 export function RecipeImage({ image, name, width, sizes, preload }: Props) {
   const height = Math.round((width * 10) / 16);
 
   if (!image) {
     return (
       <div
-        className="flex aspect-[16/10] w-full items-center justify-center bg-gradient-to-br from-brand-50 via-brand-100 to-accent-50 text-5xl"
+        className="flex aspect-[16/10] w-full items-center justify-center bg-aqua-50 text-aqua-800"
         role="img"
         aria-label={`${name} (chưa có ảnh)`}
       >
-        <span aria-hidden className="drop-shadow-sm">🍲</span>
+        <Icon icon={Icons.dish} size={44} strokeWidth={1.25} />
       </div>
     );
   }

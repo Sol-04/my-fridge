@@ -12,7 +12,7 @@ import {
   SERVINGS_MIN,
   type MealEntry,
 } from "@/lib/meal-plan";
-import { getSupabase } from "@/lib/supabase";
+import { createSupabaseServer } from "@/lib/supabase/server";
 import { getPlannerRecipes, type Meal } from "@/sanity/lib/recipes";
 
 export type SaveMealPlanInput = {
@@ -22,7 +22,7 @@ export type SaveMealPlanInput = {
   meals: Partial<Record<Meal, { recipeId: string; servings: number } | null>>;
 };
 
-export type SaveMealPlanResult = { error: string };
+export type SaveMealPlanResult = { error: string; needLogin?: boolean };
 
 export async function saveMealPlan(input: SaveMealPlanInput): Promise<SaveMealPlanResult> {
   // 1) Kiểm tra lại dữ liệu trên máy chủ (không tin hoàn toàn dữ liệu từ trình duyệt)
@@ -54,15 +54,27 @@ export async function saveMealPlan(input: SaveMealPlanInput): Promise<SaveMealPl
     return { error: "Thực đơn chưa có món nào để lưu." };
   }
 
-  // 3) Lưu vào Supabase. Tạo sẵn id để không cần đọc lại bảng (bảng không cho đọc trực tiếp).
-  const supabase = getSupabase();
+  // 3) Phải đăng nhập mới lưu được
+  const supabase = await createSupabaseServer();
   if (!supabase) return { error: "Hệ thống lưu trữ đang tạm thời chưa sẵn sàng. Thực đơn vẫn còn nguyên trên màn hình, bạn đợi một chút rồi bấm “Lưu thực đơn” lần nữa nhé." };
 
+  let userId: string | null = null;
+  try {
+    userId = (await supabase.auth.getUser()).data.user?.id ?? null;
+  } catch {
+    userId = null;
+  }
+  if (!userId) {
+    return { error: "Bạn cần đăng nhập để lưu thực đơn. Thực đơn đang làm sẽ được giữ lại.", needLogin: true };
+  }
+
+  // 4) Lưu vào Supabase. Tạo sẵn id để không cần đọc lại bảng sau khi lưu.
   const id = crypto.randomUUID();
   let errorMessage: string | null = null;
   try {
     const { error } = await supabase.from("meal_plans").insert({
       id,
+      user_id: userId,
       user_input: userInput,
       target_calories: calcTargetCalories(userInput),
       selected_foods: selectedFoods,
@@ -80,6 +92,6 @@ export async function saveMealPlan(input: SaveMealPlanInput): Promise<SaveMealPl
     return { error: "Có thể mạng đang chậm hoặc hệ thống đang bận. Thực đơn vẫn còn nguyên trên màn hình, bạn đợi một chút rồi bấm “Lưu thực đơn” lần nữa nhé." };
   }
 
-  // 4) Chuyển tới trang xem thực đơn (redirect phải nằm ngoài try/catch)
+  // 5) Chuyển tới trang xem thực đơn (redirect phải nằm ngoài try/catch)
   redirect(`/thuc-don/${id}`);
 }

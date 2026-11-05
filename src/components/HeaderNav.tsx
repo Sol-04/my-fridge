@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-// Các liên kết trong menu; tô đậm mục ứng với trang đang xem.
+// Các liên kết trong menu; mục ứng với trang đang xem có gạch chỉ báo màu xanh bên dưới.
 export function HeaderNav() {
   return <HeaderNavItems pathname={usePathname()} />;
 }
@@ -12,8 +12,10 @@ export function HeaderNavItems({ pathname }: { pathname: string | null }) {
   const isActive = (href: string) =>
     pathname != null && (href === "/" ? pathname === "/" : pathname.startsWith(href));
   const linkClass = (href: string, extra: string) =>
-    `min-h-11 items-center rounded-full px-2.5 text-sm font-medium whitespace-nowrap transition sm:px-3 ${extra} ${
-      isActive(href) ? "bg-brand-50 text-brand-700" : "text-muted hover:bg-brand-50 hover:text-brand-700"
+    `relative min-h-11 items-center px-2.5 text-sm whitespace-nowrap transition-colors duration-200 sm:px-3 ${extra} ${
+      isActive(href)
+        ? "font-semibold text-brand-700 after:absolute after:inset-x-2.5 after:bottom-1 after:h-0.5 after:rounded-full after:bg-brand-600"
+        : "font-medium text-muted hover:text-brand-700"
     }`;
 
   return (
@@ -31,7 +33,7 @@ export function HeaderNavItems({ pathname }: { pathname: string | null }) {
       <Link
         href="/tao-thuc-don"
         aria-current={isActive("/tao-thuc-don") ? "page" : undefined}
-        className="ml-0.5 inline-flex min-h-11 items-center rounded-full bg-brand-600 px-3.5 text-sm font-semibold whitespace-nowrap text-white shadow-sm hover:bg-brand-700 sm:ml-1 sm:px-4"
+        className="ml-0.5 inline-flex min-h-11 items-center rounded-2xl bg-brand-600 px-3.5 text-sm font-semibold whitespace-nowrap text-white transition duration-200 hover:bg-brand-700 hover:shadow-lift sm:ml-1 sm:px-4"
       >
         Tạo thực đơn
       </Link>

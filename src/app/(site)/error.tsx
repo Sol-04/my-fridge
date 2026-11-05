@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 
 import { buttonClass, ButtonLink, EmptyState } from "@/components/ui";
+import { Icons } from "@/components/icons";
 
 // Hiện khi một trang gặp lỗi bất ngờ (thay vì màn hình trắng).
 export default function SiteError({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
@@ -13,7 +14,7 @@ export default function SiteError({ error, reset }: { error: Error & { digest?: 
   return (
     <main className="mx-auto w-full max-w-md flex-1 px-4 py-12">
       <EmptyState
-        icon="😕"
+        icon={Icons.offline}
         title="Ôi, có lỗi xảy ra"
         action={
           <div className="flex flex-col gap-3 sm:flex-row">
