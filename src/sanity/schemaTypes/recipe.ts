@@ -85,6 +85,13 @@ export const recipe = defineType({
           title: "Link trang gốc của ảnh",
           type: "url",
         }),
+        defineField({
+          name: "illustrative",
+          title: "Ảnh minh hoạ (món gần giống)",
+          description: "Bật khi ảnh chỉ gần giống món, không phải đúng công thức này — web sẽ hiện nhãn \"Ảnh minh hoạ\".",
+          type: "boolean",
+          initialValue: false,
+        }),
       ],
     }),
     defineField({
