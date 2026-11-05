@@ -251,15 +251,18 @@ Khai báo trong `@theme` ở `src/app/globals.css`, dùng qua class Tailwind (`b
 - **Footer — `SiteFooter`:** nền trắng, viền trên `border-line`; **luôn có khối "Lưu ý sức khoẻ"** (`bg-aqua-50`,
   icon `Stethoscope`).
 - **Riêng của My Fridge:**
-  - *Thẻ món* (`RecipeCard`): ảnh 16:10 (chưa có ảnh → nền `aqua-50` phẳng + icon `CookingPot`, món ăn ngoài icon `Store`);
+  - *Thẻ món* (`RecipeCard`): ảnh 16:10 (chưa có ảnh thật → **hình vẽ minh hoạ** theo loại món, `public/minh-hoa/` + `illustrationFor`, có nhãn
+    "Hình minh hoạ" `rounded-lg bg-white/90 text-xs text-muted` ở góc dưới phải);
     món ăn ngoài có nhãn **"Ăn ngoài"** `rounded-lg bg-aqua-800 text-white` + icon `Store`, hiện khẩu phần thường bán
-    thay cho thời gian nấu, nhãn bữa `rounded-lg
-    bg-white/95`, nhãn calo (`Flame`, đào) và thời gian (`Clock`, `bg-canvas`).
+    thay cho thời gian nấu; nhãn bữa `rounded-lg bg-white/95`; nhãn calo (`Flame`, đào) và thời gian (`Clock`, `bg-canvas`).
   - *Thẻ bữa ăn* (`MealEntryCard`): icon bữa trong vòng tròn `aqua-50`, "Mục tiêu ~… kcal", tên món (link), khẩu phần,
     nhãn calo/đạm/tinh bột/béo, nút "Đổi món".
   - *Tổng dinh dưỡng* (`NutritionTotals`): khối `bg-brand-600`, chữ phụ `text-brand-50`, thanh tiến độ trắng (`scaleX`).
   - *Thanh bước*: 3 vòng tròn trong thẻ trắng; bước hiện tại `bg-brand-600`, đã xong `bg-aqua-100` + icon `Check`.
-  - *Ảnh món*: chỉ ảnh thật trong Sanity; **không ảnh giả / ảnh AI**.
+  - *Ảnh món*: ảnh thật có giấy phép mở lưu trong Sanity, luôn ghi tác giả + giấy phép (hiện dưới ảnh ở trang chi tiết);
+    không có thì dùng hình vẽ minh hoạ; **không dùng ảnh AI, ảnh không rõ nguồn, link ảnh ngoài**.
+  - *Hình vẽ minh hoạ* (`public/minh-hoa/*.svg`): SVG phẳng 320×200 (16:10), nền `aqua-50`, chỉ dùng màu trong bảng màu
+    (brand, aqua, sand, canvas, đào nhạt cho đồ ăn), không gradient, không chữ, mỗi file < 5 KB.
 
 ## Nên / Không nên
 
@@ -282,7 +285,7 @@ Khai báo trong `@theme` ở `src/app/globals.css`, dùng qua class Tailwind (`b
 - ❌ Vòng xoay "đang tải" — dùng khung lấp lánh / 3 chấm.
 - ❌ Chế độ nền tối, class `dark:`.
 - ❌ Chữ tiếng Anh trên giao diện; sáo ngữ quảng cáo; lorem ipsum.
-- ❌ Ảnh giả, link ảnh ngoài có thể hỏng; hứa hẹn y khoa ("giảm 5kg/tuần").
+- ❌ Ảnh giả, ảnh AI, ảnh không rõ giấy phép, link ảnh ngoài có thể hỏng; hứa hẹn y khoa ("giảm 5kg/tuần").
 
 ## Cỡ màn hình
 
@@ -321,4 +324,4 @@ Khai báo trong `@theme` ở `src/app/globals.css`, dùng qua class Tailwind (`b
 | Bo góc nút 8px | Nút 16px, nhãn nhỏ 8px | Nút to dễ chạm trên điện thoại trông cân đối hơn |
 | Viền 1px, tối đa rộng 1280px | Giữ độ rộng theo loại trang (`max-w-md` … `max-w-5xl`) | Dòng chữ không quá dài, dễ đọc |
 | Font mono JetBrains Mono | Không dùng | Web không có mã hay số liệu kỹ thuật |
-| Ảnh minh hoạ thiên nhiên | Icon Lucide + sóng nền SVG | Không dùng ảnh giả; nhẹ, tải nhanh |
+| Ảnh minh hoạ thiên nhiên | Ảnh thật bản quyền mở (ghi tác giả) hoặc hình vẽ SVG theo loại món; icon Lucide + sóng nền SVG | Không dùng ảnh giả/AI; nhẹ, tải nhanh, đồng bộ phong cách |

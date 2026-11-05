@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-import { Icon, Icons } from "@/components/icons";
+import { illustrationFor } from "@/lib/illustrations";
 import { urlFor } from "@/sanity/lib/image";
 import type { RecipeCardData } from "@/sanity/lib/recipes";
 
@@ -10,21 +10,28 @@ type Props = {
   width: number; // chiều rộng ảnh tải về (px)
   sizes: string;
   preload?: boolean; // tải trước (dùng cho ảnh lớn đầu trang)
-  eatOut?: boolean; // món ăn ngoài → icon cửa hàng thay cho nồi
 };
 
-// Ảnh món ăn tỉ lệ 16:10. Món chưa có ảnh sẽ hiện ô màu xanh nước nhạt với icon nồi.
-export function RecipeImage({ image, name, width, sizes, preload, eatOut }: Props) {
+// Ảnh món ăn tỉ lệ 16:10. Món chưa có ảnh thật → hình vẽ minh hoạ theo loại món (có nhãn "Hình minh hoạ").
+export function RecipeImage({ image, name, width, sizes, preload }: Props) {
   const height = Math.round((width * 10) / 16);
 
   if (!image) {
     return (
-      <div
-        className="flex aspect-[16/10] w-full items-center justify-center bg-aqua-50 text-aqua-800"
-        role="img"
-        aria-label={`${name} (chưa có ảnh)`}
-      >
-        <Icon icon={eatOut ? Icons.eatOut : Icons.dish} size={44} strokeWidth={1.25} />
+      <div className="relative">
+        <Image
+          src={illustrationFor(name)}
+          alt={`Hình minh hoạ: ${name}`}
+          width={320}
+          height={200}
+          sizes={sizes}
+          preload={preload}
+          unoptimized
+          className="aspect-[16/10] w-full bg-aqua-50 object-cover"
+        />
+        <span className="absolute right-3 bottom-3 rounded-lg bg-white/90 px-2 py-0.5 text-xs font-medium text-muted">
+          Hình minh hoạ
+        </span>
       </div>
     );
   }
@@ -33,6 +40,7 @@ export function RecipeImage({ image, name, width, sizes, preload, eatOut }: Prop
     <Image
       src={urlFor(image).width(width).height(height).fit("crop").auto("format").url()}
       alt={image.alt || name}
+      title={image.credit ? `Ảnh: ${image.credit}${image.license ? ` (${image.license})` : ""}` : undefined}
       width={width}
       height={height}
       sizes={sizes}

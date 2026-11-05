@@ -68,6 +68,23 @@ export const recipe = defineType({
           title: "Mô tả ảnh (cho người khiếm thị)",
           type: "string",
         }),
+        defineField({
+          name: "credit",
+          title: "Tác giả ảnh",
+          description: "Bắt buộc ghi khi dùng ảnh có giấy phép CC BY / CC BY-SA. Ảnh tự chụp: ghi tên bạn.",
+          type: "string",
+        }),
+        defineField({
+          name: "license",
+          title: "Giấy phép ảnh",
+          description: "Ví dụ: CC BY-SA 4.0, CC0, Ảnh tự chụp",
+          type: "string",
+        }),
+        defineField({
+          name: "sourceUrl",
+          title: "Link trang gốc của ảnh",
+          type: "url",
+        }),
       ],
     }),
     defineField({
