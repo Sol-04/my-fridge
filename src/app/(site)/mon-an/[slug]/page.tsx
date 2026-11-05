@@ -158,6 +158,7 @@ export default async function RecipePage({ params }: PageProps<"/mon-an/[slug]">
             >
               <Icon icon={Icons.nearby} size={20} />
               Tìm quán gần bạn trên Google Maps
+              <span className="sr-only"> (mở trong tab mới)</span>
             </a>
             <p className="mt-2 text-sm text-muted">
               Google Maps dùng vị trí trên máy bạn để tìm quán gần nhất. My Fridge không lưu vị trí của bạn.
