@@ -56,6 +56,7 @@ Website giúp người Việt **chọn thực phẩm đang có** (trong tủ l�
 - `data/eatout.ts` — 32 món **ăn ngoài / mua sẵn** (phở, bún, cơm tấm, bánh mì, đồ cửa hàng tiện lợi…): không có
   công thức, calo **ước tính** cho 1 phần thường bán, kèm `servingNote`, `healthyTip`, `whereToBuy`.
 - `scripts/import-recipes.ts` — script nhập món vào Sanity.
+- `data/image-credits.ts` — danh sách nguồn ảnh thật (tác giả, giấy phép, link Wikimedia Commons) đã gắn vào món trên Sanity.
 - `public/` — ảnh, icon tĩnh.
 - `public/minh-hoa/` — 14 hình vẽ SVG minh hoạ theo loại món (tô phở, bún trộn, đĩa cơm, canh + cơm, cháo, bánh mì, xôi,
   cuốn, salad, sinh tố, trứng, khoai, bánh xèo, món mặn chung).
