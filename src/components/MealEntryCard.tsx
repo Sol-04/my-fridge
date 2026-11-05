@@ -12,10 +12,12 @@ type Props = {
   entry: MealEntry | null;
   emptyText?: string;
   children?: ReactNode; // nút/ghi chú thêm (ví dụ "Đổi món")
+  toggle?: ReactNode; // công tắc "Tự nấu / Ăn ngoài" (chỉ ở bước 3)
 };
 
 // Thẻ 1 bữa ăn: tên món, khẩu phần, calo. Dùng ở bước 3 và trang /thuc-don/[id].
-export function MealEntryCard({ meal, title, target, entry, emptyText, children }: Props) {
+export function MealEntryCard({ meal, title, target, entry, emptyText, children, toggle }: Props) {
+  const eatOut = entry?.kind === "eatout";
   return (
     <section className="rounded-3xl border border-line bg-white p-5 shadow-soft">
       <div className="flex items-center justify-between gap-2">
@@ -30,6 +32,8 @@ export function MealEntryCard({ meal, title, target, entry, emptyText, children 
         )}
       </div>
 
+      {toggle}
+
       {entry ? (
         <>
           <Link
@@ -38,8 +42,20 @@ export function MealEntryCard({ meal, title, target, entry, emptyText, children 
           >
             {entry.name}
           </Link>
-          <p className="text-sm text-muted">
-            {formatServings(entry.servings)} khẩu phần ≈ {Math.round(entry.serving_grams * entry.servings)} g
+          <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted">
+            {eatOut ? (
+              <>
+                <span className="inline-flex items-center gap-1 rounded-lg bg-aqua-50 px-2 py-0.5 text-xs font-semibold text-aqua-800">
+                  <Icon icon={Icons.eatOut} size={14} />
+                  Ăn ngoài
+                </span>
+                {entry.serving_note ?? "1 phần"} · calo ước tính
+              </>
+            ) : (
+              <>
+                {formatServings(entry.servings)} khẩu phần ≈ {Math.round(entry.serving_grams * entry.servings)} g
+              </>
+            )}
           </p>
           <div className="mt-3 flex flex-wrap gap-2 text-sm">
             <span className="inline-flex items-center gap-1 rounded-lg bg-accent-50 px-2 py-1 font-bold text-accent-500">

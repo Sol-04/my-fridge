@@ -51,7 +51,10 @@ Website giúp người Việt **chọn thực phẩm đang có** (trong tủ l�
   - Code của trang web KHÔNG import từ `schemaTypes/` (sẽ kéo cả gói Studio nặng vào trang).
 - `sanity.config.ts`, `sanity.cli.ts` — cấu hình Studio và lệnh `npx sanity`.
 - `data/nutrition.ts` — bảng dinh dưỡng /100 g, là **danh sách tên nguyên liệu chuẩn**.
-- `data/recipes.ts` — 24 món mẫu; calo/đạm/tinh bột/béo được tính tự động từ số gram.
+- `data/recipes.ts` (24 món đầu) + `data/recipes-more.ts` (36 món thêm) — 60 món **tự nấu** (20 mỗi bữa);
+  calo/đạm/tinh bột/béo được tính tự động từ số gram.
+- `data/eatout.ts` — 32 món **ăn ngoài / mua sẵn** (phở, bún, cơm tấm, bánh mì, đồ cửa hàng tiện lợi…): không có
+  công thức, calo **ước tính** cho 1 phần thường bán, kèm `servingNote`, `healthyTip`, `whereToBuy`.
 - `scripts/import-recipes.ts` — script nhập món vào Sanity.
 - `public/` — ảnh, icon tĩnh.
 - `.env.example` — mẫu tên biến môi trường (KHÔNG chứa giá trị thật).
@@ -62,9 +65,13 @@ Website giúp người Việt **chọn thực phẩm đang có** (trong tủ l�
 - Loại nội dung `recipe` ("Món ăn"): `name`, `slug`, `image`, `description`,
   `meals` (`breakfast`/`lunch`/`dinner`), `ingredients[] {name, grams}`, `servingGrams`,
   `calories`, `protein`, `carbs`, `fat`, `cookMinutes`, `steps[]`.
+- Trường `kind`: `home` (Tự nấu, mặc định) hoặc `eatout` (Ăn ngoài). Món ăn ngoài không có `ingredients`/`steps`/
+  `cookMinutes`, thay bằng `servingNote`, `healthyTip`, `whereToBuy`. Truy vấn dùng `coalesce(kind, "home")`.
 - Mỗi món có ID cố định `recipe-<slug>` → nhập lại sẽ ghi đè, không trùng.
 - Thêm món mới: thêm vào `data/recipes.ts` (chỉ dùng tên nguyên liệu có trong `data/nutrition.ts`),
-  rồi chạy `npm run import:recipes`.
+  rồi chạy `npm run import:recipes`. Món ăn ngoài thêm vào `data/eatout.ts` (ghi thẳng calo + các chất).
+- Trang tạo thực đơn: mỗi bữa chọn "Tự nấu" hoặc "Ăn ngoài". Món ăn ngoài **cố định 1 phần**
+  (`EATOUT_SERVINGS`); `rebalanceTargets` chia lại calo còn lại cho các bữa tự nấu để tổng ngày sát mục tiêu.
 - Studio tại `/studio` cần thêm địa chỉ web vào CORS origins (sanity.io/manage → API).
 
 ## Supabase (đăng nhập + lưu thực đơn)
@@ -97,7 +104,7 @@ Website giúp người Việt **chọn thực phẩm đang có** (trong tủ l�
 - `npm run dev` — chạy thử trên máy tại http://localhost:3000 (Studio ở /studio)
 - `npm run build` — build để kiểm tra lỗi.
 - `npm run lint` — kiểm tra lỗi cách viết code.
-- `npm run import:recipes` — nhập món trong `data/recipes.ts` vào Sanity (cần token ghi).
+- `npm run import:recipes` — nhập toàn bộ món (tự nấu + ăn ngoài) vào Sanity (cần token ghi).
 
 ## Quy tắc giao diện
 - Xem đầy đủ trong **`DESIGN.md`** (nguồn chuẩn duy nhất về giao diện — đổi màu/khối dùng chung thì cập nhật cả file đó).

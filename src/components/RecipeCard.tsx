@@ -7,6 +7,7 @@ import { mealLabel } from "@/sanity/meals";
 
 // Thẻ món ăn: ảnh, tên, calo, thời gian nấu. Bấm vào để xem chi tiết.
 export function RecipeCard({ recipe }: { recipe: RecipeCardData }) {
+  const eatOut = recipe.kind === "eatout";
   return (
     <Link
       href={`/mon-an/${recipe.slug}`}
@@ -16,10 +17,17 @@ export function RecipeCard({ recipe }: { recipe: RecipeCardData }) {
         <RecipeImage
           image={recipe.image}
           name={recipe.name}
+          eatOut={eatOut}
           width={600}
           sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
         />
         <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
+          {eatOut && (
+            <span className="inline-flex items-center gap-1 rounded-lg bg-aqua-800 px-2 py-1 text-xs font-semibold text-white">
+              <Icon icon={Icons.eatOut} size={14} />
+              Ăn ngoài
+            </span>
+          )}
           {recipe.meals?.map((m) => (
             <span key={m} className="rounded-lg bg-white/95 px-2 py-1 text-xs font-semibold text-brand-700">
               {mealLabel(m)}
@@ -36,10 +44,17 @@ export function RecipeCard({ recipe }: { recipe: RecipeCardData }) {
             <Icon icon={Icons.calories} size={16} />
             {recipe.calories} kcal
           </span>
-          <span className="inline-flex items-center gap-1 rounded-lg bg-canvas px-2 py-1 font-medium text-muted">
-            <Icon icon={Icons.time} size={16} />
-            {recipe.cookMinutes} phút
-          </span>
+          {eatOut ? (
+            <span className="inline-flex items-center gap-1 rounded-lg bg-canvas px-2 py-1 font-medium text-muted">
+              <Icon icon={Icons.eatOut} size={16} />
+              {recipe.servingNote ?? "1 phần"}
+            </span>
+          ) : (
+            <span className="inline-flex items-center gap-1 rounded-lg bg-canvas px-2 py-1 font-medium text-muted">
+              <Icon icon={Icons.time} size={16} />
+              {recipe.cookMinutes} phút
+            </span>
+          )}
         </div>
       </div>
     </Link>

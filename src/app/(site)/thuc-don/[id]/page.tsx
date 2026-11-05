@@ -86,12 +86,19 @@ async function MealPlanContent({ params }: { params: PageProps<"/thuc-don/[id]">
             entry={plan[meal]}
             emptyText="Không có món cho bữa này."
           >
+            {plan[meal]?.kind === "eatout" && plan[meal]?.healthy_tip && (
+              <div className="mt-3">
+                <Notice tone="info" title="Mẹo gọi món lành mạnh hơn">
+                  {plan[meal]!.healthy_tip}
+                </Notice>
+              </div>
+            )}
             {plan[meal] && (
               <Link
                 href={`/mon-an/${plan[meal]!.slug}`}
                 className="mt-3 inline-flex min-h-11 items-center text-sm font-semibold text-brand-700 hover:underline"
               >
-                Xem cách nấu →
+                {plan[meal]!.kind === "eatout" ? "Xem chi tiết món →" : "Xem cách nấu →"}
               </Link>
             )}
           </MealEntryCard>

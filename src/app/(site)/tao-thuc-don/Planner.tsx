@@ -19,8 +19,11 @@ import {
   MEAL_ORDER,
   mealTargets,
   parseUserInput,
+  EATOUT_SERVINGS,
   portionFor,
+  rankEatOut,
   rankRecipes,
+  rebalanceTargets,
   sumMeals,
   type Activity,
   type Gender,
@@ -45,7 +48,13 @@ type Draft = {
   goal: Goal;
   selected: string[];
   choiceIndex: Record<Meal, number>;
+  mode?: Record<Meal, MealMode>; // tự nấu / ăn ngoài (bản lưu tạm cũ có thể chưa có)
+  eatIndex?: Record<Meal, number>;
 };
+
+type MealMode = "home" | "eatout";
+const ZERO: Record<Meal, number> = { breakfast: 0, lunch: 0, dinner: 0 };
+const ALL_HOME: Record<Meal, MealMode> = { breakfast: "home", lunch: "home", dinner: "home" };
 
 export function Planner({
   recipes,
@@ -89,15 +98,33 @@ export function Planner({
       return next;
     });
 
-  // Bước 3
-  const targets = target ? mealTargets(target) : null;
-  // Danh sách món gợi ý cho từng bữa (chỉ ~24 món nên tính lại mỗi lần vẫn rất nhanh)
+  // Bước 3 — mỗi bữa chọn "Tự nấu" (từ đồ trong tủ lạnh) hoặc "Ăn ngoài" (món mua sẵn, cố định 1 phần)
+  const [mode, setMode] = useState<Record<Meal, MealMode>>(ALL_HOME);
+  const [choiceIndex, setChoiceIndex] = useState<Record<Meal, number>>(ZERO);
+  const [eatIndex, setEatIndex] = useState<Record<Meal, number>>(ZERO);
+
+  // 1) Chọn món ăn ngoài trước (theo mục tiêu calo bình thường của bữa)
+  const baseTargets = target ? mealTargets(target) : null;
+  const eatLists = baseTargets
+    ? (Object.fromEntries(MEAL_ORDER.map((m) => [m, rankEatOut(recipes, m, baseTargets[m])])) as Record<Meal, PlannerRecipe[]>)
+    : null;
+  const eatPick = (m: Meal) => {
+    const list = eatLists?.[m] ?? [];
+    return mode[m] === "eatout" && list.length > 0 ? list[eatIndex[m] % list.length] : null;
+  };
+  // 2) Calo cố định của các bữa ăn ngoài → chia lại phần còn lại cho các bữa tự nấu
+  const targets = target
+    ? rebalanceTargets(
+        target,
+        Object.fromEntries(MEAL_ORDER.flatMap((m) => (eatPick(m) ? [[m, eatPick(m)!.calories * EATOUT_SERVINGS]] : []))),
+      )
+    : null;
+  // 3) Món tự nấu gợi ý cho từng bữa (theo mục tiêu đã chia lại)
   const ranked = targets
     ? (Object.fromEntries(
         MEAL_ORDER.map((m) => [m, rankRecipes(recipes, m, selected, targets[m])]),
       ) as Record<Meal, ReturnType<typeof rankRecipes>>)
     : null;
-  const [choiceIndex, setChoiceIndex] = useState<Record<Meal, number>>({ breakfast: 0, lunch: 0, dinner: 0 });
   const [restored, setRestored] = useState(false);
 
   // Quay lại sau khi đăng nhập: khôi phục thực đơn đang làm và mở lại bước 3
@@ -122,6 +149,8 @@ export function Planner({
     setGoal(draft.goal);
     setSelected(new Set(draft.selected));
     setChoiceIndex(draft.choiceIndex);
+    if (draft.mode) setMode(draft.mode);
+    if (draft.eatIndex) setEatIndex(draft.eatIndex);
     setStep(2);
     setRestored(true);
     /* eslint-enable react-hooks/set-state-in-effect */
@@ -129,7 +158,7 @@ export function Planner({
 
   // Chưa đăng nhập: lưu tạm thực đơn rồi chuyển sang trang đăng nhập
   const goLoginToSave = () => {
-    const draft: Draft = { gender, age, height, weight, activity, goal, selected: [...selected], choiceIndex };
+    const draft: Draft = { gender, age, height, weight, activity, goal, selected: [...selected], choiceIndex, mode, eatIndex };
     try {
       sessionStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
     } catch {
@@ -139,16 +168,33 @@ export function Planner({
   };
 
   const plan = MEAL_ORDER.map((meal) => {
+    if (mode[meal] === "eatout") {
+      const out = eatPick(meal);
+      return {
+        meal,
+        mode: "eatout" as const,
+        count: eatLists?.[meal]?.length ?? 0,
+        index: eatIndex[meal],
+        pick: null,
+        entry: out ? buildMealEntry(out, EATOUT_SERVINGS) : null,
+      };
+    }
     const list = ranked?.[meal] ?? [];
     const pick = list.length > 0 ? list[choiceIndex[meal] % list.length] : null;
     const servings = pick && targets ? portionFor(pick.recipe.calories, targets[meal]) : 1;
     return {
       meal,
+      mode: "home" as const,
       count: list.length,
+      index: choiceIndex[meal],
       pick,
       entry: pick ? buildMealEntry(pick.recipe, servings) : null,
     };
   });
+  const swap = (meal: Meal) =>
+    mode[meal] === "eatout"
+      ? setEatIndex((c) => ({ ...c, [meal]: c[meal] + 1 }))
+      : setChoiceIndex((c) => ({ ...c, [meal]: c[meal] + 1 }));
   const totals = sumMeals(plan.map((p) => p.entry));
 
   // Lưu
@@ -163,7 +209,10 @@ export function Planner({
           userInput,
           selectedFoods: [...selected],
           meals: Object.fromEntries(
-            plan.map((p) => [p.meal, p.entry ? { recipeId: p.entry.recipe_id, servings: p.entry.servings } : null]),
+            plan.map((p) => [
+              p.meal,
+              p.entry ? { recipeId: p.entry.recipe_id, servings: p.entry.servings, kind: p.mode } : null,
+            ]),
           ),
         });
         // Nếu lưu thành công, máy chủ tự chuyển trang; chỉ khi lỗi mới có kết quả trả về.
@@ -340,7 +389,8 @@ export function Planner({
         <div className="animate-enter mt-6 space-y-4">
           <h2 className="text-2xl font-bold tracking-tight text-ink">Thực đơn của bạn</h2>
           <p className="text-sm text-muted">
-            Khẩu phần đã được điều chỉnh để vừa {target} kcal/ngày. Bấm “Đổi món” nếu muốn món khác.
+            Khẩu phần đã được điều chỉnh để vừa {target} kcal/ngày. Bấm “Đổi món” nếu muốn món khác, hoặc chọn
+            “Ăn ngoài” cho bữa bạn mua sẵn — các bữa còn lại sẽ tự cân lại calo.
           </p>
 
           {!plan.some((p) => p.entry) && (
@@ -364,21 +414,47 @@ export function Planner({
               title={mealLabel(p.meal)}
               target={targets[p.meal]}
               entry={p.entry}
-              emptyText="Chưa có món phù hợp với thực phẩm bạn chọn. Hãy quay lại bước 2 và chọn thêm."
+              emptyText={
+                p.mode === "eatout"
+                  ? "Chưa có món ăn ngoài cho bữa này. Bạn chọn “Tự nấu” nhé."
+                  : "Chưa có món phù hợp với thực phẩm bạn chọn. Hãy quay lại bước 2 và chọn thêm."
+              }
+              toggle={
+                <div role="group" aria-label={`Cách ăn ${mealLabel(p.meal).toLowerCase()}`} className="mt-3 grid grid-cols-2 gap-2">
+                  {(
+                    [
+                      { value: "home", label: "Tự nấu", icon: Icons.dish },
+                      { value: "eatout", label: "Ăn ngoài", icon: Icons.eatOut },
+                    ] as const
+                  ).map((o) => (
+                    <Chip key={o.value} active={p.mode === o.value} onClick={() => setMode((m) => ({ ...m, [p.meal]: o.value }))}>
+                      <Icon icon={o.icon} size={18} />
+                      {o.label}
+                    </Chip>
+                  ))}
+                </div>
+              }
             >
               {p.pick && p.pick.missing.length > 0 && (
                 <div className="mt-3">
                   <Notice tone="warning">Cần mua thêm: {p.pick.missing.join(", ")}</Notice>
                 </div>
               )}
+              {p.mode === "eatout" && p.entry?.healthy_tip && (
+                <div className="mt-3">
+                  <Notice tone="info" title="Mẹo gọi món lành mạnh hơn">
+                    {p.entry.healthy_tip}
+                  </Notice>
+                </div>
+              )}
               {p.count > 1 && (
                 <button
                   type="button"
-                  onClick={() => setChoiceIndex((c) => ({ ...c, [p.meal]: c[p.meal] + 1 }))}
+                  onClick={() => swap(p.meal)}
                   className={buttonClass("secondary", "md", "mt-3 w-full sm:w-auto")}
                 >
                   <Icon icon={Icons.swap} size={18} />
-                  Đổi món ({(choiceIndex[p.meal] % p.count) + 1}/{p.count})
+                  Đổi món ({(p.index % p.count) + 1}/{p.count})
                 </button>
               )}
             </MealEntryCard>
@@ -420,7 +496,10 @@ export function Planner({
           <button
             type="button"
             onClick={() => {
-              if (step === 1) setChoiceIndex({ breakfast: 0, lunch: 0, dinner: 0 });
+              if (step === 1) {
+                setChoiceIndex(ZERO);
+                setEatIndex(ZERO);
+              }
               goTo(step + 1);
             }}
             disabled={!canNext}

@@ -1,10 +1,11 @@
-// 24 món ăn Việt lành mạnh, dễ nấu: 8 sáng, 8 trưa, 8 tối.
+// Món ăn Việt lành mạnh, dễ nấu (TỰ NẤU): 24 món gốc ở file này + 36 món ở data/recipes-more.ts.
 // Calo / đạm / tinh bột / béo được TÍNH TỰ ĐỘNG từ số gram (xem buildRecipeDocument bên dưới).
 import { NUTRITION, type IngredientName } from "./nutrition";
+import { MORE_RECIPES } from "./recipes-more";
 
 type Meal = "breakfast" | "lunch" | "dinner";
 
-type RecipeInput = {
+export type RecipeInput = {
   slug: string;
   name: string;
   description: string;
@@ -544,6 +545,7 @@ export function buildRecipeDocument(r: RecipeInput) {
   return {
     _id: `recipe-${r.slug}`,
     _type: "recipe",
+    kind: "home",
     name: r.name,
     slug: { _type: "slug", current: r.slug },
     description: r.description,
@@ -564,4 +566,5 @@ export function buildRecipeDocument(r: RecipeInput) {
   };
 }
 
-export const RECIPE_DOCUMENTS = RECIPES.map(buildRecipeDocument);
+export const ALL_HOME_RECIPES: RecipeInput[] = [...RECIPES, ...MORE_RECIPES];
+export const RECIPE_DOCUMENTS = ALL_HOME_RECIPES.map(buildRecipeDocument);

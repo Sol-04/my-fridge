@@ -64,7 +64,9 @@ function Waves() {
 export default async function Home() {
   const recipes = await getRecipes();
   // Món nổi bật: mỗi bữa lấy 1 món
-  const featured = MEAL_OPTIONS.map((m) => recipes.find((r) => r.meals?.includes(m.value))).filter(
+  const homeCount = recipes.filter((r) => r.kind !== "eatout").length;
+  const eatOutCount = recipes.length - homeCount;
+  const featured = MEAL_OPTIONS.map((m) => recipes.find((r) => r.kind !== "eatout" && r.meals?.includes(m.value))).filter(
     (r): r is NonNullable<typeof r> => Boolean(r),
   );
 
@@ -96,7 +98,9 @@ export default async function Home() {
               </ButtonLink>
             </div>
             <p className="mt-4 text-sm text-muted">
-              Chỉ mất khoảng 1 phút · {recipes.length || "Nhiều"} món Việt dễ nấu
+              Chỉ mất khoảng 1 phút
+              {homeCount > 0 && ` · ${homeCount} món tự nấu`}
+              {eatOutCount > 0 && ` · ${eatOutCount} món ăn ngoài`}
             </p>
           </div>
 

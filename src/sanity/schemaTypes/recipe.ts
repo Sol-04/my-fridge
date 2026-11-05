@@ -12,6 +12,16 @@ const gramField = (name: string, title: string, description?: string) =>
     validation: (rule) => rule.required().min(0),
   });
 
+// Món "ăn ngoài / mua sẵn" không cần nguyên liệu, thời gian nấu, các bước.
+// Món cũ chưa có `kind` được coi là "Tự nấu".
+type Ctx = { document?: unknown };
+const isEatOut = ({ document }: Ctx) => (document as { kind?: string } | undefined)?.kind === "eatout";
+const requiredForHome = (message: string) => (value: unknown, ctx: Ctx) => {
+  if (isEatOut(ctx)) return true;
+  const empty = value == null || (Array.isArray(value) && value.length === 0);
+  return empty ? message : true;
+};
+
 // Loại nội dung "Món ăn"
 export const recipe = defineType({
   name: "recipe",
@@ -31,6 +41,20 @@ export const recipe = defineType({
       description: "Bấm “Generate” để tạo tự động từ tên món.",
       type: "slug",
       options: { source: "name", maxLength: 96 },
+      validation: (rule) => rule.required(),
+    }),
+    defineField({
+      name: "kind",
+      title: "Loại món",
+      type: "string",
+      options: {
+        list: [
+          { title: "Tự nấu (có công thức)", value: "home" },
+          { title: "Ăn ngoài / mua sẵn (không có công thức)", value: "eatout" },
+        ],
+        layout: "radio",
+      },
+      initialValue: "home",
       validation: (rule) => rule.required(),
     }),
     defineField({
@@ -60,6 +84,30 @@ export const recipe = defineType({
       of: [defineArrayMember({ type: "string" })],
       options: { list: [...MEAL_OPTIONS], layout: "grid" },
       validation: (rule) => rule.required().min(1).unique(),
+    }),
+    defineField({
+      name: "servingNote",
+      title: "Khẩu phần thường bán",
+      description: "Ví dụ: 1 tô vừa (~550 g)",
+      type: "string",
+      hidden: ({ document }) => document?.kind !== "eatout",
+      validation: (rule) =>
+        rule.custom((v, ctx) => (!isEatOut(ctx) || v ? true : "Món ăn ngoài cần ghi khẩu phần thường bán")),
+    }),
+    defineField({
+      name: "healthyTip",
+      title: "Mẹo gọi món lành mạnh hơn",
+      description: "Ví dụ: Xin ít bánh, thêm rau, không uống hết nước béo",
+      type: "text",
+      rows: 2,
+      hidden: ({ document }) => document?.kind !== "eatout",
+    }),
+    defineField({
+      name: "whereToBuy",
+      title: "Thường bán ở",
+      description: "Ví dụ: Quán phở, cửa hàng tiện lợi",
+      type: "string",
+      hidden: ({ document }) => document?.kind !== "eatout",
     }),
     defineField({
       name: "ingredients",
@@ -93,7 +141,8 @@ export const recipe = defineType({
           },
         }),
       ],
-      validation: (rule) => rule.required().min(1),
+      hidden: ({ document }) => document?.kind === "eatout",
+      validation: (rule) => rule.custom(requiredForHome("Món tự nấu cần ít nhất 1 nguyên liệu")),
     }),
     gramField("servingGrams", "Khối lượng 1 khẩu phần (gram)"),
     defineField({
@@ -109,14 +158,16 @@ export const recipe = defineType({
       name: "cookMinutes",
       title: "Thời gian nấu (phút)",
       type: "number",
-      validation: (rule) => rule.required().min(0),
+      hidden: ({ document }) => document?.kind === "eatout",
+      validation: (rule) => rule.min(0).custom(requiredForHome("Món tự nấu cần thời gian nấu")),
     }),
     defineField({
       name: "steps",
       title: "Các bước chế biến",
       type: "array",
       of: [defineArrayMember({ type: "text", rows: 2 })],
-      validation: (rule) => rule.required().min(1),
+      hidden: ({ document }) => document?.kind === "eatout",
+      validation: (rule) => rule.custom(requiredForHome("Món tự nấu cần ít nhất 1 bước")),
     }),
   ],
   preview: {
@@ -124,15 +175,16 @@ export const recipe = defineType({
       title: "name",
       calories: "calories",
       meals: "meals",
+      kind: "kind",
       media: "image",
     },
-    prepare: ({ title, calories, meals, media }) => {
+    prepare: ({ title, calories, meals, kind, media }) => {
       const mealLabels = ((meals as string[] | undefined) ?? [])
         .map(mealLabel)
         .join(", ");
       return {
         title,
-        subtitle: [calories != null ? `${calories} kcal` : null, mealLabels]
+        subtitle: [kind === "eatout" ? "Ăn ngoài" : null, calories != null ? `${calories} kcal` : null, mealLabels]
           .filter(Boolean)
           .join(" · "),
         media,
