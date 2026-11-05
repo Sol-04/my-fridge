@@ -7,6 +7,7 @@ import { PasswordField, SubmitButton, TextField } from "@/components/form";
 import { Notice } from "@/components/ui";
 
 import { signIn, type AuthFormState } from "../actions";
+import { Icons } from "@/components/icons";
 
 export function SignInForm({ next, linkError }: { next: string; linkError?: boolean }) {
   const [state, action] = useActionState<AuthFormState, FormData>(signIn, {});
@@ -14,7 +15,7 @@ export function SignInForm({ next, linkError }: { next: string; linkError?: bool
     <form action={action} noValidate className="space-y-4">
       <input type="hidden" name="next" value={next} />
       {linkError && !state.error && (
-        <Notice tone="warning" icon="⏰" title="Link đã hết hạn hoặc đã được dùng">
+        <Notice tone="warning" icon={Icons.expired} title="Link đã hết hạn hoặc đã được dùng">
           Bạn hãy đăng nhập lại, hoặc dùng “Quên mật khẩu” để nhận link mới.
         </Notice>
       )}

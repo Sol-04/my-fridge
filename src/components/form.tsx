@@ -4,10 +4,13 @@
 import { useId, useState, type InputHTMLAttributes, type ReactNode } from "react";
 import { useFormStatus } from "react-dom";
 
-import { buttonClass } from "@/components/ui";
+import { buttonClass, PendingDots } from "@/components/ui";
 
+// Ô nhập: viền 1px, bo 16px, khi gõ có vòng sáng 2px màu xanh (cách 2px)
 const inputBase =
-  "min-h-14 w-full rounded-2xl border-2 bg-white px-4 text-base text-ink outline-none transition placeholder:text-muted/60 focus:border-brand-500";
+  "min-h-14 w-full rounded-2xl border bg-white px-4 text-base text-ink outline-none transition duration-200 placeholder:text-muted/60 focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 focus:ring-offset-canvas";
+const inputOk = "border-line";
+const inputErr = "border-red-300 bg-red-50";
 
 // Ô chọn dạng nút (giới tính, mục tiêu, thực phẩm...)
 export function Chip({
@@ -15,21 +18,25 @@ export function Chip({
   onClick,
   children,
   className = "",
+  stacked = false,
 }: {
   active: boolean;
   onClick: () => void;
   children: ReactNode;
   className?: string;
+  stacked?: boolean; // xếp dọc: tiêu đề + dòng mô tả nhỏ, căn trái
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
       aria-pressed={active}
-      className={`min-h-12 rounded-2xl border-2 px-4 text-sm font-semibold transition active:scale-[0.98] ${
+      className={`min-h-12 rounded-2xl border-[1.5px] px-4 text-sm font-semibold transition duration-200 active:translate-y-px ${
+        stacked ? "flex flex-col items-start justify-center py-2 text-left" : "inline-flex items-center justify-center gap-1.5"
+      } ${
         active
-          ? "border-brand-600 bg-brand-600 text-white shadow-sm"
-          : "border-brand-100 bg-white text-ink hover:border-brand-300"
+          ? "border-brand-600 bg-brand-600 text-white"
+          : "border-line bg-white text-ink hover:border-brand-300 hover:bg-brand-50"
       } ${className}`}
     >
       {children}
@@ -67,7 +74,7 @@ export function NumberField({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           aria-invalid={invalid}
-          className={`${inputBase} text-lg font-semibold ${invalid ? "border-red-300 bg-red-50" : "border-brand-100"}`}
+          className={`${inputBase} text-lg font-semibold ${invalid ? inputErr : inputOk}`}
         />
         <span className="w-8 shrink-0 text-sm text-muted">{unit}</span>
       </div>
@@ -98,7 +105,7 @@ export function TextField({ label, error, hint, className = "", ...props }: Text
         id={id}
         aria-invalid={!!error}
         aria-describedby={describedBy}
-        className={`mt-1 ${inputBase} ${error ? "border-red-300 bg-red-50" : "border-brand-100"} ${className}`}
+        className={`mt-1 ${inputBase} ${error ? inputErr : inputOk} ${className}`}
         {...props}
       />
       {error ? (
@@ -130,7 +137,7 @@ export function PasswordField(props: Omit<TextFieldProps, "type">) {
           type={show ? "text" : "password"}
           aria-invalid={!!error}
           aria-describedby={describedBy}
-          className={`${inputBase} pr-20 ${error ? "border-red-300 bg-red-50" : "border-brand-100"} ${className}`}
+          className={`${inputBase} pr-20 ${error ? inputErr : inputOk} ${className}`}
           {...rest}
         />
         <button
@@ -138,7 +145,7 @@ export function PasswordField(props: Omit<TextFieldProps, "type">) {
           onClick={() => setShow((s) => !s)}
           aria-pressed={show}
           aria-label={show ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
-          className="absolute inset-y-1 right-1 min-w-16 rounded-xl px-3 text-sm font-semibold text-brand-700 hover:bg-brand-50"
+          className="absolute inset-y-1 right-1 inline-flex min-w-16 items-center justify-center gap-1 rounded-xl px-3 text-sm font-semibold text-brand-700 hover:bg-brand-50"
         >
           {show ? "Ẩn" : "Hiện"}
         </button>
@@ -163,8 +170,8 @@ export function SubmitButton({ children, pendingText = "Đang xử lý…", clas
     <button type="submit" disabled={pending} className={buttonClass("primary", "lg", `w-full ${className}`)}>
       {pending ? (
         <>
-          <span aria-hidden className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white motion-reduce:animate-none" />
           {pendingText}
+          <PendingDots />
         </>
       ) : (
         children

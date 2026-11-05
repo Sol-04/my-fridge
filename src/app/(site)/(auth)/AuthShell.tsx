@@ -1,10 +1,11 @@
 import type { ReactNode } from "react";
 
-import { Skeleton } from "@/components/ui";
+import { Icon, type LucideIcon } from "@/components/icons";
+import { cardClass, Skeleton } from "@/components/ui";
 
 // Khung chung cho các trang đăng nhập / đăng ký: thẻ trắng bo góc ở giữa màn hình.
 export function AuthShell({ icon, title, subtitle, children, footer }: {
-  icon: string;
+  icon: LucideIcon;
   title: string;
   subtitle?: string;
   children: ReactNode;
@@ -12,11 +13,11 @@ export function AuthShell({ icon, title, subtitle, children, footer }: {
 }) {
   return (
     <main className="mx-auto w-full max-w-md flex-1 px-4 py-8 sm:py-12">
-      <div className="rounded-[2rem] bg-white p-6 shadow-sm ring-1 ring-brand-100 sm:p-8">
-        <span aria-hidden className="flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-50 text-3xl">
-          {icon}
+      <div className={`animate-enter p-6 sm:p-8 ${cardClass}`}>
+        <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-aqua-50 text-aqua-800">
+          <Icon icon={icon} size={28} strokeWidth={1.5} />
         </span>
-        <h1 className="mt-4 text-2xl font-extrabold tracking-tight text-ink">{title}</h1>
+        <h1 className="mt-4 text-2xl font-bold tracking-tight text-ink">{title}</h1>
         {subtitle && <p className="mt-1 text-muted">{subtitle}</p>}
         <div className="mt-6">{children}</div>
       </div>

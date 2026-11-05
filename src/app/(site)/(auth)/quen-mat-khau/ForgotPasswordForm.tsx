@@ -6,12 +6,13 @@ import { SubmitButton, TextField } from "@/components/form";
 import { Notice } from "@/components/ui";
 
 import { requestPasswordReset, type AuthFormState } from "../actions";
+import { Icons } from "@/components/icons";
 
 export function ForgotPasswordForm() {
   const [state, action] = useActionState<AuthFormState, FormData>(requestPasswordReset, {});
   if (state.success) {
     return (
-      <Notice tone="success" icon="📬" title="Đã gửi yêu cầu">
+      <Notice tone="success" icon={Icons.mail} title="Đã gửi yêu cầu">
         {state.success}
       </Notice>
     );

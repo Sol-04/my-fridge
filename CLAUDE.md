@@ -1,4 +1,5 @@
 @AGENTS.md
+@DESIGN.md
 
 # My Fridge
 
@@ -38,8 +39,9 @@ Website giúp người Việt **chọn thực phẩm đang có** (trong tủ l�
   `src/lib/profile.ts` — đọc hồ sơ. `src/components/form.tsx` — ô nhập dùng chung (Chip, NumberField, TextField,
   PasswordField, SubmitButton). `src/components/AccountLink.tsx` — nút tài khoản trên menu.
 - `supabase/schema.sql` — SQL tạo bảng `meal_plans` + RLS (chạy trong Supabase SQL Editor).
+- `src/components/icons.tsx` — bộ icon Lucide dùng chung (`Icons.*`, `<Icon>`, `MEAL_ICONS`); KHÔNG dùng emoji trên giao diện.
 - `src/components/ui.tsx` — khối giao diện dùng chung: `buttonClass`/`ButtonLink` (nút to ≥48px), `Notice` (thông báo
-  lỗi/lưu ý), `EmptyState` (trạng thái rỗng), `Skeleton`/`LoadingLabel` (đang tải), `PageHeader`.
+  lỗi/lưu ý), `EmptyState` (trạng thái rỗng), `Skeleton`/`LoadingLabel`/`PendingDots` (đang tải), `PageHeader`, `cardClass` (thẻ).
 - `src/components/` — `RecipeCard.tsx` (thẻ món), `RecipeImage.tsx` (ảnh món, có ô thay thế khi chưa có ảnh),
   `MealEntryCard.tsx` (thẻ 1 bữa), `NutritionTotals.tsx` (tổng dinh dưỡng trong ngày).
 - `src/sanity/` — kết nối Sanity: `env.ts` (đọc biến môi trường), `lib/client.ts` (đọc dữ liệu),
@@ -53,6 +55,7 @@ Website giúp người Việt **chọn thực phẩm đang có** (trong tủ l�
 - `scripts/import-recipes.ts` — script nhập món vào Sanity.
 - `public/` — ảnh, icon tĩnh.
 - `.env.example` — mẫu tên biến môi trường (KHÔNG chứa giá trị thật).
+- `DESIGN.md` — **phong cách giao diện** (màu, chữ, nút, thẻ, bố cục, nên/không nên, câu lệnh mẫu). Đọc trước khi làm giao diện.
 
 ## Sanity (công thức món ăn)
 - Project ID `b4tnn0pq`, dataset `production` (dataset public: đọc không cần token).
@@ -97,14 +100,12 @@ Website giúp người Việt **chọn thực phẩm đang có** (trong tủ l�
 - `npm run import:recipes` — nhập món trong `data/recipes.ts` vào Sanity (cần token ghi).
 
 ## Quy tắc giao diện
-- Phong cách: tươi, sạch, thân thiện. Màu chủ đạo `brand-*` (xanh lá, khai báo trong `globals.css`),
-  nền sáng `bg-canvas`, chữ `text-ink` / `text-muted`, nhấn `accent-*` (cam đào) cho calo. Luôn nền sáng
-  (đã tắt `dark:`). Bo góc mềm: `rounded-2xl`/`rounded-3xl`, nút `rounded-full`. Dùng lại khối trong `ui.tsx`.
-- Kiểm tra hiển thị ở khổ điện thoại 375px (không tràn ngang, nút ≥44px).
-- Toàn bộ chữ hiển thị cho người dùng bằng **tiếng Việt** (có dấu đầy đủ).
-- **Ưu tiên mobile**: thiết kế cho màn hình điện thoại trước, sau đó mới mở rộng cho
-  màn hình lớn (dùng tiền tố Tailwind `sm:`, `md:`, `lg:`).
-- Nút bấm và vùng chạm đủ lớn (tối thiểu ~44px), chữ dễ đọc.
+- Xem đầy đủ trong **`DESIGN.md`** (nguồn chuẩn duy nhất về giao diện — đổi màu/khối dùng chung thì cập nhật cả file đó).
+- Tóm tắt: **tối giản êm dịu**, nhiều khoảng trắng; màu chính **xanh xô thơm** `brand-600 #3f7a5c`, nền **kem**
+  `canvas #fdf6e3`, phụ **xanh nước** `aqua-*`, calo **đào** `accent-*`; font **Nunito**; bo góc 8/16/24px;
+  bóng nhẹ `shadow-soft` / `shadow-lift`; chuyển động `animate-enter` / `stagger`; **icon Lucide (không emoji)**,
+  luôn nền sáng (không `dark:`), không gradient, không vòng xoay "đang tải". Dùng lại khối trong `ui.tsx` /
+  `form.tsx` / `icons.tsx`; điện thoại trước, kiểm tra ở 375px (không tràn ngang, nút ≥44px); chữ tiếng Việt có dấu.
 
 ## Cách làm việc với chủ dự án (QUAN TRỌNG)
 Chủ dự án **không biết code**. Vì vậy luôn:

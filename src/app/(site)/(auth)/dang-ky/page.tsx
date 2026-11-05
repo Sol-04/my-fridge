@@ -8,13 +8,14 @@ import { getCurrentUser } from "@/lib/supabase/server";
 
 import { AuthFormSkeleton, AuthShell } from "../AuthShell";
 import { SignUpForm } from "./SignUpForm";
+import { Icons } from "@/components/icons";
 
 export const metadata: Metadata = { title: "Đăng ký – My Fridge" };
 
 export default function SignUpPage({ searchParams }: PageProps<"/dang-ky">) {
   return (
     <AuthShell
-      icon="🥬"
+      icon={Icons.logo}
       title="Tạo tài khoản miễn phí"
       subtitle="Lưu hồ sơ để tự điền thông tin, lưu và xem lại các thực đơn của bạn."
       footer={

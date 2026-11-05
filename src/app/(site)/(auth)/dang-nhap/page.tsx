@@ -8,13 +8,14 @@ import { getCurrentUser } from "@/lib/supabase/server";
 
 import { AuthFormSkeleton, AuthShell } from "../AuthShell";
 import { SignInForm } from "./SignInForm";
+import { Icons } from "@/components/icons";
 
 export const metadata: Metadata = { title: "Đăng nhập – My Fridge" };
 
 export default function SignInPage({ searchParams }: PageProps<"/dang-nhap">) {
   return (
     <AuthShell
-      icon="👋"
+      icon={Icons.wave}
       title="Chào mừng trở lại!"
       subtitle="Đăng nhập để lưu thực đơn và xem lại bất cứ lúc nào."
       footer={

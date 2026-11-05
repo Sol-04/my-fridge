@@ -6,12 +6,13 @@ import { getCurrentUser } from "@/lib/supabase/server";
 
 import { AuthFormSkeleton, AuthShell } from "../AuthShell";
 import { NewPasswordForm } from "./NewPasswordForm";
+import { Icons } from "@/components/icons";
 
 export const metadata: Metadata = { title: "Đặt lại mật khẩu – My Fridge", robots: { index: false } };
 
 export default function ResetPasswordPage() {
   return (
-    <AuthShell icon="🔒" title="Đặt mật khẩu mới" subtitle="Chọn mật khẩu mới cho tài khoản của bạn.">
+    <AuthShell icon={Icons.lock} title="Đặt mật khẩu mới" subtitle="Chọn mật khẩu mới cho tài khoản của bạn.">
       <Suspense fallback={<AuthFormSkeleton />}>
         <ResetGate />
       </Suspense>
@@ -25,7 +26,7 @@ async function ResetGate() {
     return (
       <Notice
         tone="warning"
-        icon="⏰"
+        icon={Icons.expired}
         title="Link đặt lại mật khẩu đã hết hạn"
         action={<ButtonLink href="/quen-mat-khau">Gửi lại link mới</ButtonLink>}
       >

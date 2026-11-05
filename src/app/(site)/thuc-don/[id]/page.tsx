@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
 import { MealEntryCard } from "@/components/MealEntryCard";
+import { Icon, Icons } from "@/components/icons";
 import { ButtonLink, LoadingLabel, Notice, Skeleton } from "@/components/ui";
 import { NutritionTotals } from "@/components/NutritionTotals";
 import { describeUser, MEAL_ORDER, mealTargets, sumMeals } from "@/lib/meal-plan";
@@ -61,11 +62,14 @@ async function MealPlanContent({ params }: { params: PageProps<"/thuc-don/[id]">
 
   return (
     <>
-      <p className="text-sm font-semibold text-brand-600">✅ Đã lưu thực đơn</p>
-      <h1 className="mt-1 text-3xl font-extrabold tracking-tight text-ink sm:text-4xl">Thực đơn của bạn</h1>
+      <p className="inline-flex items-center gap-1.5 text-sm font-semibold text-brand-600">
+        <Icon icon={Icons.success} size={16} />
+        Đã lưu thực đơn
+      </p>
+      <h1 className="mt-1 text-[2.25rem] leading-tight font-bold tracking-tight text-ink">Thực đơn của bạn</h1>
       <p className="mt-1 text-sm text-muted">Tạo lúc {createdAt}</p>
 
-      <div className="mt-4 rounded-3xl bg-white p-5 ring-1 ring-brand-100">
+      <div className="animate-enter mt-4 rounded-3xl border border-line bg-white p-5 shadow-soft">
         <p className="text-sm text-muted">{describeUser(plan.user_input)}</p>
         <p className="mt-1 text-lg font-bold text-ink">
           Mục tiêu: {plan.target_calories} kcal/ngày
@@ -97,12 +101,15 @@ async function MealPlanContent({ params }: { params: PageProps<"/thuc-don/[id]">
 
         {plan.selected_foods.length > 0 && (
           <section>
-            <h2 className="text-sm font-bold text-ink">🧺 Thực phẩm đã chọn</h2>
+            <h2 className="inline-flex items-center gap-1.5 text-sm font-bold text-ink">
+              <Icon icon={Icons.foods} size={16} />
+              Thực phẩm đã chọn
+            </h2>
             <ul className="mt-2 flex flex-wrap gap-2">
               {plan.selected_foods.map((f) => (
                 <li
                   key={f}
-                  className="rounded-full bg-white px-3 py-1.5 text-sm text-ink ring-1 ring-brand-100"
+                  className="rounded-lg border border-line bg-white px-2.5 py-1 text-sm text-ink"
                 >
                   {f}
                 </li>
@@ -112,7 +119,7 @@ async function MealPlanContent({ params }: { params: PageProps<"/thuc-don/[id]">
         )}
       </div>
 
-      <div className="mt-8 rounded-3xl bg-brand-50 p-5">
+      <div className="mt-8 rounded-3xl bg-aqua-50 p-5">
         <p className="font-semibold text-brand-900">Gửi thực đơn cho người thân hoặc lưu lại để xem sau</p>
         <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-start">
           <CopyLinkButton />

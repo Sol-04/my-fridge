@@ -6,13 +6,14 @@ import { PasswordField, SubmitButton, TextField } from "@/components/form";
 import { Notice } from "@/components/ui";
 
 import { signUp, type AuthFormState } from "../actions";
+import { Icons } from "@/components/icons";
 
 export function SignUpForm({ next }: { next: string }) {
   const [state, action] = useActionState<AuthFormState, FormData>(signUp, {});
 
   if (state.success) {
     return (
-      <Notice tone="success" icon="📬" title="Kiểm tra hộp thư của bạn">
+      <Notice tone="success" icon={Icons.mail} title="Kiểm tra hộp thư của bạn">
         {state.success}
       </Notice>
     );

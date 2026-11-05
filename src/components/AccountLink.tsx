@@ -12,7 +12,7 @@ export async function AccountLink() {
     return (
       <Link
         href="/dang-nhap"
-        className="inline-flex min-h-11 items-center rounded-full px-2.5 text-sm font-semibold whitespace-nowrap text-brand-700 hover:bg-brand-50 sm:px-3"
+        className="inline-flex min-h-11 items-center rounded-2xl px-2.5 text-sm font-semibold whitespace-nowrap text-brand-700 transition-colors duration-200 hover:bg-brand-50 sm:px-3"
       >
         Đăng nhập
       </Link>
@@ -25,7 +25,7 @@ export async function AccountLink() {
       href="/ho-so"
       aria-label={`Hồ sơ của ${name}`}
       title="Hồ sơ của bạn"
-      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-brand-100 text-base font-bold text-brand-800 ring-2 ring-white transition hover:bg-brand-200"
+      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-aqua-100 text-base font-bold text-aqua-800 transition-colors duration-200 hover:bg-aqua-300"
     >
       {initialOf(name)}
     </Link>
@@ -34,5 +34,5 @@ export async function AccountLink() {
 
 // Chỗ giữ chỗ trong lúc đang kiểm tra đăng nhập (để menu không bị nhảy)
 export function AccountLinkPlaceholder() {
-  return <span aria-hidden className="block h-11 w-11 shrink-0 rounded-full bg-brand-50" />;
+  return <span aria-hidden className="block h-11 w-11 shrink-0 rounded-full bg-canvas" />;
 }

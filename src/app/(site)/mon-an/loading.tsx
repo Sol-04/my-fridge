@@ -11,12 +11,12 @@ export default function Loading() {
       </div>
       <div className="mt-4 flex gap-2">
         {[0, 1, 2, 3].map((i) => (
-          <Skeleton key={i} className="h-12 w-24 rounded-full" />
+          <Skeleton key={i} className="h-12 w-24 rounded-2xl" />
         ))}
       </div>
       <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {[0, 1, 2, 3, 4, 5].map((i) => (
-          <div key={i} className="overflow-hidden rounded-3xl bg-white ring-1 ring-brand-100">
+          <div key={i} className="overflow-hidden rounded-3xl border border-line bg-white">
             <Skeleton className="aspect-[16/10] w-full rounded-none" />
             <div className="space-y-3 p-4">
               <Skeleton className="h-5 w-3/4" />

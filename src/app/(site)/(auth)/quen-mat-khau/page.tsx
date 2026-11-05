@@ -3,13 +3,14 @@ import Link from "next/link";
 
 import { AuthShell } from "../AuthShell";
 import { ForgotPasswordForm } from "./ForgotPasswordForm";
+import { Icons } from "@/components/icons";
 
 export const metadata: Metadata = { title: "Quên mật khẩu – My Fridge" };
 
 export default function ForgotPasswordPage() {
   return (
     <AuthShell
-      icon="🔑"
+      icon={Icons.key}
       title="Quên mật khẩu?"
       subtitle="Nhập email bạn đã dùng để đăng ký, chúng tôi sẽ gửi link đặt lại mật khẩu."
       footer={

@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 
 import { Chip, NumberField, TextField } from "@/components/form";
-import { buttonClass, Notice } from "@/components/ui";
+import { buttonClass, Notice, PendingDots } from "@/components/ui";
 import {
   ACTIVITY_OPTIONS,
   calcTargetCalories,
@@ -17,6 +17,7 @@ import {
 } from "@/lib/meal-plan";
 
 import { updateProfile } from "./actions";
+import { Icon, Icons } from "@/components/icons";
 
 export type ProfileFormValues = {
   displayName: string;
@@ -92,7 +93,7 @@ export function ProfileForm({ initial }: { initial: ProfileFormValues }) {
         <legend className="text-sm font-semibold text-ink">Mức vận động</legend>
         <div className="mt-1 grid grid-cols-1 gap-2 sm:grid-cols-2">
           {ACTIVITY_OPTIONS.map((o) => (
-            <Chip key={o.value} active={v.activity === o.value} onClick={() => set("activity", o.value)} className="py-2 text-left">
+            <Chip key={o.value} active={v.activity === o.value} onClick={() => set("activity", o.value)} stacked>
               <span className="block">{o.label}</span>
               <span className={`block text-xs font-normal ${v.activity === o.value ? "text-brand-100" : "text-muted"}`}>{o.hint}</span>
             </Chip>
@@ -111,10 +112,11 @@ export function ProfileForm({ initial }: { initial: ProfileFormValues }) {
         </div>
       </fieldset>
 
-      <div className="rounded-2xl bg-brand-50 p-4" aria-live="polite">
+      <div className="rounded-2xl bg-aqua-50 p-4" aria-live="polite">
         {target ? (
-          <p className="text-brand-900">
-            🎯 Calo mục tiêu mỗi ngày: <strong className="text-xl">{target} kcal</strong>
+          <p className="flex flex-wrap items-center gap-2 text-brand-900">
+            <Icon icon={Icons.target} size={18} />
+            Calo mục tiêu mỗi ngày: <strong className="text-xl">{target} kcal</strong>
           </p>
         ) : (
           <p className="text-sm text-muted">Nhập tuổi, chiều cao, cân nặng để xem lượng calo bạn cần mỗi ngày.</p>
@@ -130,8 +132,8 @@ export function ProfileForm({ initial }: { initial: ProfileFormValues }) {
       <button type="submit" disabled={saving || v.displayName.trim() === ""} className={buttonClass("primary", "lg", "w-full sm:w-auto")}>
         {saving ? (
           <>
-            <span aria-hidden className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white motion-reduce:animate-none" />
             Đang lưu…
+            <PendingDots />
           </>
         ) : (
           "Lưu hồ sơ"

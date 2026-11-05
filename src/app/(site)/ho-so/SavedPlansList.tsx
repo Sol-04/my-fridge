@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { ButtonLink, EmptyState, Notice } from "@/components/ui";
 import type { MealEntry } from "@/lib/meal-plan";
+import { Icon, Icons } from "@/components/icons";
 
 export type SavedPlanRow = {
   id: string;
@@ -19,7 +20,7 @@ export function SavedPlansList({ plans }: { plans: SavedPlanRow[] | null }) {
   }
   if (plans.length === 0) {
     return (
-      <EmptyState icon="📋" title="Bạn chưa lưu thực đơn nào" action={<ButtonLink href="/tao-thuc-don">Tạo thực đơn</ButtonLink>}>
+      <EmptyState icon={Icons.plan} title="Bạn chưa lưu thực đơn nào" action={<ButtonLink href="/tao-thuc-don">Tạo thực đơn</ButtonLink>}>
         Tạo thực đơn rồi bấm “Lưu thực đơn”, danh sách sẽ hiện ở đây để bạn xem lại bất cứ lúc nào.
       </EmptyState>
     );
@@ -39,11 +40,14 @@ export function SavedPlansList({ plans }: { plans: SavedPlanRow[] | null }) {
           <li key={p.id}>
             <Link
               href={`/thuc-don/${p.id}`}
-              className="block rounded-2xl bg-white p-4 ring-1 ring-brand-100 transition hover:ring-brand-300"
+              className="block rounded-2xl border border-line bg-white p-4 transition duration-200 hover:-translate-y-0.5 hover:shadow-lift"
             >
               <div className="flex items-center justify-between gap-2">
-                <span className="text-sm font-semibold text-brand-700">📅 {date}</span>
-                <span className="rounded-full bg-accent-50 px-2.5 py-1 text-xs font-bold text-accent-500">
+                <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-brand-700">
+                  <Icon icon={Icons.calendar} size={16} />
+                  {date}
+                </span>
+                <span className="inline-flex items-center gap-1 rounded-lg bg-accent-50 px-2 py-1 text-xs font-bold text-accent-500">
                   {total} / {p.target_calories} kcal
                 </span>
               </div>
