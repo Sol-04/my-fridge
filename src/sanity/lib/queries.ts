@@ -10,7 +10,9 @@ export const RECIPES_QUERY = defineQuery(`
     image,
     calories,
     cookMinutes,
-    meals
+    meals,
+    "kind": coalesce(kind, "home"),
+    servingNote
   }
 `);
 
@@ -30,7 +32,11 @@ export const RECIPE_QUERY = defineQuery(`
     carbs,
     fat,
     cookMinutes,
-    steps
+    steps,
+    "kind": coalesce(kind, "home"),
+    servingNote,
+    healthyTip,
+    whereToBuy
   }
 `);
 
@@ -51,6 +57,9 @@ export const PLANNER_RECIPES_QUERY = defineQuery(`
     calories,
     protein,
     carbs,
-    fat
+    fat,
+    "kind": coalesce(kind, "home"),
+    servingNote,
+    healthyTip
   }
 `);

@@ -12,6 +12,7 @@ import {
 } from "./queries";
 
 export type Meal = "breakfast" | "lunch" | "dinner";
+export type RecipeKind = "home" | "eatout"; // tự nấu | ăn ngoài / mua sẵn
 
 export type RecipeCardData = {
   _id: string;
@@ -21,6 +22,8 @@ export type RecipeCardData = {
   calories: number;
   cookMinutes: number;
   meals: Meal[];
+  kind: RecipeKind;
+  servingNote?: string | null; // khẩu phần thường bán (món ăn ngoài)
 };
 
 export type RecipeDetailData = RecipeCardData & {
@@ -31,12 +34,26 @@ export type RecipeDetailData = RecipeCardData & {
   carbs: number;
   fat: number;
   steps: string[];
+  healthyTip?: string | null;
+  whereToBuy?: string | null;
 };
 
 // Dữ liệu món dùng cho trang tạo thực đơn
 export type PlannerRecipe = Pick<
   RecipeDetailData,
-  "_id" | "name" | "slug" | "meals" | "ingredients" | "servingGrams" | "calories" | "protein" | "carbs" | "fat"
+  | "_id"
+  | "name"
+  | "slug"
+  | "meals"
+  | "ingredients"
+  | "servingGrams"
+  | "calories"
+  | "protein"
+  | "carbs"
+  | "fat"
+  | "kind"
+  | "servingNote"
+  | "healthyTip"
 >;
 
 // Nếu Sanity lỗi (ví dụ chưa đặt biến môi trường), web vẫn chạy và báo nhẹ nhàng

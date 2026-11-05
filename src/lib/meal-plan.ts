@@ -112,22 +112,32 @@ export const PANTRY_STAPLES = new Set([
 const GROUPS: { title: string; items: string[] }[] = [
   {
     title: "Đạm (thịt, cá, trứng, đậu)",
-    items: ["Trứng gà", "Ức gà", "Thịt heo nạc", "Thịt bò nạc", "Cá basa", "Cá rô phi", "Tôm", "Đậu phụ"],
+    items: [
+      "Trứng gà", "Ức gà", "Thịt heo nạc", "Thịt bò nạc", "Thịt bò bắp", "Cá basa", "Cá rô phi", "Cá thu",
+      "Tôm", "Mực", "Nghêu", "Đậu phụ",
+    ],
   },
   {
     title: "Tinh bột",
-    items: ["Cơm gạo lứt", "Yến mạch", "Khoai lang", "Bún tươi", "Bánh phở tươi", "Bánh mì nguyên cám"],
+    items: [
+      "Cơm gạo lứt", "Yến mạch", "Khoai lang", "Khoai tây", "Ngô ngọt", "Bún tươi", "Bánh phở tươi",
+      "Miến dong", "Bánh tráng", "Bánh mì nguyên cám",
+    ],
   },
   {
     title: "Rau củ, nấm",
     items: [
       "Cải ngọt", "Cải thìa", "Rau muống", "Mồng tơi", "Xà lách", "Bông cải xanh", "Cà chua",
-      "Dưa leo", "Cà rốt", "Bí đỏ", "Đậu bắp", "Nấm rơm", "Giá đỗ",
+      "Dưa leo", "Cà rốt", "Bí đỏ", "Đậu bắp", "Nấm rơm", "Giá đỗ", "Bắp cải", "Su su", "Bí xanh",
+      "Mướp", "Đậu que", "Rau dền", "Rau ngót", "Cải bó xôi", "Nấm kim châm", "Hành tây", "Ớt chuông",
     ],
   },
   {
     title: "Sữa, trái cây, hạt",
-    items: ["Sữa tươi không đường", "Sữa đậu nành không đường", "Sữa chua không đường", "Chuối", "Đậu phộng"],
+    items: [
+      "Sữa tươi không đường", "Sữa đậu nành không đường", "Sữa chua không đường", "Chuối", "Táo",
+      "Thanh long", "Đu đủ", "Đậu phộng",
+    ],
   },
 ];
 
@@ -162,7 +172,8 @@ export function rankRecipes(
   mealTarget: number,
 ): RankedRecipe[] {
   return recipes
-    .filter((r) => r.meals?.includes(meal))
+    // Chỉ món TỰ NẤU (món ăn ngoài không có nguyên liệu → sẽ bị coi là "đủ 100%" nếu không loại ra)
+    .filter((r) => r.kind !== "eatout" && r.meals?.includes(meal))
     .map((recipe) => {
       const main = (recipe.ingredients ?? []).filter((i) => !PANTRY_STAPLES.has(i.name));
       const missing = main.filter((i) => !selected.has(i.name)).map((i) => i.name);
@@ -178,9 +189,39 @@ export function rankRecipes(
     });
 }
 
+// Món ăn ngoài / mua sẵn của 1 bữa: món có calo gần mục tiêu nhất xếp trước.
+export function rankEatOut(recipes: PlannerRecipe[], meal: Meal, mealTarget: number): PlannerRecipe[] {
+  return recipes
+    .filter((r) => r.kind === "eatout" && r.meals?.includes(meal))
+    .sort((a, b) => Math.abs(a.calories - mealTarget) - Math.abs(b.calories - mealTarget));
+}
+
+// Chia calo cho các bữa khi có bữa ăn ngoài (calo cố định 1 phần):
+// phần calo còn lại của ngày chia cho các bữa tự nấu theo tỉ lệ 25/40/35,
+// để tổng ngày vẫn sát mục tiêu. `fixed` = calo cố định của các bữa ăn ngoài.
+export function rebalanceTargets(target: number, fixed: Partial<Record<Meal, number>>): Record<Meal, number> {
+  const base = mealTargets(target);
+  const fixedMeals = MEAL_ORDER.filter((m) => fixed[m] != null);
+  if (fixedMeals.length === 0) return base;
+  const fixedTotal = fixedMeals.reduce((sum, m) => sum + (fixed[m] ?? 0), 0);
+  const free = MEAL_ORDER.filter((m) => fixed[m] == null);
+  const shareTotal = free.reduce((sum, m) => sum + MEAL_SPLIT[m], 0);
+  // Không để bữa tự nấu xuống quá thấp (tối thiểu 60% mức bình thường)
+  const remaining = Math.max(target - fixedTotal, 0);
+  const result = { ...base };
+  for (const m of MEAL_ORDER) {
+    if (fixed[m] != null) result[m] = fixed[m]!;
+    else result[m] = Math.max(Math.round((remaining * MEAL_SPLIT[m]) / shareTotal), Math.round(base[m] * 0.6));
+  }
+  return result;
+}
+
 // Số khẩu phần để vừa calo của bữa: làm tròn 0,25; giới hạn 0,5–2,5.
 export const SERVINGS_MIN = 0.5;
 export const SERVINGS_MAX = 2.5;
+
+// Món ăn ngoài luôn tính 1 phần (không ai gọi 1,25 tô phở)
+export const EATOUT_SERVINGS = 1;
 
 export function portionFor(caloriesPerServing: number, mealTarget: number): number {
   if (!caloriesPerServing || caloriesPerServing <= 0) return 1;
@@ -201,6 +242,9 @@ export type MealEntry = {
   protein: number;
   carbs: number;
   fat: number;
+  kind?: "home" | "eatout"; // thực đơn lưu trước đây không có trường này → coi là "home"
+  serving_note?: string | null;
+  healthy_tip?: string | null;
 };
 
 const r1 = (n: number) => Math.round(n * 10) / 10;
@@ -217,6 +261,10 @@ export function buildMealEntry(recipe: PlannerRecipe, servings: number): MealEnt
     protein: r1(recipe.protein * servings),
     carbs: r1(recipe.carbs * servings),
     fat: r1(recipe.fat * servings),
+    kind: recipe.kind === "eatout" ? "eatout" : "home",
+    ...(recipe.kind === "eatout"
+      ? { serving_note: recipe.servingNote ?? null, healthy_tip: recipe.healthyTip ?? null }
+      : {}),
   };
 }
 

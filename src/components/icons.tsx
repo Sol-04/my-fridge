@@ -40,6 +40,7 @@ import {
   Soup,
   Sparkles,
   Stethoscope,
+  Store,
   Sun,
   Sunrise,
   Target,
@@ -53,6 +54,7 @@ export type { LucideIcon };
 export const Icons = {
   logo: Leaf,
   dish: CookingPot,
+  eatOut: Store,
   calories: Flame,
   time: Clock,
   breakfast: Sunrise,

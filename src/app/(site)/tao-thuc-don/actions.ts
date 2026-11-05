@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import {
   buildMealEntry,
   calcTargetCalories,
+  EATOUT_SERVINGS,
   MEAL_ORDER,
   parseUserInput,
   SERVINGS_MAX,
@@ -19,7 +20,7 @@ export type SaveMealPlanInput = {
   userInput: unknown;
   selectedFoods: unknown;
   // Mỗi bữa: id món + số khẩu phần (hoặc null nếu không có món)
-  meals: Partial<Record<Meal, { recipeId: string; servings: number } | null>>;
+  meals: Partial<Record<Meal, { recipeId: string; servings: number; kind?: "home" | "eatout" } | null>>;
 };
 
 export type SaveMealPlanResult = { error: string; needLogin?: boolean };
@@ -45,7 +46,16 @@ export async function saveMealPlan(input: SaveMealPlanInput): Promise<SaveMealPl
     if (!recipe || !recipe.meals?.includes(meal)) {
       return { error: "Có món không còn tồn tại. Vui lòng tải lại trang và thử lại." };
     }
-    if (!Number.isFinite(servings) || servings < SERVINGS_MIN || servings > SERVINGS_MAX) {
+    const kind = recipe.kind === "eatout" ? "eatout" : "home";
+    if ((choice.kind ?? "home") !== kind) {
+      return { error: "Thông tin món chưa khớp. Vui lòng tải lại trang và thử lại." };
+    }
+    // Món ăn ngoài luôn 1 phần; món tự nấu từ 0,5 đến 2,5 phần
+    const validServings =
+      kind === "eatout"
+        ? servings === EATOUT_SERVINGS
+        : Number.isFinite(servings) && servings >= SERVINGS_MIN && servings <= SERVINGS_MAX;
+    if (!validServings) {
       return { error: "Khẩu phần không hợp lệ." };
     }
     entries[meal] = buildMealEntry(recipe, servings);
