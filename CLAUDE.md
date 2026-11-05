@@ -57,6 +57,10 @@ Website giúp người Việt **chọn thực phẩm đang có** (trong tủ l�
   công thức, calo **ước tính** cho 1 phần thường bán, kèm `servingNote`, `healthyTip`, `whereToBuy`.
 - `scripts/import-recipes.ts` — script nhập món vào Sanity.
 - `public/` — ảnh, icon tĩnh.
+- `public/minh-hoa/` — 14 hình vẽ SVG minh hoạ theo loại món (tô phở, bún trộn, đĩa cơm, canh + cơm, cháo, bánh mì, xôi,
+  cuốn, salad, sinh tố, trứng, khoai, bánh xèo, món mặn chung).
+- `src/lib/illustrations.ts` — `illustrationFor(name)`: chọn hình vẽ theo từ khoá trong tên món (bỏ dấu); món chưa có
+  ảnh thật trong Sanity tự hiện hình vẽ kèm nhãn "Hình minh hoạ" (`RecipeImage.tsx`).
 - `.env.example` — mẫu tên biến môi trường (KHÔNG chứa giá trị thật).
 - `DESIGN.md` — **phong cách giao diện** (màu, chữ, nút, thẻ, bố cục, nên/không nên, câu lệnh mẫu). Đọc trước khi làm giao diện.
 
@@ -65,6 +69,10 @@ Website giúp người Việt **chọn thực phẩm đang có** (trong tủ l�
 - Loại nội dung `recipe` ("Món ăn"): `name`, `slug`, `image`, `description`,
   `meals` (`breakfast`/`lunch`/`dinner`), `ingredients[] {name, grams}`, `servingGrams`,
   `calories`, `protein`, `carbs`, `fat`, `cookMinutes`, `steps[]`.
+- Trường `image` có thêm `credit` (tác giả), `license` (giấy phép), `sourceUrl` (link gốc). Ảnh thật chỉ dùng ảnh có giấy
+  phép mở (CC0 / Public domain / CC BY / CC BY-SA, ví dụ từ Wikimedia Commons) và PHẢI ghi `credit` + `license`; trang chi
+  tiết món hiện dòng "Ảnh: … · giấy phép · Nguồn ảnh". Muốn dùng ảnh tự chụp: vào `/studio`, mở món, tải ảnh lên, ghi tác
+  giả là chính mình, giấy phép "Ảnh tự chụp".
 - Trường `kind`: `home` (Tự nấu, mặc định) hoặc `eatout` (Ăn ngoài). Món ăn ngoài không có `ingredients`/`steps`/
   `cookMinutes`, thay bằng `servingNote`, `healthyTip`, `whereToBuy`. Truy vấn dùng `coalesce(kind, "home")`.
 - Mỗi món có ID cố định `recipe-<slug>` → nhập lại sẽ ghi đè, không trùng.
@@ -113,6 +121,21 @@ Website giúp người Việt **chọn thực phẩm đang có** (trong tủ l�
   bóng nhẹ `shadow-soft` / `shadow-lift`; chuyển động `animate-enter` / `stagger`; **icon Lucide (không emoji)**,
   luôn nền sáng (không `dark:`), không gradient, không vòng xoay "đang tải". Dùng lại khối trong `ui.tsx` /
   `form.tsx` / `icons.tsx`; điện thoại trước, kiểm tra ở 375px (không tràn ngang, nút ≥44px); chữ tiếng Việt có dấu.
+
+## Chia việc theo model
+
+| Loại việc | Model | Vì sao |
+|---|---|---|
+| Việc rất khó, nhiều bước dài: làm lại cả luồng tạo thực đơn, đổi cấu trúc dữ liệu lớn (Sanity + Supabase cùng lúc) | **Fable** | Mạnh nhất nhưng tốn nhất — chỉ dùng khi thật cần |
+| Lên kế hoạch tính năng mới; **bảo mật** (đăng nhập, RLS Supabase, key bí mật); lỗi khó tìm nguyên nhân; review code trước khi gộp PR | **Opus** | Cần suy nghĩ kỹ, sai thì ảnh hưởng người dùng |
+| Việc hằng ngày: làm trang/khối giao diện theo DESIGN.md, thêm món vào `data/`, sửa lỗi build, sửa chữ, cập nhật tài liệu | **Sonnet** | Đủ giỏi, nhanh và rẻ hơn — hợp phần lớn công việc |
+| Việc nhỏ, nhanh: tìm file, đổi một câu chữ, đọc kết quả `npm run lint`/`npm run build`, đếm/rà dữ liệu đơn giản | **Haiku** | Nhanh nhất, rẻ nhất |
+
+- Không chắc thì chọn model mạnh hơn một bậc.
+- Model nào cũng phải theo đúng CLAUDE.md + DESIGN.md (build trước khi push, không đưa key bí mật vào code, giải thích tiếng Việt dễ hiểu).
+- Sửa phần tính calo / khẩu phần (`src/lib/meal-plan.ts`) hoặc dữ liệu dinh dưỡng (`data/`) → luôn để **Opus** kiểm tra lại.
+- Việc lớn có thể chia nhỏ cho nhiều model chạy song song (subagent), model chính (Opus) tổng hợp và kiểm tra cuối.
+- Đổi model trong Claude Code bằng lệnh `/model`.
 
 ## Cách làm việc với chủ dự án (QUAN TRỌNG)
 Chủ dự án **không biết code**. Vì vậy luôn:
