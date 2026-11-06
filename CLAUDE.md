@@ -167,3 +167,19 @@ Chủ dự án **không biết code**. Vì vậy luôn:
    trong phần Environment Variables của Vercel. Chỉ ghi **tên biến** vào `.env.example`.
    - Lưu ý: biến có tiền tố `NEXT_PUBLIC_` sẽ hiển thị công khai trên trình duyệt —
      không dùng tiền tố này cho key bí mật (ví dụ Supabase service role key).
+
+## Tiến độ hiện tại (cập nhật cuối mỗi phiên — đọc mục này trước tiên)
+- **Đang chờ chủ dự án duyệt:** PR #11 https://github.com/Sol-04/my-fridge/pull/11 (nhánh `claude/modest-allen-rbgup8`).
+  - Nội dung: Nhật ký ăn uống + tập luyện, 12 món phụ, đổi tên hiển thị "Glow up with me", ô tìm kiếm ở `/mon-an`.
+  - Bản thử: https://my-fridge-git-claude-modest-allen-rbgup8-sol-04.vercel.app
+  - Khi chủ dự án nói "đồng ý gộp" → gộp PR #11 (squash). Việc mới sau đó → tạo nhánh mới từ `main`.
+- **Việc chủ dự án tự làm:** bật "Leaked password protection" trong Supabase → Authentication.
+- **Chưa làm (chỉ làm khi được yêu cầu lại):** cân nặng theo ngày, uống nước, giấc ngủ, dashboard, báo cáo tuần.
+- **Mã định danh** (không phải bí mật):
+  - Supabase project `vxuapnicjqyvwzicdkmv`; SQL đã chạy nằm trong `supabase/migrations/`.
+  - Vercel project `prj_xjDlVUwKwhQvaXSMfkD55EFaeJxc`, team `team_qpHDwMKTyBVTo2sImPR3GE15`. Công cụ Vercel có thể báo 403 → lấy link preview từ bình luận của vercel[bot] trên PR.
+- **Tiết kiệm token:**
+  - Chỉ đọc file liên quan đến việc được giao, không quét cả dự án.
+  - Không đọc DESIGN.md trừ khi làm giao diện mới.
+  - Việc nhỏ (1–2 file) thì tự làm, không gọi trợ lý.
+  - Cuối phiên cập nhật lại mục này cho ngắn gọn.
