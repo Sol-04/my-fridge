@@ -43,7 +43,7 @@ export function LarkSettings({ initial }: { initial: LarkInitial }) {
         <ol className="list-decimal space-y-1 pl-5 text-sm leading-relaxed text-ink">
           <li>Trong Lark, tạo một nhóm chỉ có mình bạn (hoặc nhóm bạn muốn nhận nhắc).</li>
           <li>Vào Cài đặt nhóm → Bot → Thêm bot → chọn <b>Custom Bot</b>, đặt tên bất kỳ.</li>
-          <li>Copy <b>Webhook URL</b> rồi dán vào ô bên dưới. Nếu Lark hỏi bảo mật, chọn từ khoá <b>Glow up</b> hoặc để trống, không giới hạn IP.</li>
+          <li>Copy <b>Webhook URL</b> rồi dán vào ô bên dưới. Phần bảo mật: chọn từ khoá <b>Glow up</b> hoặc để trống; không bật giới hạn IP và không bật ký xác thực.</li>
         </ol>
       )}
 

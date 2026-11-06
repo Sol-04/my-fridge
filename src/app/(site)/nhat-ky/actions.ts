@@ -96,9 +96,15 @@ export async function addFoodLog(input: AddFoodInput): Promise<DiaryResult> {
     console.error("Ghi nhật ký ăn lỗi:", error.message);
     return { ok: false, error: SAVE_FAILED };
   }
-  // Quá calo → báo qua Lark (nếu người dùng đã bật). Gửi sau khi trả lời để không làm chậm nút lưu.
-  const alert = await buildCalorieAlert(s.supabase, s.userId, input.date, Number(row.calories));
-  if (alert) after(() => sendLarkText(alert.url, alert.text).then(() => undefined));
+  // Quá calo → báo qua Lark (nếu người dùng đã bật). Cả việc tính lẫn việc gửi chạy SAU khi trả lời, không làm chậm nút lưu.
+  const calories = Number(row.calories);
+  const { supabase, userId } = s;
+  after(async () => {
+    const alert = await buildCalorieAlert(supabase, userId, input.date, calories);
+    if (!alert) return;
+    const sent = await sendLarkText(alert.url, alert.text);
+    if (!sent.ok) console.error("Gửi cảnh báo calo tới Lark lỗi:", sent.error);
+  });
   return done();
 }
 

@@ -23,8 +23,10 @@ export async function sendLarkText(url: string, text: string): Promise<LarkSend>
     const code = body?.code ?? body?.StatusCode ?? 0;
     if (res.ok && code === 0) return { ok: true };
     const reason = (body?.msg ?? body?.StatusMessage ?? "").toLowerCase();
-    if (reason.includes("key")) return { ok: false, error: 'Bot Lark đang bật "Từ khoá". Bạn đặt từ khoá là Glow up hoặc tắt phần từ khoá rồi thử lại nhé.' };
-    if (reason.includes("ip")) return { ok: false, error: "Bot Lark đang giới hạn địa chỉ IP. Bạn tắt giới hạn IP trong cài đặt bot rồi thử lại nhé." };
+    // 19021 = sai chữ ký, 19022 = IP không được phép, 19024 = thiếu từ khoá (mã lỗi của Lark)
+    if (code === 19021 || reason.includes("sign match")) return { ok: false, error: "Bot Lark đang bật \"Ký xác thực\". Bạn tắt phần này trong cài đặt bot rồi thử lại nhé." };
+    if (code === 19022 || reason.includes("ip not in")) return { ok: false, error: "Bot Lark đang giới hạn địa chỉ IP. Bạn tắt giới hạn IP trong cài đặt bot rồi thử lại nhé." };
+    if (code === 19024 || reason.includes("key words")) return { ok: false, error: 'Bot Lark đang bật "Từ khoá". Bạn đặt từ khoá là Glow up hoặc tắt phần từ khoá rồi thử lại nhé.' };
     return { ok: false, error: "Lark không nhận tin. Bạn kiểm tra lại link webhook (bot còn trong nhóm không) rồi thử lại nhé." };
   } catch {
     return { ok: false, error: "Chưa gửi được tới Lark. Có thể mạng đang chậm, bạn thử lại sau ít phút nhé." };

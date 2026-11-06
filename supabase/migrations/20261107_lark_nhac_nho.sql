@@ -41,7 +41,11 @@ security definer
 set search_path = ''
 as $$
 declare
-  now_vn text := to_char(now() at time zone 'Asia/Ho_Chi_Minh', 'HH24:MI');
+  -- Làm tròn xuống mốc 30 phút: hẹn giờ có trễ vài phút vẫn khớp, không bị bỏ cả lượt nhắc
+  now_vn text := to_char(
+    date_trunc('hour', now() at time zone 'Asia/Ho_Chi_Minh')
+      + interval '30 minutes' * floor(extract(minute from now() at time zone 'Asia/Ho_Chi_Minh') / 30),
+    'HH24:MI');
   s record;
 begin
   for s in

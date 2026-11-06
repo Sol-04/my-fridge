@@ -58,7 +58,10 @@ export async function sendLarkTest(): Promise<LarkResult> {
   const s = await session();
   if (!s.ok) return s;
   const { data, error } = await s.supabase.from("lark_settings").select("webhook_url").eq("user_id", s.userId).maybeSingle();
-  if (error) return { ok: false, error: FAILED };
+  if (error) {
+    console.error("Đọc cài đặt Lark lỗi:", error.message);
+    return { ok: false, error: FAILED };
+  }
   if (!data) return { ok: false, error: "Bạn lưu link webhook trước rồi mới gửi thử nhé." };
   const res = await sendLarkText(data.webhook_url, "[Glow up] Kết nối Lark thành công! Từ giờ bạn sẽ nhận nhắc uống nước, vận động, ăn uống và cảnh báo calo tại đây.");
   return res.ok ? { ok: true, message: "Đã gửi tin thử. Bạn kiểm tra nhóm Lark nhé." } : res;
