@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { Suspense } from "react";
 import { Nunito } from "next/font/google";
 import "./globals.css";
 
@@ -33,7 +34,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="vi" className={`${nunito.variable} antialiased`}>
       <body className="flex min-h-dvh flex-col font-sans">{children}
-        <PwaSetup />
+        <Suspense fallback={null}>
+          <PwaSetup />
+        </Suspense>
       </body>
     </html>
   );

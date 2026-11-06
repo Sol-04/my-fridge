@@ -11,7 +11,7 @@ import type { DiaryResult } from "./actions";
 const NOT_READY = "Hệ thống lưu trữ đang tạm thời chưa sẵn sàng. Bạn đợi một chút rồi thử lại nhé.";
 const SAVE_FAILED = "Chưa lưu được. Có thể mạng đang chậm, bạn thử lại sau ít phút nhé.";
 const MAX_DAYS = 420;
-const MAX_CYCLES = 40;
+const MAX_CYCLES = 60;
 
 type Session =
   | { ok: true; supabase: NonNullable<Awaited<ReturnType<typeof createSupabaseServer>>>; userId: string }
@@ -57,7 +57,7 @@ export async function importHealthSummary(input: {
   }
   const cycles = new Map<string, { start_date: string; end_date: string }>();
   for (const c of input.cycles) {
-    if (!isValidIsoDate(c?.start) || !isValidIsoDate(c?.end) || c.start > today || c.end < c.start) continue;
+    if (!isValidIsoDate(c?.start) || !isValidIsoDate(c?.end) || c.start > today || c.end > today || c.end < c.start) continue;
     if (Date.parse(c.end) - Date.parse(c.start) > 15 * 86_400_000) continue;
     cycles.set(c.start, { start_date: c.start, end_date: c.end });
   }
@@ -77,7 +77,11 @@ export async function importHealthSummary(input: {
   }
   if (cycles.size) {
     // Không ghi đè kỳ người dùng tự nhập: chỉ upsert dòng có nguồn apple_health
-    const { data: manual } = await s.supabase.from("cycle_logs").select("start_date").eq("source", "manual");
+    const { data: manual, error: manualError } = await s.supabase.from("cycle_logs").select("start_date").eq("user_id", s.userId).eq("source", "manual");
+    if (manualError) {
+      console.error("Đọc kỳ tự nhập lỗi:", manualError.message);
+      return { ok: false, error: SAVE_FAILED };
+    }
     const skip = new Set((manual ?? []).map((m: { start_date: string }) => m.start_date));
     const rows = [...cycles.values()].filter((c) => !skip.has(c.start_date)).map((c) => ({ ...base, ...c }));
     if (rows.length) {

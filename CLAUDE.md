@@ -35,7 +35,7 @@ Website giúp người Việt **chọn thực phẩm đang có** (trong tủ l�
     và chọn file ngay trên web; `src/lib/apple-health.ts` đọc file NGAY TRÊN MÁY (fflate, không tải file gốc lên) → chỉ gửi tóm tắt
     (bước chân + năng lượng hoạt động mỗi ngày, các kỳ kinh nguyệt) vào bảng `health_daily`, `cycle_logs` (`supabase/migrations/20261106_suc_khoe.sql`,
     RLS chỉ chủ tài khoản). Bước chân lấy nguồn nhiều nhất mỗi ngày (khỏi cộng đôi iPhone + Watch). `src/lib/cycle.ts` = chu kỳ trung bình + ngày dự kiến (chỉ tham khảo).
-    Tổng ngày: "đốt thêm" = số lớn hơn giữa buổi tập đã ghi và năng lượng hoạt động của Apple (tránh tính hai lần). Web KHÔNG đọc thẳng được Apple Sức khoẻ /
+    Năng lượng hoạt động của Apple chỉ để xem (KHÔNG cộng vào "còn lại" vì calo mục tiêu đã có hệ số vận động). Web KHÔNG đọc thẳng được Apple Sức khoẻ /
     Health Connect (chỉ app cài trên máy mới đọc được); Fitbit Web API đã tắt từ 11/2026 → Google Health API (chưa làm).
 - `src/app/(site)/ho-so/` — hồ sơ: thông tin cơ thể (`ProfileForm.tsx` + `actions.ts`), thực đơn đã lưu
   (`SavedPlansList.tsx`), đổi mật khẩu, đăng xuất. Chưa đăng nhập → chuyển tới `/dang-nhap?next=/ho-so`.

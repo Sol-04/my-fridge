@@ -21,6 +21,9 @@ export function cycleStats(starts: { start: string; end: string | null }[]): Cyc
   const avgCycle = good.length ? Math.round(good.reduce((s, g) => s + g, 0) / good.length) : null;
   const lens = sorted.slice(-6).filter((p) => p.end).map((p) => dayNumber(p.end!) - dayNumber(p.start) + 1);
   const avgPeriod = lens.length ? Math.round(lens.reduce((s, g) => s + g, 0) / lens.length) : null;
-  const next = avgCycle ? isoDay((dayNumber(last.start) + avgCycle) * dayMs) : null;
+  let nextNum = avgCycle ? dayNumber(last.start) + avgCycle : null;
+  const todayNum = Math.floor(Date.now() / dayMs);
+  while (nextNum != null && avgCycle && nextNum < todayNum) nextNum += avgCycle; // quá hạn thì dự đoán kỳ kế tiếp
+  const next = nextNum != null ? isoDay(nextNum * dayMs) : null;
   return { lastStart: last.start, avgCycleDays: avgCycle, avgPeriodDays: avgPeriod, nextStart: next };
 }

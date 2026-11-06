@@ -55,10 +55,8 @@ async function DiaryContent({ searchParams }: { searchParams: PageProps<"/nhat-k
   const foods = day.foods ?? [];
   const workouts = day.workouts ?? [];
   const eaten = day.foods === null ? null : Math.round(foods.reduce((s, f) => s + f.calories, 0));
-  const workoutBurned = day.workouts === null ? null : Math.round(workouts.reduce((s, w) => s + w.calories, 0));
-  // Năng lượng hoạt động của Apple đã gồm cả buổi tập → lấy số lớn hơn, không cộng dồn để khỏi tính hai lần
-  const appleKcal = health?.week.find((d) => d.day === date)?.active_kcal ?? null;
-  const burned = workoutBurned == null ? null : appleKcal != null ? Math.max(workoutBurned, appleKcal) : workoutBurned;
+  // Chỉ tính buổi tập đã ghi. Năng lượng hoạt động của Apple (gồm cả đi lại thường ngày) KHÔNG cộng vào đây vì calo mục tiêu đã có hệ số vận động.
+  const burned = day.workouts === null ? null : Math.round(workouts.reduce((s, w) => s + w.calories, 0));
 
   const input = profile
     ? parseUserInput({
@@ -158,7 +156,7 @@ async function DiaryContent({ searchParams }: { searchParams: PageProps<"/nhat-k
         </dl>
         {remaining != null && (
           <p className="mt-3 text-xs text-brand-50">
-            Còn lại = mục tiêu + calo đốt thêm − calo đã ăn (ước tính).{appleKcal != null && " Calo đốt thêm lấy từ app Sức khoẻ nếu cao hơn buổi tập bạn ghi."}
+            Còn lại = mục tiêu + calo đốt thêm khi tập − calo đã ăn (ước tính).
           </p>
         )}
       </section>

@@ -61,8 +61,8 @@ class Collector {
       else if (tag.includes(FLOW)) this.addFlow(tag);
     }
     // Giữ lại phần chưa trọn thẻ ở cuối đoạn
-    const open = buf.lastIndexOf("<Record", buf.length);
-    this.tail = open >= lastEnd ? buf.slice(open) : "";
+    const cut = Math.max(lastEnd, buf.lastIndexOf("<"));
+    this.tail = buf.slice(cut);
     if (this.tail.length > 20_000) this.tail = "";
   }
 
@@ -101,7 +101,7 @@ class Collector {
         return { day, steps: s ? Math.round(best(s)) : null, activeKcal: e ? Math.round(best(e)) : null };
       })
       .filter((d) => (d.steps ?? 0) > 0 || (d.activeKcal ?? 0) > 0);
-    return { days: out, cycles: groupPeriods([...this.flowDays]), recordsRead: this.recordsRead };
+    return { days: out, cycles: groupPeriods([...this.flowDays]).slice(-40), recordsRead: this.recordsRead };
   }
 }
 

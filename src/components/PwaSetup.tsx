@@ -1,5 +1,6 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { Icon, Icons } from "@/components/icons";
@@ -13,6 +14,7 @@ export function PwaSetup() {
   const [event, setEvent] = useState<InstallEvent | null>(null);
   const [ios, setIos] = useState(false);
   const [hidden, setHidden] = useState(true);
+  const pathname = usePathname();
 
   useEffect(() => {
     if (process.env.NODE_ENV === "production" && "serviceWorker" in navigator) {
@@ -46,7 +48,8 @@ export function PwaSetup() {
     };
   }, []);
 
-  if (hidden || (!event && !ios)) return null;
+  // Không che thanh nút dính đáy của trang tạo thực đơn; trang quản trị không cần gợi ý
+  if (hidden || (!event && !ios) || pathname.startsWith("/tao-thuc-don") || pathname.startsWith("/studio")) return null;
 
   const close = () => {
     setHidden(true);

@@ -1,7 +1,7 @@
 // Service worker của Glow up with me.
 // Chỉ lưu tạm file tĩnh (giao diện, hình vẽ, icon) cho nhanh, và trang "offline" khi mất mạng.
 // KHÔNG lưu trang đã đăng nhập hay dữ liệu cá nhân (nhật ký, hồ sơ, thực đơn).
-const VERSION = "v1";
+const VERSION = "v2"; // đổi số này khi sửa icon / hình vẽ cùng tên để máy người dùng lấy bản mới
 const STATIC = `static-${VERSION}`;
 const OFFLINE_URL = "/offline";
 
@@ -23,7 +23,7 @@ self.addEventListener("fetch", (event) => {
 
   // Mở trang: luôn lấy từ mạng; mất mạng mới hiện trang offline
   if (req.mode === "navigate") {
-    event.respondWith(fetch(req).catch(() => caches.match(OFFLINE_URL)));
+    event.respondWith(fetch(req).catch(() => caches.match(OFFLINE_URL).then((r) => r || Response.error())));
     return;
   }
 
