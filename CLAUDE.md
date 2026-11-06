@@ -169,7 +169,7 @@ Chủ dự án **không biết code**. Vì vậy luôn:
      không dùng tiền tố này cho key bí mật (ví dụ Supabase service role key).
 
 ## Tiến độ hiện tại (cập nhật cuối mỗi phiên — đọc mục này trước tiên)
-- **Đã xong và đã gộp vào `main` (PR #11):** Nhật ký ăn uống + tập luyện (`/nhat-ky`), 12 món phụ, đổi tên hiển thị "Glow up with me", ô tìm kiếm không dấu ở `/mon-an`.
+- **Đã xong và đã gộp vào `main` (PR #11, #12):** Nhật ký ăn uống + tập luyện (`/nhat-ky`), 12 món phụ, đổi tên hiển thị "Glow up with me", ô tìm kiếm không dấu ở `/mon-an`.
   - Web chính tự cập nhật trên Vercel sau khi gộp.
   - Việc mới → tạo nhánh mới từ `main` mới nhất → PR → gửi link preview (lấy từ bình luận của vercel[bot] trên PR) → chủ dự án nói "đồng ý gộp" thì mới gộp.
 - **Việc chủ dự án tự làm:** bật "Leaked password protection" trong Supabase → Authentication.
