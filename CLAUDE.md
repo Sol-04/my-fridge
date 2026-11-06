@@ -37,6 +37,11 @@ Website giúp người Việt **chọn thực phẩm đang có** (trong tủ l�
     RLS chỉ chủ tài khoản). Bước chân lấy nguồn nhiều nhất mỗi ngày (khỏi cộng đôi iPhone + Watch). `src/lib/cycle.ts` = chu kỳ trung bình + ngày dự kiến (chỉ tham khảo).
     Năng lượng hoạt động của Apple chỉ để xem (KHÔNG cộng vào "còn lại" vì calo mục tiêu đã có hệ số vận động). Web KHÔNG đọc thẳng được Apple Sức khoẻ /
     Health Connect (chỉ app cài trên máy mới đọc được); Fitbit Web API đã tắt từ 11/2026 → Google Health API (chưa làm).
+- **Nhắc nhở Lark** (mục "Nhắc nhở qua Lark" ở `/ho-so`: `LarkSettings.tsx`, `lark-actions.ts`): mỗi người dán link webhook của Custom Bot trong nhóm Lark.
+  Bảng `lark_settings` (RLS chỉ chủ tài khoản; link là BÍ MẬT, trang chỉ lấy các công tắc, không lấy link). Nhắc uống nước / vận động / giờ ăn chạy
+  trong Supabase bằng pg_cron + pg_net mỗi 30 phút theo giờ VN (`supabase/migrations/20261107_lark_nhac_nho.sql`, hàm `send_lark_reminders`).
+  Cảnh báo quá calo gửi từ web khi ghi món (`src/lib/lark-alerts.ts`, trong `after()`), chỉ báo khi vừa vượt 100% hoặc chạm 90%. `src/lib/lark.ts` chỉ nhận
+  link `open.larksuite.com` / `open.feishu.cn`. KHÔNG thêm schema `net` vào "Exposed schemas" của Supabase. Chưa có: tự chỉnh giờ nhắc, cảnh báo khi sửa số phần / xoá buổi tập.
 - `src/app/(site)/ho-so/` — hồ sơ: thông tin cơ thể (`ProfileForm.tsx` + `actions.ts`), thực đơn đã lưu
   (`SavedPlansList.tsx`), đổi mật khẩu, đăng xuất. Chưa đăng nhập → chuyển tới `/dang-nhap?next=/ho-so`.
 - `src/app/auth/callback/route.ts` — nhận link từ email (xác nhận tài khoản / đặt lại mật khẩu).
@@ -178,12 +183,13 @@ Chủ dự án **không biết code**. Vì vậy luôn:
      không dùng tiền tố này cho key bí mật (ví dụ Supabase service role key).
 
 ## Tiến độ hiện tại (cập nhật cuối mỗi phiên — đọc mục này trước tiên)
-- **Đã xong và đã gộp vào `main` (PR #11, #12):** Nhật ký ăn uống + tập luyện (`/nhat-ky`), 12 món phụ, đổi tên hiển thị "Glow up with me", ô tìm kiếm không dấu ở `/mon-an`.
+- **Đã gộp vào `main` trước đó (PR #11, #12):** Nhật ký ăn uống + tập luyện (`/nhat-ky`), 12 món phụ, đổi tên hiển thị "Glow up with me", ô tìm kiếm không dấu ở `/mon-an`.
   - Web chính tự cập nhật trên Vercel sau khi gộp.
   - Việc mới → tạo nhánh mới từ `main` mới nhất → PR → gửi link preview (lấy từ bình luận của vercel[bot] trên PR) → chủ dự án nói "đồng ý gộp" thì mới gộp.
 - **Việc chủ dự án tự làm:** bật "Leaked password protection" trong Supabase → Authentication.
-- **PR #13 (nhánh `claude/loving-feynman-t7q1zt`, chưa gộp — chờ chủ dự án xem preview và nói "đồng ý gộp"):** tab Sức khoẻ (nhập file Apple Sức khoẻ: bước chân,
-  năng lượng hoạt động, chu kỳ) + web app PWA. SQL `20261106_suc_khoe.sql` đã chạy trên Supabase. Chưa thử trên iPhone thật / file export.zip thật.
+- **Đã gộp vào `main` (PR #13):** tab Sức khoẻ (nhập file Apple Sức khoẻ: bước chân, năng lượng hoạt động, chu kỳ) + web app PWA (icon lá xanh có tia sáng đào).
+  SQL `20261106_suc_khoe.sql` đã chạy trên Supabase. Chưa thử trên iPhone thật / file export.zip thật. Icon trên link preview Vercel có thể ra chữ "G"
+  (preview bị khoá đăng nhập nên iPhone không tải được icon) → thử lại trên web chính, xoá icon cũ rồi thêm lại.
 - **Chưa làm (chỉ làm khi được yêu cầu lại):** cân nặng theo ngày, uống nước, giấc ngủ, dashboard, báo cáo tuần, tự đồng bộ Google Health / Fitbit.
 - **Mã định danh** (không phải bí mật):
   - Supabase project `vxuapnicjqyvwzicdkmv`; SQL đã chạy nằm trong `supabase/migrations/`.

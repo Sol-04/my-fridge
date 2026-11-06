@@ -9,6 +9,7 @@ import { createSupabaseServer } from "@/lib/supabase/server";
 
 import { signOut } from "../(auth)/actions";
 import { NewPasswordForm } from "../(auth)/dat-lai-mat-khau/NewPasswordForm";
+import { LarkSettings } from "./LarkSettings";
 import { ProfileForm } from "./ProfileForm";
 import { SavedPlansList, type SavedPlanRow } from "./SavedPlansList";
 import ProfileLoading from "./loading";
@@ -43,8 +44,18 @@ async function ProfileContent() {
   const user = data.user;
   if (!supabase || !user) redirect("/dang-nhap?next=/ho-so");
 
-  const [profile, plansRes] = await Promise.all([
+  const [profile, larkRes, plansRes] = await Promise.all([
     getProfile(supabase, user.id),
+    // Chỉ lấy các công tắc, KHÔNG lấy link webhook (bí mật) để nó không rời khỏi máy chủ
+    supabase
+      .from("lark_settings")
+      .select("enabled, water_on, move_on, meal_on, calorie_on")
+      .eq("user_id", user.id)
+      .maybeSingle()
+      .then(
+        (r) => r,
+        () => ({ data: null, error: { message: "network" } }),
+      ),
     supabase
       .from("meal_plans")
       .select("id, created_at, target_calories, breakfast, lunch, dinner")
@@ -58,6 +69,9 @@ async function ProfileContent() {
   ]);
   if (plansRes.error) console.error("Không đọc được thực đơn đã lưu:", plansRes.error.message);
   const plans = plansRes.error ? null : ((plansRes.data ?? []) as SavedPlanRow[]);
+
+  if (larkRes.error) console.error("Không đọc được cài đặt Lark:", larkRes.error.message);
+  const lark = larkRes.error ? null : larkRes.data;
 
   const name = displayNameOf(profile, user.email);
 
@@ -88,6 +102,20 @@ async function ProfileContent() {
             weightKg: profile?.weight_kg?.toString() ?? "",
             activity: profile?.activity ?? "light",
             goal: profile?.goal ?? "lose",
+          }}
+        />
+      </Section>
+
+      <Section id="nhac-nho-lark" title="Nhắc nhở qua Lark" icon={Icons.heartbeat}>
+        <p className="-mt-2 mb-4 text-sm text-muted">Nhận nhắc uống nước, vận động, giờ ăn và cảnh báo khi ăn quá calo ngay trong Lark.</p>
+        <LarkSettings
+          initial={{
+            connected: !!lark,
+            enabled: lark?.enabled ?? true,
+            water: lark?.water_on ?? true,
+            move: lark?.move_on ?? true,
+            meal: lark?.meal_on ?? true,
+            calorie: lark?.calorie_on ?? true,
           }}
         />
       </Section>

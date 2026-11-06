@@ -161,9 +161,9 @@ export function HealthTab({ date, today, week, cycles }: Props) {
             run(() => addCycleStart(cycleDate));
           }}
         >
-          <label className="block flex-1 text-sm font-medium text-ink">
+          <label className="block min-w-0 flex-1 text-sm font-medium text-ink">
             Ngày bắt đầu kỳ mới
-            <input type="date" className={`${selectClass} mt-1`} value={cycleDate} max={today} min="2020-01-01" onChange={(e) => setCycleDate(e.target.value)} required disabled={busy} />
+            <input type="date" className={`${selectClass} mt-1 min-w-0 max-w-full appearance-none text-left`} value={cycleDate} max={today} min="2020-01-01" onChange={(e) => setCycleDate(e.target.value)} required disabled={busy} />
           </label>
           <button type="submit" disabled={busy} className={buttonClass("secondary", "md", "w-full sm:w-auto")}>
             <Icon icon={Icons.add} size={18} /> Thêm kỳ
