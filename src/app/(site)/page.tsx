@@ -66,7 +66,7 @@ export default async function Home() {
   // Món nổi bật: mỗi bữa lấy 1 món
   const homeCount = recipes.filter((r) => r.kind !== "eatout").length;
   const eatOutCount = recipes.length - homeCount;
-  const featured = MEAL_OPTIONS.map((m) => recipes.find((r) => r.kind !== "eatout" && r.meals?.includes(m.value))).filter(
+  const featured = MEAL_OPTIONS.filter((m) => m.value !== "snack").map((m) => recipes.find((r) => r.kind !== "eatout" && r.meals?.includes(m.value))).filter(
     (r): r is NonNullable<typeof r> => Boolean(r),
   );
 

@@ -2,6 +2,7 @@
 // Chỉ import icon từ file này để cả web dùng một kiểu nét, một độ dày.
 import type { LucideIcon, LucideProps } from "lucide-react";
 import {
+  Apple,
   ArrowDown,
   ArrowLeft,
   ArrowRight,
@@ -62,6 +63,7 @@ export const Icons = {
   breakfast: Sunrise,
   lunch: Sun,
   dinner: Moon,
+  snack: Apple,
   allMeals: UtensilsCrossed,
   foods: ShoppingBasket,
   plan: ClipboardList,
@@ -106,6 +108,7 @@ export const MEAL_ICONS: Record<string, LucideIcon> = {
   breakfast: Icons.breakfast,
   lunch: Icons.lunch,
   dinner: Icons.dinner,
+  snack: Icons.snack,
   all: Icons.allMeals,
 };
 
