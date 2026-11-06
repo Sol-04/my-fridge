@@ -8,6 +8,12 @@ const nextConfig: NextConfig = {
     // Cho phép hiển thị ảnh món ăn lưu trên Sanity
     remotePatterns: [{ protocol: "https", hostname: "cdn.sanity.io" }],
   },
+  async headers() {
+    return [
+      // Service worker phải luôn được kiểm tra bản mới, không để trình duyệt giữ bản cũ
+      { source: "/sw.js", headers: [{ key: "Cache-Control", value: "no-cache, no-store, must-revalidate" }, { key: "Service-Worker-Allowed", value: "/" }] },
+    ];
+  },
   turbopack: {
     rules: {
       "*.css": {

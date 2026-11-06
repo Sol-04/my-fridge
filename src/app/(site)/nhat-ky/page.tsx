@@ -7,6 +7,7 @@ import { Icon, Icons } from "@/components/icons";
 import { ButtonLink, buttonClass, Notice, PageHeader } from "@/components/ui";
 import { addDays, formatDiaryDate, isValidIsoDate, todayInVietnam } from "@/lib/diary";
 import { getDiaryDay } from "@/lib/diary-db";
+import { getHealthData } from "@/lib/health-db";
 import { calcTargetCalories, parseUserInput } from "@/lib/meal-plan";
 import { getProfile } from "@/lib/profile";
 import { createSupabaseServer } from "@/lib/supabase/server";
@@ -14,6 +15,7 @@ import { DEFAULT_WEIGHT_KG } from "@/lib/workout-plan";
 import { getPlannerRecipes } from "@/sanity/lib/recipes";
 
 import { FoodTab } from "./FoodTab";
+import { HealthTab } from "./HealthTab";
 import DiaryLoading from "./loading";
 import { WorkoutTab } from "./WorkoutTab";
 
@@ -40,14 +42,23 @@ async function DiaryContent({ searchParams }: { searchParams: PageProps<"/nhat-k
   const today = todayInVietnam();
   const rawDate = first(sp.ngay);
   const date = isValidIsoDate(rawDate) ? rawDate : today;
-  const tab = first(sp.tab) === "tap" ? "tap" : "an";
+  const rawTab = first(sp.tab);
+  const tab = rawTab === "tap" ? "tap" : rawTab === "suc-khoe" ? "suc-khoe" : "an";
 
-  const [day, profile, recipes] = await Promise.all([getDiaryDay(supabase, user.id, date), getProfile(supabase, user.id), getPlannerRecipes()]);
+  const [day, profile, recipes, health] = await Promise.all([
+    getDiaryDay(supabase, user.id, date),
+    getProfile(supabase, user.id),
+    getPlannerRecipes(),
+    getHealthData(supabase, user.id, date),
+  ]);
 
   const foods = day.foods ?? [];
   const workouts = day.workouts ?? [];
   const eaten = day.foods === null ? null : Math.round(foods.reduce((s, f) => s + f.calories, 0));
-  const burned = day.workouts === null ? null : Math.round(workouts.reduce((s, w) => s + w.calories, 0));
+  const workoutBurned = day.workouts === null ? null : Math.round(workouts.reduce((s, w) => s + w.calories, 0));
+  // Năng lượng hoạt động của Apple đã gồm cả buổi tập → lấy số lớn hơn, không cộng dồn để khỏi tính hai lần
+  const appleKcal = health?.week.find((d) => d.day === date)?.active_kcal ?? null;
+  const burned = workoutBurned == null ? null : appleKcal != null ? Math.max(workoutBurned, appleKcal) : workoutBurned;
 
   const input = profile
     ? parseUserInput({
@@ -66,14 +77,14 @@ async function DiaryContent({ searchParams }: { searchParams: PageProps<"/nhat-k
   const href = (d: string, t: string) => {
     const q = new URLSearchParams();
     if (d !== today) q.set("ngay", d);
-    if (t === "tap") q.set("tab", "tap");
+    if (t !== "an") q.set("tab", t);
     const s = q.toString();
     return s ? `/nhat-ky?${s}` : "/nhat-ky";
   };
   const navBtn = "inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-2xl border-[1.5px] border-line bg-white text-brand-700 transition duration-200 hover:border-brand-300 hover:bg-brand-50 active:translate-y-px";
 
   const remaining = target != null && eaten != null && burned != null ? target + burned - eaten : null;
-  const loadError = tab === "tap" ? day.workouts === null : day.foods === null;
+  const loadError = tab === "tap" ? day.workouts === null : tab === "suc-khoe" ? health === null : day.foods === null;
   const recipeList = recipes.map((r) => ({ slug: r.slug, name: r.name, calories: r.calories, meals: r.meals, kind: r.kind }));
 
   return (
@@ -101,10 +112,11 @@ async function DiaryContent({ searchParams }: { searchParams: PageProps<"/nhat-k
       </nav>
 
       {/* Hai tab */}
-      <nav aria-label="Phần nhật ký" className="animate-enter grid grid-cols-2 gap-2 rounded-2xl border border-line bg-white p-1.5">
+      <nav aria-label="Phần nhật ký" className="animate-enter grid grid-cols-3 gap-2 rounded-2xl border border-line bg-white p-1.5">
         {[
           { key: "an", label: "Ăn uống", icon: Icons.allMeals },
           { key: "tap", label: "Tập luyện", icon: Icons.workout },
+          { key: "suc-khoe", label: "Sức khoẻ", icon: Icons.heartbeat },
         ].map((t) => (
           <Link
             key={t.key}
@@ -144,7 +156,11 @@ async function DiaryContent({ searchParams }: { searchParams: PageProps<"/nhat-k
             </div>
           ))}
         </dl>
-        {remaining != null && <p className="mt-3 text-xs text-brand-50">Còn lại = mục tiêu + calo đốt thêm khi tập − calo đã ăn (ước tính).</p>}
+        {remaining != null && (
+          <p className="mt-3 text-xs text-brand-50">
+            Còn lại = mục tiêu + calo đốt thêm − calo đã ăn (ước tính).{appleKcal != null && " Calo đốt thêm lấy từ app Sức khoẻ nếu cao hơn buổi tập bạn ghi."}
+          </p>
+        )}
       </section>
 
       {target == null && (
@@ -174,6 +190,8 @@ async function DiaryContent({ searchParams }: { searchParams: PageProps<"/nhat-k
         >
           Có thể mạng đang chậm. Bạn đợi một chút rồi thử lại nhé.
         </Notice>
+      ) : tab === "suc-khoe" && health ? (
+        <HealthTab key={date} date={date} today={today} week={health.week} cycles={health.cycles} />
       ) : tab === "tap" ? (
         <WorkoutTab key={date} date={date} plan={day.plan} workouts={workouts} weightKg={weightKg} usingDefaultWeight={usingDefaultWeight} isToday={date === today} />
       ) : (
