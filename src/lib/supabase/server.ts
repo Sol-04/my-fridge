@@ -43,3 +43,17 @@ export async function getCurrentUser(): Promise<User | null> {
     return null;
   }
 }
+
+// Người dùng đang đăng nhập, lấy từ chữ ký trong token (getClaims): nhanh hơn getUser vì không phải gọi mạng tới Supabase
+// khi dự án dùng khoá ký bất đối xứng; nếu dự án còn dùng khoá cũ, thư viện tự quay về hỏi Supabase nên không bao giờ chậm hơn.
+// Chỉ dùng khi ĐỌC dữ liệu hiển thị; hành động ghi dữ liệu vẫn dùng getUser() để chắc chắn phiên chưa bị thu hồi.
+export async function getAuthUser(supabase: SupabaseClient): Promise<{ id: string; email: string | null } | null> {
+  try {
+    const { data, error } = await supabase.auth.getClaims();
+    const claims = data?.claims;
+    if (error || !claims?.sub) return null;
+    return { id: claims.sub, email: typeof claims.email === "string" ? claims.email : null };
+  } catch {
+    return null;
+  }
+}

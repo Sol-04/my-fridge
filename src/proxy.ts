@@ -7,6 +7,9 @@ import { getSupabaseEnv } from "@/lib/supabase/env";
 export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request });
 
+  // Yêu cầu tải trước trang (prefetch) rất nhiều và chạy nền: bỏ qua để không tranh mạng với lần bấm thật của người dùng.
+  if (request.headers.has("next-router-prefetch") || request.headers.get("purpose") === "prefetch") return response;
+
   const env = getSupabaseEnv();
   // Chưa cấu hình, hoặc người dùng chưa từng đăng nhập (không có cookie Supabase) → bỏ qua cho nhanh.
   const hasAuthCookie = request.cookies.getAll().some((c) => c.name.startsWith("sb-"));

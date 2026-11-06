@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import { ButtonLink, Notice, PageHeader } from "@/components/ui";
 import { parseUserInput, type UserInput } from "@/lib/meal-plan";
 import { getProfile } from "@/lib/profile";
-import { createSupabaseServer } from "@/lib/supabase/server";
+import { createSupabaseServer, getAuthUser } from "@/lib/supabase/server";
 import { getPlannerRecipes } from "@/sanity/lib/recipes";
 
 import PlannerLoading from "./loading";
@@ -28,7 +28,7 @@ async function CreatePlanContent() {
 
   // Người dùng đang đăng nhập + hồ sơ (để tự điền bước 1)
   const supabase = await createSupabaseServer();
-  const user = supabase ? (await supabase.auth.getUser().catch(() => null))?.data.user ?? null : null;
+  const user = supabase ? await getAuthUser(supabase) : null;
   const profile = supabase && user ? await getProfile(supabase, user.id) : null;
   const profileInput: UserInput | null = profile
     ? parseUserInput({

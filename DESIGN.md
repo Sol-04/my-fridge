@@ -182,9 +182,9 @@ Khai báo trong `@theme` ở `src/app/globals.css`, dùng qua class Tailwind (`b
 - **Bóng:** `shadow-soft` (`0 2px 12px rgba(43,58,51,.06)`) cho thẻ; `shadow-lift` (`0 2px 8px rgba(43,58,51,.08)`)
   khi di chuột — **không bao giờ đậm hơn mức này**. Phân tách chủ yếu bằng viền mảnh `border-line`.
 - **Chuyển động** (khai báo trong `globals.css`):
-  - Xuất hiện: `animate-enter` — hiện dần + trượt lên 16px → 0 trong **420ms ease-out**. Dùng cho tiêu đề trang,
+  - Xuất hiện: `animate-enter` — hiện dần + trượt lên 8px → 0 trong **240ms ease-out**. Dùng cho tiêu đề trang,
     thẻ chính, từng bước của trang tạo thực đơn.
-  - Danh sách: class `stagger` trên thẻ cha + `style={{ "--i": số thứ tự }}` trên từng mục → mỗi mục trễ **80ms**.
+  - Danh sách: class `stagger` trên thẻ cha + `style={{ "--i": số thứ tự }}` trên từng mục → mỗi mục trễ **40ms, tối đa 5 mục** (mục thứ 6 trở đi hiện cùng lúc với mục thứ 6).
   - Di chuột: **200ms ease-out** — đổi màu, `shadow-lift`, thẻ nhích lên 2px (`hover:-translate-y-0.5`).
   - Bấm nút: lún xuống 1px (`active:translate-y-px`).
   - **Chỉ làm động `transform` và `opacity`** (thanh tiến độ dùng `scaleX`, không đổi `width`).

@@ -10,7 +10,7 @@ import { getDiaryDay } from "@/lib/diary-db";
 import { getHealthData } from "@/lib/health-db";
 import { calcTargetCalories, parseUserInput } from "@/lib/meal-plan";
 import { getProfile } from "@/lib/profile";
-import { createSupabaseServer } from "@/lib/supabase/server";
+import { createSupabaseServer, getAuthUser } from "@/lib/supabase/server";
 import { DEFAULT_WEIGHT_KG } from "@/lib/workout-plan";
 import { getPlannerRecipes } from "@/sanity/lib/recipes";
 
@@ -34,8 +34,7 @@ const first = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v
 async function DiaryContent({ searchParams }: { searchParams: PageProps<"/nhat-ky">["searchParams"] }) {
   const sp = await searchParams;
   const supabase = await createSupabaseServer();
-  const { data } = supabase ? await supabase.auth.getUser().catch(() => ({ data: { user: null } })) : { data: { user: null } };
-  const user = data.user;
+  const user = supabase ? await getAuthUser(supabase) : null;
   if (!supabase || !user) redirect("/dang-nhap?next=/nhat-ky");
 
   // Chỉ gọi new Date() sau khi đã đọc dữ liệu động ở trên
