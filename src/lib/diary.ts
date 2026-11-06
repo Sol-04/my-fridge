@@ -54,7 +54,7 @@ export function isValidIsoDate(v: unknown): v is string {
   if (typeof v !== "string" || !ISO.test(v)) return false;
   const [y, m, d] = v.split("-").map(Number);
   const dt = new Date(Date.UTC(y, m - 1, d));
-  return dt.getUTCFullYear() === y && dt.getUTCMonth() === m - 1 && dt.getUTCDate() === d && y >= 2020 && y <= 2100;
+  return dt.getUTCFullYear() === y && dt.getUTCMonth() === m - 1 && dt.getUTCDate() === d && y >= 2020 && y < 2100;
 }
 
 export function addDays(iso: string, n: number): string {

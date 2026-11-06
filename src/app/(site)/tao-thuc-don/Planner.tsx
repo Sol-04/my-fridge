@@ -504,7 +504,7 @@ export function Planner({
           <button
             type="button"
             onClick={onLogDiary}
-            disabled={logging || !plan.some((p) => p.entry)}
+            disabled={logging || logState?.tone === "ok" || !plan.some((p) => p.entry)}
             className={buttonClass("secondary", "md", "w-full")}
           >
             {logging ? (

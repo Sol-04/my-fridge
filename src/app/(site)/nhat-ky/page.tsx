@@ -46,8 +46,8 @@ async function DiaryContent({ searchParams }: { searchParams: PageProps<"/nhat-k
 
   const foods = day.foods ?? [];
   const workouts = day.workouts ?? [];
-  const eaten = Math.round(foods.reduce((s, f) => s + f.calories, 0));
-  const burned = Math.round(workouts.reduce((s, w) => s + w.calories, 0));
+  const eaten = day.foods === null ? null : Math.round(foods.reduce((s, f) => s + f.calories, 0));
+  const burned = day.workouts === null ? null : Math.round(workouts.reduce((s, w) => s + w.calories, 0));
 
   const input = profile
     ? parseUserInput({
@@ -72,7 +72,7 @@ async function DiaryContent({ searchParams }: { searchParams: PageProps<"/nhat-k
   };
   const navBtn = "inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-2xl border-[1.5px] border-line bg-white text-brand-700 transition duration-200 hover:border-brand-300 hover:bg-brand-50 active:translate-y-px";
 
-  const remaining = target != null ? target + burned - eaten : null;
+  const remaining = target != null && eaten != null && burned != null ? target + burned - eaten : null;
   const loadError = tab === "tap" ? day.workouts === null : day.foods === null;
   const recipeList = recipes.map((r) => ({ slug: r.slug, name: r.name, calories: r.calories, meals: r.meals, kind: r.kind }));
 
@@ -135,7 +135,7 @@ async function DiaryContent({ searchParams }: { searchParams: PageProps<"/nhat-k
         <dl className="mt-4 grid grid-cols-3 gap-2 text-center">
           {[
             { label: "Đã ăn", value: eaten },
-            { label: "Đốt", value: burned },
+            { label: "Đốt thêm", value: burned },
             { label: "Mục tiêu", value: target },
           ].map((n) => (
             <div key={n.label} className="rounded-2xl bg-white/15 p-3">
@@ -144,7 +144,7 @@ async function DiaryContent({ searchParams }: { searchParams: PageProps<"/nhat-k
             </div>
           ))}
         </dl>
-        {remaining != null && <p className="mt-3 text-xs text-brand-50">Còn lại = mục tiêu + calo đốt − calo đã ăn.</p>}
+        {remaining != null && <p className="mt-3 text-xs text-brand-50">Còn lại = mục tiêu + calo đốt thêm khi tập − calo đã ăn (ước tính).</p>}
       </section>
 
       {target == null && (

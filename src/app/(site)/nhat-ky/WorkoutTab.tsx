@@ -297,7 +297,7 @@ function SessionCard({ date, session, weightKg }: { date: string; session: Exclu
       )}
       <button
         type="button"
-        disabled={pending || !validMin}
+        disabled={pending || !validMin || done}
         onClick={() => run(() => addWorkoutLog({ date, activityKey: key, minutes: min }), () => setDone(true))}
         className={buttonClass("primary", "md", "w-full sm:w-auto")}
       >
@@ -466,7 +466,7 @@ function AddOther({ date, weightKg }: { date: string; weightKg: number }) {
             {error && <Notice tone="error">{error}</Notice>}
 
             <div className="flex flex-col gap-2 sm:flex-row">
-              <button type="submit" disabled={pending || !validMin || (mode === "custom" && !name.trim())} className={buttonClass("primary", "md", "w-full sm:w-auto")}>
+              <button type="submit" disabled={pending || !validMin || (mode === "custom" && !name.trim())} className={buttonClass("secondary", "md", "w-full sm:w-auto")}>
                 {pending ? (
                   <>
                     Đang lưu…

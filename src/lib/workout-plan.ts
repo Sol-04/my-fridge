@@ -145,8 +145,10 @@ export const WEEKDAY_LABELS = ["Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Th�
 export const DEFAULT_WEIGHT_KG = 60;
 export const CUSTOM_ACTIVITY_MET = 4.0; // hoạt động tự nhập: coi như vận động vừa
 
+// Calo đốt THÊM khi tập = (MET − 1) × cân nặng × giờ. Trừ 1 MET vì calo mục tiêu (TDEE) đã gồm
+// phần cơ thể tự đốt lúc nghỉ — tránh cộng trùng khi tính "calo còn lại".
 export function burnedCalories(met: number, weightKg: number, minutes: number): number {
-  return Math.round((met * weightKg * minutes) / 60);
+  return Math.max(0, Math.round(((met - 1) * weightKg * minutes) / 60));
 }
 
 // MET theo mã đã lưu (môn / buổi bài tập); không biết → null

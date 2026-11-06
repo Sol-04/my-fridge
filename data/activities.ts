@@ -1,6 +1,6 @@
 // Thư viện hoạt động: môn thể thao + bài tập. MET = mức tiêu hao năng lượng so với lúc ngồi yên
 // (giá trị tham khảo theo Compendium of Physical Activities, mức "phong trào / vừa sức").
-// Calo đốt ước tính = MET × cân nặng (kg) × số giờ.
+// Calo đốt thêm ước tính = (MET − 1) × cân nặng (kg) × số giờ (xem burnedCalories trong src/lib/workout-plan.ts).
 
 export type ActivityKind = "sport" | "exercise";
 export type ActivityPlace = "san" | "nha" | "ngoai-troi" | "ho-boi" | "phong-gym";

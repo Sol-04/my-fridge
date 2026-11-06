@@ -230,7 +230,7 @@ function RecipeRow({ recipe, date, meal, onAdded }: { recipe: DiaryRecipe; date:
           type="button"
           disabled={pending}
           onClick={() => run(() => addFoodLog({ date, meal, recipeSlug: recipe.slug, servings }), onAdded)}
-          className={buttonClass("primary", "md", "min-h-11 shrink-0")}
+          className={buttonClass("secondary", "md", "min-h-11 shrink-0")}
         >
           {pending ? <PendingDots /> : "Thêm"}
           <span className="sr-only">{recipe.name} vào nhật ký</span>

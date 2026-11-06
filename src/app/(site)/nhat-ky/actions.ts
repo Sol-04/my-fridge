@@ -102,7 +102,8 @@ export async function updateFoodServings(id: string, servings: number): Promise<
   const s = await session();
   if (!s.ok) return s.result;
   const { data: current } = await s.supabase.from("food_logs").select("recipe_slug").eq("id", id).maybeSingle();
-  if (!current?.recipe_slug) return { ok: false, error: "Món tự nhập không đổi được số phần — bạn xoá và ghi lại nhé." };
+  if (!current) return { ok: false, error: "Không tìm thấy món này. Bạn tải lại trang nhé." };
+  if (!current.recipe_slug) return { ok: false, error: "Món tự nhập không đổi được số phần — bạn xoá và ghi lại nhé." };
   const recipe = (await getPlannerRecipes()).find((r) => r.slug === current.recipe_slug);
   if (!recipe) return { ok: false, error: "Món này không còn trên web nữa, bạn xoá và ghi món khác nhé." };
   const { error } = await s.supabase
@@ -139,7 +140,13 @@ export async function logPlannerMeals(
   date: string,
   meals: { meal: DiaryMeal; recipeId: string; servings: number }[],
 ): Promise<DiaryResult> {
-  if (!isValidIsoDate(date) || !Array.isArray(meals) || meals.length === 0 || meals.length > 4) {
+  if (
+    !isValidIsoDate(date) ||
+    !Array.isArray(meals) ||
+    meals.length === 0 ||
+    meals.length > 4 ||
+    new Set(meals.map((m) => m?.meal)).size !== meals.length // mỗi bữa 1 món
+  ) {
     return { ok: false, error: "Thực đơn chưa hợp lệ." };
   }
   const byId = new Map((await getPlannerRecipes()).map((r) => [r._id, r]));
@@ -147,7 +154,7 @@ export async function logPlannerMeals(
   for (const m of meals) {
     const recipe = byId.get(m?.recipeId);
     const sv = Number(m?.servings);
-    if (!recipe || !isDiaryMeal(m.meal) || !Number.isFinite(sv) || sv < 0.5 || sv > 3) return { ok: false, error: "Thực đơn chưa hợp lệ." };
+    if (!recipe || !isDiaryMeal(m.meal) || !Number.isInteger(sv * 4) || sv < 0.5 || sv > 2.5) return { ok: false, error: "Thực đơn chưa hợp lệ." };
     rows.push({
       log_date: date,
       meal: m.meal,
