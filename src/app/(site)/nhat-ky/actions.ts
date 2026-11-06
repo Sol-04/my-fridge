@@ -3,9 +3,12 @@
 // Ghi / sửa / xoá nhật ký ăn uống + tập luyện. Mọi số calo đều TÍNH LẠI trên máy chủ
 // (món có sẵn: từ dữ liệu Sanity; hoạt động trong thư viện: từ MET), không tin số từ trình duyệt.
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
 
 import { ACTIVITY_BY_KEY } from "../../../../data/activities";
 import { isDiaryMeal, isDiaryServings, isValidIsoDate, type DiaryMeal } from "@/lib/diary";
+import { buildCalorieAlert } from "@/lib/lark-alerts";
+import { sendLarkText } from "@/lib/lark";
 import { getProfile } from "@/lib/profile";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import {
@@ -93,6 +96,9 @@ export async function addFoodLog(input: AddFoodInput): Promise<DiaryResult> {
     console.error("Ghi nhật ký ăn lỗi:", error.message);
     return { ok: false, error: SAVE_FAILED };
   }
+  // Quá calo → báo qua Lark (nếu người dùng đã bật). Gửi sau khi trả lời để không làm chậm nút lưu.
+  const alert = await buildCalorieAlert(s.supabase, s.userId, input.date, Number(row.calories));
+  if (alert) after(() => sendLarkText(alert.url, alert.text).then(() => undefined));
   return done();
 }
 
