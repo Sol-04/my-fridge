@@ -178,12 +178,13 @@ Chủ dự án **không biết code**. Vì vậy luôn:
      không dùng tiền tố này cho key bí mật (ví dụ Supabase service role key).
 
 ## Tiến độ hiện tại (cập nhật cuối mỗi phiên — đọc mục này trước tiên)
-- **Đã xong và đã gộp vào `main` (PR #11, #12):** Nhật ký ăn uống + tập luyện (`/nhat-ky`), 12 món phụ, đổi tên hiển thị "Glow up with me", ô tìm kiếm không dấu ở `/mon-an`.
+- **Đã gộp vào `main` trước đó (PR #11, #12):** Nhật ký ăn uống + tập luyện (`/nhat-ky`), 12 món phụ, đổi tên hiển thị "Glow up with me", ô tìm kiếm không dấu ở `/mon-an`.
   - Web chính tự cập nhật trên Vercel sau khi gộp.
   - Việc mới → tạo nhánh mới từ `main` mới nhất → PR → gửi link preview (lấy từ bình luận của vercel[bot] trên PR) → chủ dự án nói "đồng ý gộp" thì mới gộp.
 - **Việc chủ dự án tự làm:** bật "Leaked password protection" trong Supabase → Authentication.
-- **PR #13 (nhánh `claude/loving-feynman-t7q1zt`, chưa gộp — chờ chủ dự án xem preview và nói "đồng ý gộp"):** tab Sức khoẻ (nhập file Apple Sức khoẻ: bước chân,
-  năng lượng hoạt động, chu kỳ) + web app PWA. SQL `20261106_suc_khoe.sql` đã chạy trên Supabase. Chưa thử trên iPhone thật / file export.zip thật.
+- **Đã gộp vào `main` (PR #13):** tab Sức khoẻ (nhập file Apple Sức khoẻ: bước chân, năng lượng hoạt động, chu kỳ) + web app PWA (icon lá xanh có tia sáng đào).
+  SQL `20261106_suc_khoe.sql` đã chạy trên Supabase. Chưa thử trên iPhone thật / file export.zip thật. Icon trên link preview Vercel có thể ra chữ "G"
+  (preview bị khoá đăng nhập nên iPhone không tải được icon) → thử lại trên web chính, xoá icon cũ rồi thêm lại.
 - **Chưa làm (chỉ làm khi được yêu cầu lại):** cân nặng theo ngày, uống nước, giấc ngủ, dashboard, báo cáo tuần, tự đồng bộ Google Health / Fitbit.
 - **Mã định danh** (không phải bí mật):
   - Supabase project `vxuapnicjqyvwzicdkmv`; SQL đã chạy nằm trong `supabase/migrations/`.
