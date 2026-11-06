@@ -4,6 +4,7 @@ import { Nunito } from "next/font/google";
 import "./globals.css";
 
 import { PwaSetup } from "@/components/PwaSetup";
+import { APPLE_TOUCH_ICON_DATA_URI } from "@/lib/apple-icon-data";
 
 // Nunito: chữ tròn, mềm, hỗ trợ đầy đủ tiếng Việt
 const nunito = Nunito({
@@ -19,6 +20,7 @@ export const metadata: Metadata = {
   applicationName: "Glow up with me",
   // iPhone: chạy toàn màn hình khi mở từ biểu tượng trên màn hình chính
   appleWebApp: { capable: true, title: "Glow up", statusBarStyle: "default" },
+  icons: { other: [{ rel: "apple-touch-icon", url: APPLE_TOUCH_ICON_DATA_URI, sizes: "180x180", type: "image/png" }] },
   formatDetection: { telephone: false },
 };
 
