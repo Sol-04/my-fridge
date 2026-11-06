@@ -55,3 +55,26 @@ export async function getDiaryDay(supabase: SupabaseClient, userId: string, date
     plan: (plan as WorkoutPlanRow | null) ?? null,
   };
 }
+
+export type CustomFood = { id: string; name: string; calories: number; protein: number | null; carbs: number | null; fat: number | null };
+
+// "Món của tôi": null = đọc lỗi
+export async function getCustomFoods(supabase: SupabaseClient, userId: string): Promise<CustomFood[] | null> {
+  try {
+    const { data, error } = await supabase
+      .from("custom_foods")
+      .select("id, name, calories, protein, carbs, fat")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false })
+      .limit(100);
+    if (error) {
+      console.error("Không đọc được Món của tôi:", error.message);
+      return null;
+    }
+    const num = (v: unknown) => (v == null ? null : Number(v));
+    return (data ?? []).map((f) => ({ ...f, calories: Number(f.calories), protein: num(f.protein), carbs: num(f.carbs), fat: num(f.fat) })) as CustomFood[];
+  } catch (err) {
+    console.error("Không đọc được Món của tôi:", err instanceof Error ? err.message : err);
+    return null;
+  }
+}

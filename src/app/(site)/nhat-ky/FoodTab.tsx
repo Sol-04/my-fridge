@@ -7,20 +7,21 @@ import { Chip, TextField } from "@/components/form";
 import { Icon, Icons, MEAL_ICONS } from "@/components/icons";
 import { buttonClass, cardClass, Notice, PendingDots } from "@/components/ui";
 import { DIARY_MEALS, DIARY_SERVINGS, plainText, type DiaryMeal, type FoodLog } from "@/lib/diary";
+import type { CustomFood } from "@/lib/diary-db";
 import { formatServings } from "@/lib/meal-plan";
 
-import { addFoodLog, deleteFoodLog, updateFoodServings } from "./actions";
+import { addFoodLog, deleteCustomFood, deleteFoodLog, updateFoodServings } from "./actions";
 import { selectClass, useDiaryRun } from "./useDiaryRun";
 
 export type DiaryRecipe = { slug: string; name: string; calories: number; meals: string[]; kind: string };
 
 const kcalBadge = "inline-flex items-center gap-1 rounded-lg bg-accent-50 px-2 py-1 text-sm font-bold text-accent-500";
 
-export function FoodTab({ date, foods, recipes }: { date: string; foods: FoodLog[]; recipes: DiaryRecipe[] }) {
+export function FoodTab({ date, foods, recipes, customFoods }: { date: string; foods: FoodLog[]; recipes: DiaryRecipe[]; customFoods: CustomFood[] | null }) {
   return (
     <div className="stagger space-y-4">
       {DIARY_MEALS.map((m, i) => (
-        <MealCard key={m.value} index={i} date={date} meal={m.value} label={m.label} logs={foods.filter((f) => f.meal === m.value)} recipes={recipes} />
+        <MealCard key={m.value} index={i} date={date} meal={m.value} label={m.label} logs={foods.filter((f) => f.meal === m.value)} recipes={recipes} customFoods={customFoods} />
       ))}
     </div>
   );
@@ -33,6 +34,7 @@ function MealCard({
   label,
   logs,
   recipes,
+  customFoods,
 }: {
   index: number;
   date: string;
@@ -40,6 +42,7 @@ function MealCard({
   label: string;
   logs: FoodLog[];
   recipes: DiaryRecipe[];
+  customFoods: CustomFood[] | null;
 }) {
   const [open, setOpen] = useState(false);
   const { pending, error, run } = useDiaryRun();
@@ -97,7 +100,7 @@ function MealCard({
                     </select>
                   </label>
                 ) : (
-                  <span className="text-sm text-muted">Tự nhập</span>
+                  <span className="text-sm text-muted">{l.servings !== 1 ? `${formatServings(l.servings)} phần` : "Tự nhập"}</span>
                 )}
                 <span className={kcalBadge}>
                   <Icon icon={Icons.calories} size={14} />
@@ -124,6 +127,7 @@ function MealCard({
             date={date}
             meal={meal}
             recipes={recipes}
+            customFoods={customFoods}
             onClose={() => setOpen(false)}
             onAdded={() => setOpen(false)}
           />
@@ -142,21 +146,26 @@ function AddPanel({
   date,
   meal,
   recipes,
+  customFoods,
   onClose,
   onAdded,
 }: {
   date: string;
   meal: DiaryMeal;
   recipes: DiaryRecipe[];
+  customFoods: CustomFood[] | null;
   onClose: () => void;
   onAdded: () => void;
 }) {
-  const [mode, setMode] = useState<"recipe" | "custom">("recipe");
+  const [mode, setMode] = useState<"recipe" | "mine" | "custom">("recipe");
   return (
     <div className="rounded-2xl border border-line bg-canvas p-3 sm:p-4">
-      <div role="group" aria-label="Cách thêm món" className="grid grid-cols-2 gap-2">
+      <div role="group" aria-label="Cách thêm món" className="grid grid-cols-3 gap-2">
         <Chip active={mode === "recipe"} onClick={() => setMode("recipe")}>
-          Món có sẵn
+          Có sẵn
+        </Chip>
+        <Chip active={mode === "mine"} onClick={() => setMode("mine")}>
+          Của tôi
         </Chip>
         <Chip active={mode === "custom"} onClick={() => setMode("custom")}>
           Tự nhập
@@ -165,6 +174,8 @@ function AddPanel({
       <div className="mt-3">
         {mode === "recipe" ? (
           <RecipePicker date={date} meal={meal} recipes={recipes} onAdded={onAdded} />
+        ) : mode === "mine" ? (
+          <MyFoods date={date} meal={meal} foods={customFoods} onAdded={onAdded} onNew={() => setMode("custom")} />
         ) : (
           <CustomFood date={date} meal={meal} onAdded={onAdded} />
         )}
@@ -240,12 +251,91 @@ function RecipeRow({ recipe, date, meal, onAdded }: { recipe: DiaryRecipe; date:
   );
 }
 
+function MyFoods({ date, meal, foods, onAdded, onNew }: { date: string; meal: DiaryMeal; foods: CustomFood[] | null; onAdded: () => void; onNew: () => void }) {
+  if (foods === null) {
+    return <Notice tone="error" title="Chưa tải được Món của tôi">Có thể mạng đang chậm. Bạn đóng ô này, tải lại trang rồi thử lại nhé.</Notice>;
+  }
+  if (foods.length === 0) {
+    return (
+      <div className="text-sm text-muted">
+        <p>Bạn chưa có món nào của riêng mình. Chọn “Tự nhập”, điền tên và calo, rồi bật “Lưu vào Món của tôi” để dùng lại lần sau nhé.</p>
+        <button type="button" onClick={onNew} className={buttonClass("secondary", "md", "mt-3 w-full")}>
+          <Icon icon={Icons.add} size={18} />
+          Tạo món của tôi
+        </button>
+      </div>
+    );
+  }
+  return (
+    <ul className="space-y-2">
+      {foods.map((f) => (
+        <MyFoodRow key={f.id} food={f} date={date} meal={meal} onAdded={onAdded} />
+      ))}
+    </ul>
+  );
+}
+
+function MyFoodRow({ food, date, meal, onAdded }: { food: CustomFood; date: string; meal: DiaryMeal; onAdded: () => void }) {
+  const [servings, setServings] = useState(1);
+  const { pending, error, run } = useDiaryRun();
+  return (
+    <li className="rounded-2xl border border-line bg-white p-3">
+      <div className="flex items-start gap-2">
+        <div className="min-w-0 flex-1">
+          <p className="font-semibold text-ink">{food.name}</p>
+          <p className="mt-0.5 text-sm text-muted">
+            <span className="font-bold text-accent-500">{Math.round(food.calories)} kcal</span> / phần
+          </p>
+        </div>
+        <button
+          type="button"
+          disabled={pending}
+          onClick={() => {
+            if (window.confirm(`Xoá “${food.name}” khỏi Món của tôi? Các bữa đã ghi trước đó vẫn giữ nguyên.`)) run(() => deleteCustomFood(food.id));
+          }}
+          className="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-2xl text-muted transition duration-200 hover:bg-red-50 hover:text-red-700 disabled:opacity-60"
+        >
+          <Icon icon={Icons.trash} size={18} />
+          <span className="sr-only">Xoá {food.name} khỏi Món của tôi</span>
+        </button>
+      </div>
+      {error && (
+        <div className="mt-2">
+          <Notice tone="error">{error}</Notice>
+        </div>
+      )}
+      <div className="mt-2 flex items-center gap-2">
+        <label className="min-w-0 flex-1">
+          <span className="sr-only">Số phần của {food.name}</span>
+          <select value={servings} onChange={(e) => setServings(Number(e.target.value))} className={`${selectClass} min-h-11`}>
+            {DIARY_SERVINGS.map((s) => (
+              <option key={s} value={s}>
+                {formatServings(s)} phần
+              </option>
+            ))}
+          </select>
+        </label>
+        <button
+          type="button"
+          disabled={pending}
+          onClick={() => run(() => addFoodLog({ date, meal, customFoodId: food.id, servings }), onAdded)}
+          className={buttonClass("secondary", "md", "min-h-11 shrink-0")}
+        >
+          {pending ? <PendingDots /> : "Thêm"}
+          <span className="sr-only">{food.name} vào nhật ký</span>
+        </button>
+      </div>
+    </li>
+  );
+}
+
 function CustomFood({ date, meal, onAdded }: { date: string; meal: DiaryMeal; onAdded: () => void }) {
   const [name, setName] = useState("");
   const [calories, setCalories] = useState("");
   const [protein, setProtein] = useState("");
   const [carbs, setCarbs] = useState("");
   const [fat, setFat] = useState("");
+  const [save, setSave] = useState(true);
   const { pending, error, run } = useDiaryRun();
   const opt = (v: string) => (v.trim() === "" ? null : Number(v));
 
@@ -255,7 +345,7 @@ function CustomFood({ date, meal, onAdded }: { date: string; meal: DiaryMeal; on
       onSubmit={(e) => {
         e.preventDefault();
         run(
-          () => addFoodLog({ date, meal, name, calories: Number(calories), protein: opt(protein), carbs: opt(carbs), fat: opt(fat) }),
+          () => addFoodLog({ date, meal, name, calories: Number(calories), protein: opt(protein), carbs: opt(carbs), fat: opt(fat), saveToLibrary: save }),
           onAdded,
         );
       }}
@@ -268,6 +358,10 @@ function CustomFood({ date, meal, onAdded }: { date: string; meal: DiaryMeal; on
         <TextField label="Tinh bột (g)" type="number" inputMode="decimal" min={0} value={carbs} onChange={(e) => setCarbs(e.target.value)} />
         <TextField label="Béo (g)" type="number" inputMode="decimal" min={0} value={fat} onChange={(e) => setFat(e.target.value)} />
       </div>
+      <label className="flex min-h-11 items-center gap-3 text-sm font-medium text-ink">
+        <input type="checkbox" checked={save} onChange={(e) => setSave(e.target.checked)} className="h-5 w-5 shrink-0 accent-brand-600" />
+        Lưu vào “Món của tôi” để dùng lại (calo tính cho 1 phần)
+      </label>
       {error && <Notice tone="error">{error}</Notice>}
       <button type="submit" disabled={pending || !name.trim() || calories === ""} className={buttonClass("primary", "md", "w-full")}>
         {pending ? (
