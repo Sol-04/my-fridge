@@ -182,8 +182,8 @@ Chủ dự án **không biết code**. Vì vậy luôn:
   - Web chính tự cập nhật trên Vercel sau khi gộp.
   - Việc mới → tạo nhánh mới từ `main` mới nhất → PR → gửi link preview (lấy từ bình luận của vercel[bot] trên PR) → chủ dự án nói "đồng ý gộp" thì mới gộp.
 - **Việc chủ dự án tự làm:** bật "Leaked password protection" trong Supabase → Authentication.
-- **Nhánh `claude/loving-feynman-t7q1zt` (chưa gộp):** tab Sức khoẻ (nhập file Apple Sức khoẻ: bước chân, năng lượng hoạt động, chu kỳ) + web app PWA.
-  Chủ dự án cần chạy `supabase/migrations/20261106_suc_khoe.sql` trong Supabase thì tab Sức khoẻ mới lưu được.
+- **PR #13 (nhánh `claude/loving-feynman-t7q1zt`, chưa gộp — chờ chủ dự án xem preview và nói "đồng ý gộp"):** tab Sức khoẻ (nhập file Apple Sức khoẻ: bước chân,
+  năng lượng hoạt động, chu kỳ) + web app PWA. SQL `20261106_suc_khoe.sql` đã chạy trên Supabase. Chưa thử trên iPhone thật / file export.zip thật.
 - **Chưa làm (chỉ làm khi được yêu cầu lại):** cân nặng theo ngày, uống nước, giấc ngủ, dashboard, báo cáo tuần, tự đồng bộ Google Health / Fitbit.
 - **Mã định danh** (không phải bí mật):
   - Supabase project `vxuapnicjqyvwzicdkmv`; SQL đã chạy nằm trong `supabase/migrations/`.
