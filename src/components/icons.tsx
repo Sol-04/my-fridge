@@ -40,6 +40,7 @@ import {
   RefreshCw,
   Plus,
   Save,
+  Search,
   SearchX,
   Settings,
   ShoppingBasket,
@@ -52,6 +53,7 @@ import {
   Sunrise,
   Target,
   Trash2,
+  X,
   User,
   UtensilsCrossed,
   Wheat,
@@ -114,6 +116,8 @@ export const Icons = {
   add: Plus,
   prevDay: ChevronLeft,
   nextDay: ChevronRight,
+  search: Search,
+  clear: X,
 } satisfies Record<string, LucideIcon>;
 
 export const MEAL_ICONS: Record<string, LucideIcon> = {

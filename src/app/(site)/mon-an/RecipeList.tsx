@@ -5,6 +5,7 @@ import { useState, type CSSProperties } from "react";
 import { RecipeCard } from "@/components/RecipeCard";
 import { Icon, Icons, MEAL_ICONS, type LucideIcon } from "@/components/icons";
 import { buttonClass, EmptyState } from "@/components/ui";
+import { plainText } from "@/lib/diary";
 import type { RecipeCardData, RecipeKind, RecipeMeal } from "@/sanity/lib/recipes";
 import { MEAL_OPTIONS } from "@/sanity/meals";
 
@@ -59,8 +60,13 @@ export function RecipeList({ recipes }: { recipes: RecipeCardData[] }) {
   const [kind, setKind] = useState<KindFilter>("all");
   const [meal, setMeal] = useState<MealFilter>("all");
   const [limit, setLimit] = useState(PAGE_SIZE);
+  const [q, setQ] = useState("");
 
-  const byKind = (k: KindFilter) => (k === "all" ? recipes : recipes.filter((r) => (r.kind ?? "home") === k));
+  // Tìm theo tên, không cần gõ dấu ("pho bo" ra "Phở bò")
+  const query = plainText(q.trim());
+  const searched = query ? recipes.filter((r) => plainText(r.name).includes(query)) : recipes;
+
+  const byKind = (k: KindFilter) => (k === "all" ? searched : searched.filter((r) => (r.kind ?? "home") === k));
   const byMeal = (list: RecipeCardData[], m: MealFilter) => (m === "all" ? list : list.filter((r) => r.meals?.includes(m)));
 
   const kindList = byKind(kind);
@@ -76,8 +82,47 @@ export function RecipeList({ recipes }: { recipes: RecipeCardData[] }) {
     setLimit(PAGE_SIZE);
   };
 
+  const changeQuery = (v: string) => {
+    setQ(v);
+    setLimit(PAGE_SIZE);
+  };
+  const resetAll = () => {
+    changeQuery("");
+    pickKind("all");
+    pickMeal("all");
+  };
+
   return (
     <>
+      <div role="search" className="relative mb-3 w-full sm:max-w-[480px]">
+        <label htmlFor="tim-mon" className="sr-only">
+          Tìm món ăn
+        </label>
+        <span aria-hidden className="pointer-events-none absolute top-1/2 left-4 -translate-y-1/2 text-muted">
+          <Icon icon={Icons.search} size={20} />
+        </span>
+        <input
+          id="tim-mon"
+          type="search"
+          value={q}
+          onChange={(e) => changeQuery(e.target.value)}
+          placeholder="Tìm món: phở, cháo, gà…"
+          autoComplete="off"
+          enterKeyHint="search"
+          className="min-h-12 w-full rounded-2xl border-[1.5px] border-line bg-white py-2 pr-12 pl-11 text-base text-ink outline-none transition duration-200 placeholder:text-muted/60 focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 focus:ring-offset-canvas [&::-webkit-search-cancel-button]:hidden"
+        />
+        {q && (
+          <button
+            type="button"
+            onClick={() => changeQuery("")}
+            aria-label="Xoá chữ tìm kiếm"
+            className="absolute top-1/2 right-1 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-xl text-muted hover:bg-brand-50 hover:text-brand-700"
+          >
+            <Icon icon={Icons.clear} size={20} />
+          </button>
+        )}
+      </div>
+
       <div role="group" aria-label="Lọc theo loại món" className={rowClass}>
         {KIND_OPTIONS.map((o) => (
           <FilterButton
@@ -112,7 +157,7 @@ export function RecipeList({ recipes }: { recipes: RecipeCardData[] }) {
 
       {filtered.length > 0 ? (
         <>
-          <ul key={`${kind}-${meal}`} className="stagger mt-3 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <ul key={`${kind}-${meal}-${query}`} className="stagger mt-3 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {shown.map((r, i) => (
               <li key={r._id} style={{ "--i": Math.min(i % PAGE_SIZE, 8) } as CSSProperties}>
                 <RecipeCard recipe={r} />
@@ -135,21 +180,20 @@ export function RecipeList({ recipes }: { recipes: RecipeCardData[] }) {
         <div className="mt-3">
           <EmptyState
             icon={Icons.bowl}
-            title="Chưa có món phù hợp"
+            title={query ? `Không tìm thấy món "${q.trim()}"` : "Chưa có món phù hợp"}
             action={
               <button
                 type="button"
-                onClick={() => {
-                  pickKind("all");
-                  pickMeal("all");
-                }}
+                onClick={resetAll}
                 className={buttonClass("secondary")}
               >
-                Xem tất cả món
+                {query ? "Xoá tìm kiếm và bộ lọc" : "Xem tất cả món"}
               </button>
             }
           >
-            Chúng tôi đang bổ sung thêm món mới. Bạn thử bỏ bớt bộ lọc nhé!
+            {query
+              ? "Bạn thử gõ tên ngắn hơn (ví dụ: phở, bún, gà) hoặc bỏ bớt bộ lọc nhé!"
+              : "Chúng tôi đang bổ sung thêm món mới. Bạn thử bỏ bớt bộ lọc nhé!"}
           </EmptyState>
         </div>
       )}
