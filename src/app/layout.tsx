@@ -19,7 +19,6 @@ export const metadata: Metadata = {
   applicationName: "Glow up with me",
   // iPhone: chạy toàn màn hình khi mở từ biểu tượng trên màn hình chính
   appleWebApp: { capable: true, title: "Glow up", statusBarStyle: "default" },
-  icons: { apple: "/icons/apple-touch-icon.png" },
   formatDetection: { telephone: false },
 };
 
