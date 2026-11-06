@@ -5,7 +5,7 @@ import { Suspense } from "react";
 import { Icon, Icons, type LucideIcon } from "@/components/icons";
 import { buttonClass, cardClass } from "@/components/ui";
 import { displayNameOf, getProfile, initialOf } from "@/lib/profile";
-import { createSupabaseServer } from "@/lib/supabase/server";
+import { createSupabaseServer, getAuthUser } from "@/lib/supabase/server";
 
 import { signOut } from "../(auth)/actions";
 import { NewPasswordForm } from "../(auth)/dat-lai-mat-khau/NewPasswordForm";
@@ -40,8 +40,7 @@ function Section({ id, title, icon, children }: { id: string; title: string; ico
 
 async function ProfileContent() {
   const supabase = await createSupabaseServer();
-  const { data } = supabase ? await supabase.auth.getUser().catch(() => ({ data: { user: null } })) : { data: { user: null } };
-  const user = data.user;
+  const user = supabase ? await getAuthUser(supabase) : null;
   if (!supabase || !user) redirect("/dang-nhap?next=/ho-so");
 
   const [profile, larkRes, plansRes] = await Promise.all([

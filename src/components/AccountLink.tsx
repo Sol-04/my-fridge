@@ -1,12 +1,12 @@
 import Link from "next/link";
 
 import { displayNameOf, getProfile, initialOf } from "@/lib/profile";
-import { createSupabaseServer } from "@/lib/supabase/server";
+import { createSupabaseServer, getAuthUser } from "@/lib/supabase/server";
 
 // Nút tài khoản trên menu: "Đăng nhập" hoặc vòng tròn chữ cái đầu của tên (dẫn tới hồ sơ).
 export async function AccountLink() {
   const supabase = await createSupabaseServer();
-  const user = supabase ? (await supabase.auth.getUser().catch(() => null))?.data.user ?? null : null;
+  const user = supabase ? await getAuthUser(supabase) : null;
 
   if (!supabase || !user) {
     return (

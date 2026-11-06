@@ -1,7 +1,7 @@
 // Service worker của Glow up with me.
 // Chỉ lưu tạm file tĩnh (giao diện, hình vẽ, icon) cho nhanh, và trang "offline" khi mất mạng.
 // KHÔNG lưu trang đã đăng nhập hay dữ liệu cá nhân (nhật ký, hồ sơ, thực đơn).
-const VERSION = "v2"; // đổi số này khi sửa icon / hình vẽ cùng tên để máy người dùng lấy bản mới
+const VERSION = "v3"; // đổi số này khi sửa icon / hình vẽ cùng tên để máy người dùng lấy bản mới
 const STATIC = `static-${VERSION}`;
 const OFFLINE_URL = "/offline";
 
@@ -11,7 +11,12 @@ self.addEventListener("install", (event) => {
 
 self.addEventListener("activate", (event) => {
   event.waitUntil(
-    caches.keys().then((keys) => Promise.all(keys.filter((k) => k !== STATIC).map((k) => caches.delete(k)))).then(() => self.clients.claim()),
+    caches
+      .keys()
+      .then((keys) => Promise.all(keys.filter((k) => k !== STATIC).map((k) => caches.delete(k))))
+      // Cho phép tải trang song song với lúc service worker khởi động (đỡ trễ khi mở app lúc nguội)
+      .then(() => (self.registration.navigationPreload ? self.registration.navigationPreload.enable() : undefined))
+      .then(() => self.clients.claim()),
   );
 });
 
@@ -23,7 +28,15 @@ self.addEventListener("fetch", (event) => {
 
   // Mở trang: luôn lấy từ mạng; mất mạng mới hiện trang offline
   if (req.mode === "navigate") {
-    event.respondWith(fetch(req).catch(() => caches.match(OFFLINE_URL).then((r) => r || Response.error())));
+    event.respondWith(
+      (async () => {
+        try {
+          return (await event.preloadResponse) || (await fetch(req));
+        } catch {
+          return (await caches.match(OFFLINE_URL)) || Response.error();
+        }
+      })(),
+    );
     return;
   }
 
