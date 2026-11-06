@@ -31,11 +31,19 @@ export function HeaderNavItems({ pathname }: { pathname: string | null }) {
         Món ăn
       </Link>
       <Link
+        href="/nhat-ky"
+        aria-current={isActive("/nhat-ky") ? "page" : undefined}
+        className={linkClass("/nhat-ky", "inline-flex")}
+      >
+        Nhật ký
+      </Link>
+      <Link
         href="/tao-thuc-don"
         aria-current={isActive("/tao-thuc-don") ? "page" : undefined}
-        className="ml-0.5 inline-flex min-h-11 items-center rounded-2xl bg-brand-600 px-3.5 text-sm font-semibold whitespace-nowrap text-white transition duration-200 hover:bg-brand-700 hover:shadow-lift sm:ml-1 sm:px-4"
+        className="ml-0.5 inline-flex min-h-11 items-center rounded-2xl bg-brand-600 px-3 text-sm font-semibold whitespace-nowrap text-white transition duration-200 hover:bg-brand-700 hover:shadow-lift sm:ml-1 sm:px-4"
       >
-        Tạo thực đơn
+        <span className="sm:hidden">Thực đơn</span>
+        <span className="hidden sm:inline">Tạo thực đơn</span>
       </Link>
     </nav>
   );
