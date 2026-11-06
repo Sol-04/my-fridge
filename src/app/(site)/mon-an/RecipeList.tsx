@@ -5,10 +5,10 @@ import { useState, type CSSProperties } from "react";
 import { RecipeCard } from "@/components/RecipeCard";
 import { Icon, Icons, MEAL_ICONS, type LucideIcon } from "@/components/icons";
 import { buttonClass, EmptyState } from "@/components/ui";
-import type { Meal, RecipeCardData, RecipeKind } from "@/sanity/lib/recipes";
+import type { RecipeCardData, RecipeKind, RecipeMeal } from "@/sanity/lib/recipes";
 import { MEAL_OPTIONS } from "@/sanity/meals";
 
-type MealFilter = "all" | Meal;
+type MealFilter = "all" | RecipeMeal;
 type KindFilter = "all" | RecipeKind;
 
 const PAGE_SIZE = 24; // hiện dần để màn hình điện thoại không quá dài

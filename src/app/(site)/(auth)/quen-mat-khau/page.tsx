@@ -5,7 +5,7 @@ import { AuthShell } from "../AuthShell";
 import { ForgotPasswordForm } from "./ForgotPasswordForm";
 import { Icons } from "@/components/icons";
 
-export const metadata: Metadata = { title: "Quên mật khẩu – My Fridge" };
+export const metadata: Metadata = { title: "Quên mật khẩu – Glow up with me" };
 
 export default function ForgotPasswordPage() {
   return (

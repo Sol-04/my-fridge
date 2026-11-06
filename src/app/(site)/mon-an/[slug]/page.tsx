@@ -21,9 +21,9 @@ export async function generateMetadata({
 }: PageProps<"/mon-an/[slug]">): Promise<Metadata> {
   const { slug } = await params;
   const recipe = await getRecipe(slug);
-  if (!recipe) return { title: "Không tìm thấy món – My Fridge" };
+  if (!recipe) return { title: "Không tìm thấy món – Glow up with me" };
   return {
-    title: `${recipe.name} – My Fridge`,
+    title: `${recipe.name} – Glow up with me`,
     description: recipe.description,
   };
 }
@@ -161,7 +161,7 @@ export default async function RecipePage({ params }: PageProps<"/mon-an/[slug]">
               <span className="sr-only"> (mở trong tab mới)</span>
             </a>
             <p className="mt-2 text-sm text-muted">
-              Google Maps dùng vị trí trên máy bạn để tìm quán gần nhất. My Fridge không lưu vị trí của bạn.
+              Google Maps dùng vị trí trên máy bạn để tìm quán gần nhất. Glow up with me không lưu vị trí của bạn.
             </p>
           </div>
         </section>

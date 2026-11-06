@@ -8,7 +8,7 @@ import { AuthFormSkeleton, AuthShell } from "../AuthShell";
 import { NewPasswordForm } from "./NewPasswordForm";
 import { Icons } from "@/components/icons";
 
-export const metadata: Metadata = { title: "Đặt lại mật khẩu – My Fridge", robots: { index: false } };
+export const metadata: Metadata = { title: "Đặt lại mật khẩu – Glow up with me", robots: { index: false } };
 
 export default function ResetPasswordPage() {
   return (

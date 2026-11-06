@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState, useTransition } from "react";
 
@@ -32,6 +33,9 @@ import {
 } from "@/lib/meal-plan";
 import type { Meal, PlannerRecipe } from "@/sanity/lib/recipes";
 import { mealLabel } from "@/sanity/meals";
+
+import { logPlannerMeals } from "../nhat-ky/actions";
+import { todayInVietnam } from "@/lib/diary";
 
 import { saveMealPlan } from "./actions";
 
@@ -222,6 +226,25 @@ export function Planner({
         // Lệnh chuyển trang của Next.js cũng đi qua đây — không coi là lỗi.
         if (err && typeof err === "object" && "digest" in err && String(err.digest).startsWith("NEXT_REDIRECT")) throw err;
         setSaveError("Có thể mạng đang chậm hoặc bị ngắt. Thực đơn vẫn còn nguyên trên màn hình, bạn đợi một chút rồi bấm “Lưu thực đơn” lần nữa nhé.");
+      }
+    });
+  };
+
+  // Ghi các món đang hiện vào nhật ký hôm nay
+  const [logging, startLogging] = useTransition();
+  const [logState, setLogState] = useState<{ tone: "ok" | "error" | "login"; text?: string } | null>(null);
+  const onLogDiary = () => {
+    const meals = plan.flatMap((p) => (p.entry ? [{ meal: p.meal, recipeId: p.entry.recipe_id, servings: p.entry.servings }] : []));
+    if (meals.length === 0) return;
+    setLogState(null);
+    startLogging(async () => {
+      try {
+        const res = await logPlannerMeals(todayInVietnam(), meals);
+        if (res.ok) setLogState({ tone: "ok" });
+        else if (res.needLogin) setLogState({ tone: "login" });
+        else setLogState({ tone: "error", text: res.error });
+      } catch {
+        setLogState({ tone: "error", text: "Có thể mạng đang chậm hoặc bị ngắt. Bạn đợi một chút rồi thử lại nhé." });
       }
     });
   };
@@ -477,6 +500,51 @@ export function Planner({
               {saveError}
             </Notice>
           )}
+
+          <button
+            type="button"
+            onClick={onLogDiary}
+            disabled={logging || logState?.tone === "ok" || !plan.some((p) => p.entry)}
+            className={buttonClass("secondary", "md", "w-full")}
+          >
+            {logging ? (
+              <>
+                Đang ghi…
+                <PendingDots />
+              </>
+            ) : (
+              <>
+                <Icon icon={Icons.diary} size={18} />
+                Ghi vào nhật ký hôm nay
+              </>
+            )}
+          </button>
+          {logState?.tone === "ok" && (
+            <Notice
+              tone="success"
+              title="Đã ghi vào nhật ký hôm nay"
+              action={
+                <Link href="/nhat-ky" className="font-semibold text-brand-700 underline underline-offset-2">
+                  Xem nhật ký
+                </Link>
+              }
+            />
+          )}
+          {logState?.tone === "login" && (
+            <Notice
+              tone="info"
+              icon={Icons.lock}
+              title="Đăng nhập để ghi nhật ký"
+              action={
+                <Link href="/dang-nhap?next=/tao-thuc-don" className="font-semibold text-brand-700 underline underline-offset-2">
+                  Đăng nhập
+                </Link>
+              }
+            >
+              Bạn cần có tài khoản để lưu nhật ký ăn uống.
+            </Notice>
+          )}
+          {logState?.tone === "error" && <Notice tone="error">{logState.text}</Notice>}
         </div>
       )}
 

@@ -10,7 +10,7 @@ const nunito = Nunito({
 });
 
 export const metadata: Metadata = {
-  title: "My Fridge – Thực đơn từ tủ lạnh của bạn",
+  title: "Glow up with me – Thực đơn từ tủ lạnh của bạn",
   description:
     "Có sẵn đồ trong tủ lạnh mà không biết nấu gì? Chọn thực phẩm đang có để nhận thực đơn sáng, trưa, tối vừa đủ calo.",
 };

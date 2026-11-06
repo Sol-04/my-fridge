@@ -2,6 +2,7 @@
 // Chỉ import icon từ file này để cả web dùng một kiểu nét, một độ dày.
 import type { LucideIcon, LucideProps } from "lucide-react";
 import {
+  Apple,
   ArrowDown,
   ArrowLeft,
   ArrowRight,
@@ -9,6 +10,8 @@ import {
   Carrot,
   Check,
   ChefHat,
+  ChevronLeft,
+  ChevronRight,
   CircleAlert,
   CircleCheck,
   ClipboardList,
@@ -18,6 +21,7 @@ import {
   Compass,
   CookingPot,
   Drumstick,
+  Dumbbell,
   Egg,
   Flame,
   Hand,
@@ -32,7 +36,9 @@ import {
   MapPin,
   Milk,
   Moon,
+  NotebookPen,
   RefreshCw,
+  Plus,
   Save,
   SearchX,
   Settings,
@@ -45,6 +51,7 @@ import {
   Sun,
   Sunrise,
   Target,
+  Trash2,
   User,
   UtensilsCrossed,
   Wheat,
@@ -62,6 +69,7 @@ export const Icons = {
   breakfast: Sunrise,
   lunch: Sun,
   dinner: Moon,
+  snack: Apple,
   allMeals: UtensilsCrossed,
   foods: ShoppingBasket,
   plan: ClipboardList,
@@ -100,12 +108,19 @@ export const Icons = {
   greens: LeafyGreen,
   grain: Wheat,
   milk: Milk,
+  diary: NotebookPen,
+  workout: Dumbbell,
+  trash: Trash2,
+  add: Plus,
+  prevDay: ChevronLeft,
+  nextDay: ChevronRight,
 } satisfies Record<string, LucideIcon>;
 
 export const MEAL_ICONS: Record<string, LucideIcon> = {
   breakfast: Icons.breakfast,
   lunch: Icons.lunch,
   dinner: Icons.dinner,
+  snack: Icons.snack,
   all: Icons.allMeals,
 };
 

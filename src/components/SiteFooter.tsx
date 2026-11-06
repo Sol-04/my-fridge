@@ -14,7 +14,7 @@ export function SiteFooter() {
           <div>
           <p className="pt-1 font-semibold">Lưu ý sức khoẻ</p>
           <p className="mt-1">
-            Lượng calo và dinh dưỡng trên My Fridge chỉ là <strong>ước tính tham khảo</strong>, không thay thế lời
+            Lượng calo và dinh dưỡng trên Glow up with me chỉ là <strong>ước tính tham khảo</strong>, không thay thế lời
             khuyên của bác sĩ hay chuyên gia dinh dưỡng. Nếu bạn đang mang thai, cho con bú, dưới 18 tuổi, có bệnh
             lý (tiểu đường, tim mạch, thận…) hoặc muốn giảm cân nhanh, hãy hỏi ý kiến chuyên gia trước khi thay đổi
             chế độ ăn.
@@ -27,7 +27,7 @@ export function SiteFooter() {
             <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-600 text-white">
               <Icon icon={Icons.logo} size={18} />
             </span>
-            My Fridge
+            Glow up with me
           </p>
           <nav aria-label="Liên kết cuối trang" className="flex flex-wrap gap-x-2 text-sm">
             <Link href="/" className="inline-flex min-h-11 items-center px-2 text-muted transition-colors duration-200 hover:text-brand-700">
@@ -41,7 +41,7 @@ export function SiteFooter() {
             </Link>
           </nav>
         </div>
-        <p className="mt-4 text-xs text-muted">© 2026 My Fridge · Nấu ngon từ những gì bạn đang có.</p>
+        <p className="mt-4 text-xs text-muted">© 2026 Glow up with me · Nấu ngon từ những gì bạn đang có.</p>
       </div>
     </footer>
   );

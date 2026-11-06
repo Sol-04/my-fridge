@@ -10,7 +10,7 @@ import { AuthFormSkeleton, AuthShell } from "../AuthShell";
 import { SignInForm } from "./SignInForm";
 import { Icons } from "@/components/icons";
 
-export const metadata: Metadata = { title: "Đăng nhập – My Fridge" };
+export const metadata: Metadata = { title: "Đăng nhập – Glow up with me" };
 
 export default function SignInPage({ searchParams }: PageProps<"/dang-nhap">) {
   return (

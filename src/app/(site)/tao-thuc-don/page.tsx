@@ -11,7 +11,7 @@ import PlannerLoading from "./loading";
 import { Planner } from "./Planner";
 
 export const metadata: Metadata = {
-  title: "Tạo thực đơn – My Fridge",
+  title: "Tạo thực đơn – Glow up with me",
   description: "Nhập thông tin, chọn thực phẩm đang có và nhận thực đơn sáng, trưa, tối vừa đủ calo.",
 };
 
@@ -44,7 +44,7 @@ async function CreatePlanContent() {
   return (
     <main className="mx-auto w-full max-w-2xl px-4 pt-8 sm:pt-12">
       <PageHeader eyebrow="Miễn phí · khoảng 1 phút" title="Tạo thực đơn">
-        Trả lời vài câu hỏi ngắn, My Fridge sẽ gợi ý thực đơn cả ngày cho bạn.
+        Trả lời vài câu hỏi ngắn, Glow up with me sẽ gợi ý thực đơn cả ngày cho bạn.
       </PageHeader>
       <div className="mt-6">
         {recipes.length > 0 ? (

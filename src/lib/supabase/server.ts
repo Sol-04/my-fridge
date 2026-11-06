@@ -5,12 +5,15 @@ import "server-only";
 import { createServerClient } from "@supabase/ssr";
 import type { SupabaseClient, User } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
+import { connection } from "next/server";
 
 import { getSupabaseEnv } from "./env";
 
 export async function createSupabaseServer(): Promise<SupabaseClient | null> {
   const env = getSupabaseEnv();
   if (!env) return null;
+  // Thư viện Supabase đọc giờ hiện tại (kiểm tra hạn phiên) → chỉ chạy khi có yêu cầu thật, không lúc dựng sẵn trang.
+  await connection();
   const cookieStore = await cookies();
   return createServerClient(env.url, env.anonKey, {
     cookies: {

@@ -3,11 +3,11 @@
 /* Web luôn dùng nền sáng: tắt kiểu "dark:" tự động theo chế độ tối của điện thoại */
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* Bộ màu, font, bóng, bo góc chung của My Fridge — phong cách "tối giản êm dịu" (xem DESIGN.md) */
+/* Bộ màu, font, bóng, bo góc chung của Glow up with me — phong cách "tối giản êm dịu" (xem DESIGN.md) */
 @theme {
   --font-sans: var(--font-nunito), ui-sans-serif, system-ui, sans-serif;
 
-  /* Xanh xô thơm (sage) — màu chính, bản sắc "rau xanh" của My Fridge */
+  /* Xanh xô thơm (sage) — màu chính, bản sắc "rau xanh" của Glow up with me */
   --color-brand-50: #f1f7f3;
   --color-brand-100: #e0eee5;
   --color-brand-200: #c3dfcd;

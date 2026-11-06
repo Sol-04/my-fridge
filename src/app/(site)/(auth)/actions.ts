@@ -46,7 +46,7 @@ export async function signUp(_prev: AuthFormState, fd: FormData): Promise<AuthFo
   const next = safeNext(fd.get("next"));
   const values = { displayName, email };
   const fieldErrors: AuthFormState["fieldErrors"] = {};
-  if (!displayName) fieldErrors.displayName = "Vui lòng nhập tên để My Fridge gọi bạn";
+  if (!displayName) fieldErrors.displayName = "Vui lòng nhập tên để Glow up with me gọi bạn";
   if (!EMAIL_RE.test(email)) fieldErrors.email = "Email chưa đúng dạng, ví dụ: ten@gmail.com";
   if (password.length < PASSWORD_MIN) fieldErrors.password = `Mật khẩu cần ít nhất ${PASSWORD_MIN} ký tự`;
   if (Object.keys(fieldErrors).length) return { fieldErrors, values };

@@ -11,7 +11,8 @@ import {
   RECIPES_QUERY,
 } from "./queries";
 
-export type Meal = "breakfast" | "lunch" | "dinner";
+export type Meal = "breakfast" | "lunch" | "dinner"; // 3 bữa chính (trang tạo thực đơn)
+export type RecipeMeal = Meal | "snack"; // món có thể thuộc thêm "bữa phụ"
 export type RecipeKind = "home" | "eatout"; // tự nấu | ăn ngoài / mua sẵn
 
 export type RecipeCardData = {
@@ -21,7 +22,7 @@ export type RecipeCardData = {
   image?: SanityImageSource & { alt?: string; credit?: string; license?: string; sourceUrl?: string; illustrative?: boolean };
   calories: number;
   cookMinutes: number;
-  meals: Meal[];
+  meals: RecipeMeal[];
   kind: RecipeKind;
   servingNote?: string | null; // khẩu phần thường bán (món ăn ngoài)
 };

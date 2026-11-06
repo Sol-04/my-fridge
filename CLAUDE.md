@@ -1,7 +1,7 @@
 @AGENTS.md
 @DESIGN.md
 
-# My Fridge
+# Glow up with me
 
 ## Dự án là gì
 Website giúp người Việt **chọn thực phẩm đang có** (trong tủ lạnh, trong bếp) để nhận
@@ -27,6 +27,10 @@ Website giúp người Việt **chọn thực phẩm đang có** (trong tủ l�
 - `src/app/(site)/thuc-don/[id]/` — xem lại thực đơn đã lưu + nút "Sao chép link" (`CopyLinkButton.tsx`).
 - `src/app/(site)/(auth)/` — đăng nhập `/dang-nhap`, đăng ký `/dang-ky`, quên mật khẩu `/quen-mat-khau`,
   đặt lại mật khẩu `/dat-lai-mat-khau`; `actions.ts` (signIn/signUp/signOut/requestPasswordReset/updatePassword).
+- `src/app/(site)/nhat-ky/` — **Nhật ký** (phải đăng nhập): tab Ăn uống (4 bữa sáng/trưa/tối/phụ; món có sẵn hoặc tự nhập)
+  + tab Tập luyện (mục tiêu + trình độ + môn yêu thích → lịch tuần, "Đã tập"); `actions.ts` tự tính lại calo trên máy chủ.
+  Lõi: `src/lib/diary.ts`, `src/lib/diary-db.ts`, `src/lib/workout-plan.ts` (calo đốt thêm = (MET − 1) × kg × giờ),
+  `data/activities.ts` (môn thể thao + bài tập, MET), `data/recipes-snacks.ts` (12 món phụ, `meals: ["snack"]`).
 - `src/app/(site)/ho-so/` — hồ sơ: thông tin cơ thể (`ProfileForm.tsx` + `actions.ts`), thực đơn đã lưu
   (`SavedPlansList.tsx`), đổi mật khẩu, đăng xuất. Chưa đăng nhập → chuyển tới `/dang-nhap?next=/ho-so`.
 - `src/app/auth/callback/route.ts` — nhận link từ email (xác nhận tài khoản / đặt lại mật khẩu).
@@ -93,6 +97,8 @@ Website giúp người Việt **chọn thực phẩm đang có** (trong tủ l�
 - Project "Sol-1". Đăng nhập bằng **email + mật khẩu** (Supabase Auth).
 - Bảng `public.profiles` (1 dòng / tài khoản, tự tạo bằng trigger khi đăng ký): `display_name`, `gender`, `age`,
   `height_cm`, `weight_kg`, `activity`, `goal`. RLS: chỉ chủ tài khoản xem / tạo / sửa (không xoá).
+- Bảng nhật ký `food_logs`, `workout_logs`, `workout_plans` (1 dòng/người): mỗi bảng có `user_id` + RLS — chỉ xem / thêm /
+  sửa / xoá dòng của mình; khách không có quyền. SQL ở `supabase/migrations/` (đã chạy) và `supabase/schema.sql`.
 - Bảng `public.meal_plans`: `id`, `created_at`, `user_id`, `user_input` (jsonb), `target_calories`,
   `selected_foods` (text[]), `breakfast` / `lunch` / `dinner` (jsonb: món + khẩu phần + dinh dưỡng).
 - RLS: **phải đăng nhập mới thêm được** (`user_id` = chính mình); chủ xem được danh sách của mình; không ai

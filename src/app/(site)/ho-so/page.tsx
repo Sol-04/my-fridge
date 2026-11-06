@@ -13,7 +13,7 @@ import { ProfileForm } from "./ProfileForm";
 import { SavedPlansList, type SavedPlanRow } from "./SavedPlansList";
 import ProfileLoading from "./loading";
 
-export const metadata: Metadata = { title: "Hồ sơ của bạn – My Fridge", robots: { index: false } };
+export const metadata: Metadata = { title: "Hồ sơ của bạn – Glow up with me", robots: { index: false } };
 
 export default function ProfilePage() {
   return (

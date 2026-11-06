@@ -66,7 +66,7 @@ export default async function Home() {
   // Món nổi bật: mỗi bữa lấy 1 món
   const homeCount = recipes.filter((r) => r.kind !== "eatout").length;
   const eatOutCount = recipes.length - homeCount;
-  const featured = MEAL_OPTIONS.map((m) => recipes.find((r) => r.kind !== "eatout" && r.meals?.includes(m.value))).filter(
+  const featured = MEAL_OPTIONS.filter((m) => m.value !== "snack").map((m) => recipes.find((r) => r.kind !== "eatout" && r.meals?.includes(m.value))).filter(
     (r): r is NonNullable<typeof r> => Boolean(r),
   );
 
@@ -85,7 +85,7 @@ export default async function Home() {
               Có sẵn đồ trong tủ lạnh mà <span className="text-brand-600">không biết nấu gì?</span>
             </h1>
             <p className="mt-5 max-w-[60ch] text-lg text-muted">
-              Chọn thực phẩm bạn đang có, My Fridge gợi ý ngay thực đơn sáng – trưa – tối{" "}
+              Chọn thực phẩm bạn đang có, Glow up with me gợi ý ngay thực đơn sáng – trưa – tối{" "}
               <strong className="font-semibold text-ink">vừa đủ calo</strong> để bạn ăn ngon mà vẫn giữ dáng.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
@@ -212,7 +212,7 @@ export default async function Home() {
       {/* ---------- Kêu gọi cuối trang ---------- */}
       <section className={`px-4 sm:px-6 ${SECTION_Y}`}>
         <div className="mx-auto w-full max-w-5xl rounded-3xl bg-brand-600 px-6 py-12 text-center text-white sm:py-16">
-          <h2 className="text-[1.75rem] leading-tight font-bold tracking-tight sm:text-4xl">Hôm nay ăn gì? Để My Fridge lo!</h2>
+          <h2 className="text-[1.75rem] leading-tight font-bold tracking-tight sm:text-4xl">Hôm nay ăn gì? Để Glow up with me lo!</h2>
           <p className="mx-auto mt-3 max-w-md text-brand-50">
             Tận dụng đồ có sẵn, bớt lãng phí, ăn vừa đủ calo mỗi ngày.
           </p>

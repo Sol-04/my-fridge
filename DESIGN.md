@@ -1,6 +1,6 @@
 ---
 version: "1.0"
-name: "My Fridge — Tối giản êm dịu"
+name: "Glow up with me — Tối giản êm dịu"
 description: "Web gợi ý thực đơn vừa đủ calo từ thực phẩm đang có, cho người Việt. Phong cách tối giản, êm dịu, nhiều khoảng trắng; xanh xô thơm (sage) là màu bản sắc."
 colors:
   primary: "#3F7A5C"        # brand-600 — xanh sage: nút chính, ô đang chọn, khối nhấn
@@ -43,9 +43,9 @@ components:
   input: { border: "1px {colors.line}", focusRing: "2px {colors.primary} offset 2px", rounded: "{rounded.md}", minHeight: 56px }
 ---
 
-# DESIGN.md — My Fridge
+# DESIGN.md — Glow up with me
 
-> File này mô tả **phong cách giao diện** của My Fridge để người và AI (Claude Code, Claude Design…) làm trang mới
+> File này mô tả **phong cách giao diện** của Glow up with me để người và AI (Claude Code, Claude Design…) làm trang mới
 > vẫn giữ đúng một phong cách. Mỗi quy tắc có **giá trị**, **quy tắc** và **lý do** — gặp trường hợp chưa nói tới,
 > hãy suy ra từ lý do.
 >
@@ -57,7 +57,7 @@ components:
 
 - **Phong cách:** tối giản, êm dịu, nhiều khoảng trắng — giao diện "thở chậm", không thúc ép, không gây áp lực.
   Hợp với người đang muốn ăn uống điều độ, kiểm soát cân nặng: không đếm calo gắt gao, chỉ nhẹ nhàng gợi ý.
-- **Bản sắc My Fridge giữ lại:** xanh lá (nay là **xanh xô thơm — sage**) = rau tươi, lành mạnh; chủ đề nấu ăn
+- **Bản sắc Glow up with me giữ lại:** xanh lá (nay là **xanh xô thơm — sage**) = rau tươi, lành mạnh; chủ đề nấu ăn
   từ đồ trong tủ lạnh; **100% tiếng Việt**; calo luôn nổi bật bằng một màu riêng; luôn có lưu ý sức khoẻ.
 - **Người dùng:** người Việt, **phần lớn dùng điện thoại**, nhiều người không rành công nghệ → chữ dễ đọc, nút to,
   mỗi màn hình một việc chính.
@@ -85,7 +85,7 @@ Khai báo trong `@theme` ở `src/app/globals.css`, dùng qua class Tailwind (`b
 | `brand-700` | `#33644b` | Hover nút chính, chữ link, chữ nút phụ |
 | `brand-800/900` | `#2a513d` / `#223f31` | Chữ trên nền nhạt (lưu ý, thành công) |
 
-*Lý do:* xanh sage giữ ý "rau xanh" của My Fridge nhưng dịu, êm hơn xanh lá tươi. `brand-600` vẫn đủ đậm để **chữ trắng
+*Lý do:* xanh sage giữ ý "rau xanh" của Glow up with me nhưng dịu, êm hơn xanh lá tươi. `brand-600` vẫn đủ đậm để **chữ trắng
 đạt tương phản 5:1** (chuẩn WCAG AA).
 
 ### Xanh nước — `aqua-*` · bề mặt phụ
@@ -250,7 +250,7 @@ Khai báo trong `@theme` ở `src/app/globals.css`, dùng qua class Tailwind (`b
   hoặc avatar tròn `bg-aqua-100`.
 - **Footer — `SiteFooter`:** nền trắng, viền trên `border-line`; **luôn có khối "Lưu ý sức khoẻ"** (`bg-aqua-50`,
   icon `Stethoscope`).
-- **Riêng của My Fridge:**
+- **Riêng của Glow up with me:**
   - *Thẻ món* (`RecipeCard`): ảnh 16:10 (chưa có ảnh thật → **hình vẽ minh hoạ** theo loại món, `public/minh-hoa/` + `illustrationFor`, có nhãn
     "Hình minh hoạ" `rounded-lg bg-white/90 text-xs text-muted` ở góc dưới phải);
     món ăn ngoài có nhãn **"Ăn ngoài"** `rounded-lg bg-aqua-800 text-white` + icon `Store`, hiện khẩu phần thường bán
@@ -274,7 +274,7 @@ Khai báo trong `@theme` ở `src/app/globals.css`, dùng qua class Tailwind (`b
 - Vùng chạm **≥ 44px** cho mọi thứ bấm được (link chữ thêm `min-h-11 inline-flex items-center`).
 - Trang tải dữ liệu luôn có **đang tải**, **lỗi** (kèm "Thử tải lại") và **rỗng** (kèm nút bước tiếp theo).
 - Chuyển động nhẹ, phản hồi chạm rõ ràng (lún 1px), tôn trọng "giảm chuyển động".
-- Chữ 100% tiếng Việt có dấu; tiêu đề trang dạng "… – My Fridge".
+- Chữ 100% tiếng Việt có dấu; tiêu đề trang dạng "… – Glow up with me".
 - Hỗ trợ bàn phím / trình đọc màn hình: `aria-pressed`, `aria-current`, `aria-live`, icon `aria-hidden`.
 
 **Không nên**
@@ -294,7 +294,7 @@ Khai báo trong `@theme` ở `src/app/globals.css`, dùng qua class Tailwind (`b
 - **Điện thoại trước**, mở rộng bằng `sm:` (640px) · `md:` (768px) · `lg:` (1024px).
 - **Khổ kiểm tra bắt buộc: 375px** — không tràn ngang (`scrollWidth <= 375`), nút ≥ 44px, menu trên 1 dòng.
   Kiểm tra thêm 1280px cho máy tính.
-- Menu: dưới `sm` ẩn chữ "My Fridge" và "Trang chủ" (giữ logo + "Món ăn" + "Tạo thực đơn" + tài khoản).
+- Menu: dưới `sm` ẩn chữ "Glow up with me" và "Trang chủ" (giữ logo + "Món ăn" + "Tạo thực đơn" + tài khoản).
 - Bố cục nhiều cột gập về 1 cột trên điện thoại; khối so le xếp dọc (khối icon ở trên, chữ ở dưới).
 - Hàng nút lọc: điện thoại vuốt ngang (`overflow-x-auto`), máy tính xuống dòng.
 - Nút chính: điện thoại `w-full`, từ `sm:` `sm:w-auto`; nhóm nút `flex-col` → `sm:flex-row`.
@@ -307,7 +307,7 @@ Khai báo trong `@theme` ở `src/app/globals.css`, dùng qua class Tailwind (`b
 - *"Thêm form … theo DESIGN.md: `TextField` / `NumberField` / `Chip` / `SubmitButton` trong `form.tsx`, nhãn ở trên,
   lỗi ngay dưới ô bằng tiếng Việt, nút chính `w-full` trên điện thoại."*
 - *"Thêm khối giới thiệu theo DESIGN.md: bố cục so le, khối icon `bg-aqua-50 rounded-3xl`, không 3 cột bằng nhau."*
-- Với Claude Design: tải file này lên → *"Tạo design system từ DESIGN.md này cho web My Fridge."*
+- Với Claude Design: tải file này lên → *"Tạo design system từ DESIGN.md này cho web Glow up with me."*
 
 **Danh sách kiểm tra trước khi push**
 - [ ] Không emoji, không gradient, không vòng xoay, bóng ≤ `shadow-lift`.
@@ -318,10 +318,10 @@ Khai báo trong `@theme` ở `src/app/globals.css`, dùng qua class Tailwind (`b
 
 ## Khác với mẫu gốc (có chủ đích)
 
-| Mẫu gốc | My Fridge | Lý do |
+| Mẫu gốc | Glow up with me | Lý do |
 |---|---|---|
 | Nút chính nền trắng, chữ xám `#E0E0E0` | Nền `brand-600`, chữ trắng | Chữ xám trên trắng gần như không đọc được (tương phản ~1.3:1) |
-| Bảng màu toàn pastel | Giữ **xanh sage** làm màu chính | Bản sắc "rau xanh, lành mạnh" của My Fridge |
+| Bảng màu toàn pastel | Giữ **xanh sage** làm màu chính | Bản sắc "rau xanh, lành mạnh" của Glow up with me |
 | Không có màu riêng cho số liệu | Màu **đào** riêng cho calo | Calo là thông tin quan trọng nhất |
 | Bo góc nút 8px | Nút 16px, nhãn nhỏ 8px | Nút to dễ chạm trên điện thoại trông cân đối hơn |
 | Viền 1px, tối đa rộng 1280px | Giữ độ rộng theo loại trang (`max-w-md` … `max-w-5xl`) | Dòng chữ không quá dài, dễ đọc |
