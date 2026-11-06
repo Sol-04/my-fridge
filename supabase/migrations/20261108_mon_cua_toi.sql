@@ -26,6 +26,8 @@ language plpgsql
 set search_path = ''
 as $$
 begin
+  -- Khoá theo người dùng để hai lần thêm chạy cùng lúc không cùng lọt qua giới hạn
+  perform pg_advisory_xact_lock(hashtextextended(new.user_id::text, 0));
   if (select count(*) from public.custom_foods where user_id = new.user_id) >= 100 then
     raise exception 'custom_foods_limit' using errcode = 'P0001';
   end if;

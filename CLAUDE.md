@@ -42,6 +42,9 @@ Website giúp người Việt **chọn thực phẩm đang có** (trong tủ l�
   trong Supabase bằng pg_cron + pg_net mỗi 30 phút theo giờ VN (`supabase/migrations/20261107_lark_nhac_nho.sql`, hàm `send_lark_reminders`).
   Cảnh báo quá calo gửi từ web khi ghi món (`src/lib/lark-alerts.ts`, trong `after()`), chỉ báo khi vừa vượt 100% hoặc chạm 90%. `src/lib/lark.ts` chỉ nhận
   link `open.larksuite.com` / `open.feishu.cn`. KHÔNG thêm schema `net` vào "Exposed schemas" của Supabase. Chưa có: tự chỉnh giờ nhắc, cảnh báo khi sửa số phần / xoá buổi tập.
+- **Món của tôi** (Nhật ký → Thêm món → "Của tôi" / "Tự nhập" + ô "Lưu vào Món của tôi"): bảng `custom_foods` (calo / 1 phần, RLS chỉ chủ tài khoản, tối đa 100 món/người,
+  trigger có khoá; `supabase/migrations/20261108_mon_cua_toi.sql` + `schema.sql`). `addFoodLog` nhánh `customFoodId` tính lại calo từ DB × số phần, báo lỗi nếu vượt giới hạn nhật ký.
+  Chưa dùng được ở Tạo thực đơn / Món ăn; chưa có sửa món (nhập lại cùng tên để cập nhật). Bữa đã ghi lưu sẵn tên + calo nên xoá món không ảnh hưởng.
 - `src/app/(site)/ho-so/` — hồ sơ: thông tin cơ thể (`ProfileForm.tsx` + `actions.ts`), thực đơn đã lưu
   (`SavedPlansList.tsx`), đổi mật khẩu, đăng xuất. Chưa đăng nhập → chuyển tới `/dang-nhap?next=/ho-so`.
 - `src/app/auth/callback/route.ts` — nhận link từ email (xác nhận tài khoản / đặt lại mật khẩu).
@@ -190,7 +193,7 @@ Chủ dự án **không biết code**. Vì vậy luôn:
 - **Đã gộp vào `main` (PR #13):** tab Sức khoẻ (nhập file Apple Sức khoẻ: bước chân, năng lượng hoạt động, chu kỳ) + web app PWA (icon lá xanh có tia sáng đào).
   SQL `20261106_suc_khoe.sql` đã chạy trên Supabase. Chưa thử trên iPhone thật / file export.zip thật. Icon trên link preview Vercel có thể ra chữ "G"
   (preview bị khoá đăng nhập nên iPhone không tải được icon) → thử lại trên web chính, xoá icon cũ rồi thêm lại.
-- **Tối ưu chuyển trang (nhánh `claude/loving-feynman-t7q1zt`, chưa gộp):** hiệu ứng vào 240ms (trước 420ms), trễ danh sách 40ms tối đa 5 mục; `getAuthUser()` (getClaims, `src/lib/supabase/server.ts`)
+- **Đã gộp (PR #15) — tối ưu chuyển trang:** hiệu ứng vào 240ms (trước 420ms), trễ danh sách 40ms tối đa 5 mục; `getAuthUser()` (getClaims, `src/lib/supabase/server.ts`)
   thay `getUser()` khi ĐỌC trang; proxy bỏ qua yêu cầu prefetch; service worker bật navigation preload. Hành động GHI vẫn dùng `getUser()`. Chưa đo thời gian thật trên Vercel.
 - **Chưa làm (chỉ làm khi được yêu cầu lại):** cân nặng theo ngày, uống nước, giấc ngủ, dashboard, báo cáo tuần, tự đồng bộ Google Health / Fitbit.
 - **Mã định danh** (không phải bí mật):

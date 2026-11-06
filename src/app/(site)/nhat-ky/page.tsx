@@ -193,7 +193,7 @@ async function DiaryContent({ searchParams }: { searchParams: PageProps<"/nhat-k
       ) : tab === "tap" ? (
         <WorkoutTab key={date} date={date} plan={day.plan} workouts={workouts} weightKg={weightKg} usingDefaultWeight={usingDefaultWeight} isToday={date === today} />
       ) : (
-        <FoodTab key={date} date={date} foods={foods} recipes={recipeList} customFoods={customFoods ?? []} />
+        <FoodTab key={date} date={date} foods={foods} recipes={recipeList} customFoods={tab === "an" ? customFoods : []} />
       )}
     </main>
   );

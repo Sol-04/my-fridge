@@ -17,7 +17,7 @@ export type DiaryRecipe = { slug: string; name: string; calories: number; meals:
 
 const kcalBadge = "inline-flex items-center gap-1 rounded-lg bg-accent-50 px-2 py-1 text-sm font-bold text-accent-500";
 
-export function FoodTab({ date, foods, recipes, customFoods }: { date: string; foods: FoodLog[]; recipes: DiaryRecipe[]; customFoods: CustomFood[] }) {
+export function FoodTab({ date, foods, recipes, customFoods }: { date: string; foods: FoodLog[]; recipes: DiaryRecipe[]; customFoods: CustomFood[] | null }) {
   return (
     <div className="stagger space-y-4">
       {DIARY_MEALS.map((m, i) => (
@@ -42,7 +42,7 @@ function MealCard({
   label: string;
   logs: FoodLog[];
   recipes: DiaryRecipe[];
-  customFoods: CustomFood[];
+  customFoods: CustomFood[] | null;
 }) {
   const [open, setOpen] = useState(false);
   const { pending, error, run } = useDiaryRun();
@@ -100,7 +100,7 @@ function MealCard({
                     </select>
                   </label>
                 ) : (
-                  <span className="text-sm text-muted">Tự nhập</span>
+                  <span className="text-sm text-muted">{l.servings !== 1 ? `${formatServings(l.servings)} phần` : "Tự nhập"}</span>
                 )}
                 <span className={kcalBadge}>
                   <Icon icon={Icons.calories} size={14} />
@@ -153,7 +153,7 @@ function AddPanel({
   date: string;
   meal: DiaryMeal;
   recipes: DiaryRecipe[];
-  customFoods: CustomFood[];
+  customFoods: CustomFood[] | null;
   onClose: () => void;
   onAdded: () => void;
 }) {
@@ -251,7 +251,10 @@ function RecipeRow({ recipe, date, meal, onAdded }: { recipe: DiaryRecipe; date:
   );
 }
 
-function MyFoods({ date, meal, foods, onAdded, onNew }: { date: string; meal: DiaryMeal; foods: CustomFood[]; onAdded: () => void; onNew: () => void }) {
+function MyFoods({ date, meal, foods, onAdded, onNew }: { date: string; meal: DiaryMeal; foods: CustomFood[] | null; onAdded: () => void; onNew: () => void }) {
+  if (foods === null) {
+    return <Notice tone="error" title="Chưa tải được Món của tôi">Có thể mạng đang chậm. Bạn đóng ô này, tải lại trang rồi thử lại nhé.</Notice>;
+  }
   if (foods.length === 0) {
     return (
       <div className="text-sm text-muted">

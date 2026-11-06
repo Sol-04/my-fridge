@@ -97,6 +97,10 @@ export async function addFoodLog(input: AddFoodInput): Promise<DiaryResult> {
     const sv = input.servings;
     const scale = (v: unknown) => (v == null ? null : r1(Number(v) * sv));
     row = { recipe_slug: null, name: String(food.name).slice(0, 120), servings: sv, calories: Math.round(Number(food.calories) * sv), protein: scale(food.protein), carbs: scale(food.carbs), fat: scale(food.fat) };
+    // Nhân số phần có thể vượt giới hạn của nhật ký (5000 kcal / đạm 500 g…) → báo đúng nguyên nhân thay vì "chưa lưu được"
+    if (Number(row.calories) > 5000 || Number(row.protein ?? 0) > 500 || Number(row.carbs ?? 0) > 1000 || Number(row.fat ?? 0) > 500) {
+      return { ok: false, error: "Tổng calo hoặc chất dinh dưỡng của bữa này quá lớn. Bạn giảm số phần xuống nhé." };
+    }
   } else {
     const name = String(input.name ?? "").trim().slice(0, 120);
     const calories = Math.round(Number(input.calories));
