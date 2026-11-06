@@ -6,7 +6,7 @@ import { Suspense } from "react";
 import { Icon, Icons } from "@/components/icons";
 import { ButtonLink, buttonClass, Notice, PageHeader } from "@/components/ui";
 import { addDays, formatDiaryDate, isValidIsoDate, todayInVietnam } from "@/lib/diary";
-import { getDiaryDay } from "@/lib/diary-db";
+import { getCustomFoods, getDiaryDay } from "@/lib/diary-db";
 import { getHealthData } from "@/lib/health-db";
 import { calcTargetCalories, parseUserInput } from "@/lib/meal-plan";
 import { getProfile } from "@/lib/profile";
@@ -44,11 +44,12 @@ async function DiaryContent({ searchParams }: { searchParams: PageProps<"/nhat-k
   const rawTab = first(sp.tab);
   const tab = rawTab === "tap" ? "tap" : rawTab === "suc-khoe" ? "suc-khoe" : "an";
 
-  const [day, profile, recipes, health] = await Promise.all([
+  const [day, profile, recipes, health, customFoods] = await Promise.all([
     getDiaryDay(supabase, user.id, date),
     getProfile(supabase, user.id),
     getPlannerRecipes(),
     getHealthData(supabase, user.id, date),
+    tab === "an" ? getCustomFoods(supabase, user.id) : Promise.resolve([]),
   ]);
 
   const foods = day.foods ?? [];
@@ -192,7 +193,7 @@ async function DiaryContent({ searchParams }: { searchParams: PageProps<"/nhat-k
       ) : tab === "tap" ? (
         <WorkoutTab key={date} date={date} plan={day.plan} workouts={workouts} weightKg={weightKg} usingDefaultWeight={usingDefaultWeight} isToday={date === today} />
       ) : (
-        <FoodTab key={date} date={date} foods={foods} recipes={recipeList} />
+        <FoodTab key={date} date={date} foods={foods} recipes={recipeList} customFoods={customFoods ?? []} />
       )}
     </main>
   );
