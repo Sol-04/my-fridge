@@ -195,6 +195,8 @@ Chủ dự án **không biết code**. Vì vậy luôn:
   (preview bị khoá đăng nhập nên iPhone không tải được icon) → thử lại trên web chính, xoá icon cũ rồi thêm lại.
 - **Đã gộp (PR #15) — tối ưu chuyển trang:** hiệu ứng vào 240ms (trước 420ms), trễ danh sách 40ms tối đa 5 mục; `getAuthUser()` (getClaims, `src/lib/supabase/server.ts`)
   thay `getUser()` khi ĐỌC trang; proxy bỏ qua yêu cầu prefetch; service worker bật navigation preload. Hành động GHI vẫn dùng `getUser()`. Chưa đo thời gian thật trên Vercel.
+- **Nhánh `claude/loving-feynman-t7q1zt` (chưa gộp):** "Món của tôi" (SQL `20261108_mon_cua_toi.sql` CHƯA chạy) + đổi tab Nhật ký tức thì (`DiaryShell.tsx`: dữ liệu cả 3 tab tải sẵn, đổi tab chỉ ẩn / hiện,
+  địa chỉ cập nhật bằng `history.replaceState`) + trang Hồ sơ chỉ lấy tên món + calo của thực đơn đã lưu (không kéo cả jsonb). Chưa đo thời gian thật.
 - **Chưa làm (chỉ làm khi được yêu cầu lại):** cân nặng theo ngày, uống nước, giấc ngủ, dashboard, báo cáo tuần, tự đồng bộ Google Health / Fitbit.
 - **Mã định danh** (không phải bí mật):
   - Supabase project `vxuapnicjqyvwzicdkmv`; SQL đã chạy nằm trong `supabase/migrations/`.

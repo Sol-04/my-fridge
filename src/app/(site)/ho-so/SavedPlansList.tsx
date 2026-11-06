@@ -1,17 +1,19 @@
 import Link from "next/link";
 
 import { ButtonLink, EmptyState, Notice } from "@/components/ui";
-import type { MealEntry } from "@/lib/meal-plan";
 import { Icon, Icons } from "@/components/icons";
 
 export type SavedPlanRow = {
   id: string;
   created_at: string;
   target_calories: number;
-  breakfast: MealEntry | null;
-  lunch: MealEntry | null;
-  dinner: MealEntry | null;
+  breakfast: SavedMeal | null;
+  lunch: SavedMeal | null;
+  dinner: SavedMeal | null;
 };
+
+// Chỉ phần danh sách cần (tên món + calo), không tải cả chi tiết nguyên liệu / các bước của mỗi thực đơn
+export type SavedMeal = { name: string; total_calories: number };
 
 // Danh sách thực đơn đã lưu của người dùng
 export function SavedPlansList({ plans }: { plans: SavedPlanRow[] | null }) {

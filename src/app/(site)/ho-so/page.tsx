@@ -57,7 +57,8 @@ async function ProfileContent() {
       ),
     supabase
       .from("meal_plans")
-      .select("id, created_at, target_calories, breakfast, lunch, dinner")
+      // Chỉ lấy tên món + tổng calo của từng bữa (không kéo cả cột jsonb lớn) để trang Hồ sơ mở nhanh hơn
+      .select("id, created_at, target_calories, b_name:breakfast->>name, b_cal:breakfast->>total_calories, l_name:lunch->>name, l_cal:lunch->>total_calories, d_name:dinner->>name, d_cal:dinner->>total_calories")
       .eq("user_id", user.id)
       .order("created_at", { ascending: false })
       .limit(20)
@@ -67,7 +68,18 @@ async function ProfileContent() {
       ),
   ]);
   if (plansRes.error) console.error("Không đọc được thực đơn đã lưu:", plansRes.error.message);
-  const plans = plansRes.error ? null : ((plansRes.data ?? []) as SavedPlanRow[]);
+  type PlanRaw = { id: string; created_at: string; target_calories: number; b_name: string | null; b_cal: string | null; l_name: string | null; l_cal: string | null; d_name: string | null; d_cal: string | null };
+  const meal = (name: string | null, cal: string | null) => (name ? { name, total_calories: Number(cal) || 0 } : null);
+  const plans: SavedPlanRow[] | null = plansRes.error
+    ? null
+    : ((plansRes.data ?? []) as unknown as PlanRaw[]).map((p) => ({
+        id: p.id,
+        created_at: p.created_at,
+        target_calories: p.target_calories,
+        breakfast: meal(p.b_name, p.b_cal),
+        lunch: meal(p.l_name, p.l_cal),
+        dinner: meal(p.d_name, p.d_cal),
+      }));
 
   if (larkRes.error) console.error("Không đọc được cài đặt Lark:", larkRes.error.message);
   const lark = larkRes.error ? null : larkRes.data;
