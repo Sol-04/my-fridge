@@ -1,6 +1,9 @@
 import type { Metadata, Viewport } from "next";
+import { Suspense } from "react";
 import { Nunito } from "next/font/google";
 import "./globals.css";
+
+import { PwaSetup } from "@/components/PwaSetup";
 
 // Nunito: chữ tròn, mềm, hỗ trợ đầy đủ tiếng Việt
 const nunito = Nunito({
@@ -13,18 +16,28 @@ export const metadata: Metadata = {
   title: "Glow up with me – Thực đơn từ tủ lạnh của bạn",
   description:
     "Có sẵn đồ trong tủ lạnh mà không biết nấu gì? Chọn thực phẩm đang có để nhận thực đơn sáng, trưa, tối vừa đủ calo.",
+  applicationName: "Glow up with me",
+  // iPhone: chạy toàn màn hình khi mở từ biểu tượng trên màn hình chính
+  appleWebApp: { capable: true, title: "Glow up", statusBarStyle: "default" },
+  icons: { apple: "/icons/apple-touch-icon.png" },
+  formatDetection: { telephone: false },
 };
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   themeColor: "#3f7a5c",
+  viewportFit: "cover",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="vi" className={`${nunito.variable} antialiased`}>
-      <body className="flex min-h-dvh flex-col font-sans">{children}</body>
+      <body className="flex min-h-dvh flex-col font-sans">{children}
+        <Suspense fallback={null}>
+          <PwaSetup />
+        </Suspense>
+      </body>
     </html>
   );
 }

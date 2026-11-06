@@ -23,6 +23,10 @@ import {
   Drumstick,
   Dumbbell,
   Egg,
+  Footprints,
+  HeartPulse,
+  Upload,
+  Droplet,
   Flame,
   Hand,
   KeyRound,
@@ -118,6 +122,10 @@ export const Icons = {
   nextDay: ChevronRight,
   search: Search,
   clear: X,
+  steps: Footprints,
+  heartbeat: HeartPulse,
+  upload: Upload,
+  cycle: Droplet,
 } satisfies Record<string, LucideIcon>;
 
 export const MEAL_ICONS: Record<string, LucideIcon> = {

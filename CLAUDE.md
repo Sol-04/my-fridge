@@ -31,9 +31,18 @@ Website giúp người Việt **chọn thực phẩm đang có** (trong tủ l�
   + tab Tập luyện (mục tiêu + trình độ + môn yêu thích → lịch tuần, "Đã tập"); `actions.ts` tự tính lại calo trên máy chủ.
   Lõi: `src/lib/diary.ts`, `src/lib/diary-db.ts`, `src/lib/workout-plan.ts` (calo đốt thêm = (MET − 1) × kg × giờ),
   `data/activities.ts` (môn thể thao + bài tập, MET), `data/recipes-snacks.ts` (12 món phụ, `meals: ["snack"]`).
+  - Tab **Sức khoẻ** (`?tab=suc-khoe`, `HealthTab.tsx` + `health-actions.ts`): người dùng iPhone xuất file `export.zip` từ app Sức khoẻ
+    và chọn file ngay trên web; `src/lib/apple-health.ts` đọc file NGAY TRÊN MÁY (fflate, không tải file gốc lên) → chỉ gửi tóm tắt
+    (bước chân + năng lượng hoạt động mỗi ngày, các kỳ kinh nguyệt) vào bảng `health_daily`, `cycle_logs` (`supabase/migrations/20261106_suc_khoe.sql`,
+    RLS chỉ chủ tài khoản). Bước chân lấy nguồn nhiều nhất mỗi ngày (khỏi cộng đôi iPhone + Watch). `src/lib/cycle.ts` = chu kỳ trung bình + ngày dự kiến (chỉ tham khảo).
+    Năng lượng hoạt động của Apple chỉ để xem (KHÔNG cộng vào "còn lại" vì calo mục tiêu đã có hệ số vận động). Web KHÔNG đọc thẳng được Apple Sức khoẻ /
+    Health Connect (chỉ app cài trên máy mới đọc được); Fitbit Web API đã tắt từ 11/2026 → Google Health API (chưa làm).
 - `src/app/(site)/ho-so/` — hồ sơ: thông tin cơ thể (`ProfileForm.tsx` + `actions.ts`), thực đơn đã lưu
   (`SavedPlansList.tsx`), đổi mật khẩu, đăng xuất. Chưa đăng nhập → chuyển tới `/dang-nhap?next=/ho-so`.
 - `src/app/auth/callback/route.ts` — nhận link từ email (xác nhận tài khoản / đặt lại mật khẩu).
+- **Web app trên điện thoại (PWA):** `src/app/manifest.ts` (tên, màu, icon, lối tắt), `public/icons/` (icon 192/512/maskable + apple-touch),
+  `public/sw.js` (chỉ lưu file tĩnh + trang `/offline`; KHÔNG lưu trang đăng nhập / dữ liệu cá nhân), `src/components/PwaSetup.tsx`
+  (đăng ký service worker + gợi ý "Cài ứng dụng"; iPhone: Chia sẻ → Thêm vào MH chính), `src/app/offline/page.tsx`.
 - `src/proxy.ts` — làm mới phiên đăng nhập Supabase trước mỗi trang (Next 16 gọi là "proxy", trước là middleware).
 - `src/lib/maps.ts` — `mapsSearchUrl(slug, name)`: link Google Maps tìm quán bán món ăn ngoài gần người dùng (Google Maps URLs,
   miễn phí, không cần API key, web không đọc/lưu vị trí). Một số món tìm theo loại cửa hàng (`QUERY_BY_SLUG`). Nút "Tìm quán gần bạn"
@@ -173,7 +182,9 @@ Chủ dự án **không biết code**. Vì vậy luôn:
   - Web chính tự cập nhật trên Vercel sau khi gộp.
   - Việc mới → tạo nhánh mới từ `main` mới nhất → PR → gửi link preview (lấy từ bình luận của vercel[bot] trên PR) → chủ dự án nói "đồng ý gộp" thì mới gộp.
 - **Việc chủ dự án tự làm:** bật "Leaked password protection" trong Supabase → Authentication.
-- **Chưa làm (chỉ làm khi được yêu cầu lại):** cân nặng theo ngày, uống nước, giấc ngủ, dashboard, báo cáo tuần.
+- **PR #13 (nhánh `claude/loving-feynman-t7q1zt`, chưa gộp — chờ chủ dự án xem preview và nói "đồng ý gộp"):** tab Sức khoẻ (nhập file Apple Sức khoẻ: bước chân,
+  năng lượng hoạt động, chu kỳ) + web app PWA. SQL `20261106_suc_khoe.sql` đã chạy trên Supabase. Chưa thử trên iPhone thật / file export.zip thật.
+- **Chưa làm (chỉ làm khi được yêu cầu lại):** cân nặng theo ngày, uống nước, giấc ngủ, dashboard, báo cáo tuần, tự đồng bộ Google Health / Fitbit.
 - **Mã định danh** (không phải bí mật):
   - Supabase project `vxuapnicjqyvwzicdkmv`; SQL đã chạy nằm trong `supabase/migrations/`.
   - Vercel project `prj_xjDlVUwKwhQvaXSMfkD55EFaeJxc`, team `team_qpHDwMKTyBVTo2sImPR3GE15`. Công cụ Vercel có thể báo 403 → lấy link preview từ bình luận của vercel[bot] trên PR.
